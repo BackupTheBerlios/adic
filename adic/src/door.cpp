@@ -18,7 +18,7 @@ Door::step(R dt)
   int sig1=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
   angle+=angleSpeed*dt;
   int sig2=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
-  if ((sig1!=sig2)&&(fabs(angleSpeed)<RAD(30))) {
+  if ((sig1!=sig2)&&(fabs(angleSpeed)<RAD(45))) {
     angle=0;
     angleSpeed=0;
     return true;
