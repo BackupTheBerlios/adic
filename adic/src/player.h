@@ -43,7 +43,7 @@ public:
   {
     RoundObject::composite(layer2);
     layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy).SIMPLE(type)
-      .SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
+      .SIMPLE(m_fitness).SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
   }
 
   void setControl(int8_t x, int8_t y)
@@ -52,6 +52,11 @@ public:
     m_iy=y;
   }
 
+  void setFitness(R f=1.0)
+  {
+    m_fitness=f;
+  }
+  
   R getDirection() const
   {
     return m_direction;
@@ -115,6 +120,8 @@ protected:
   int8_t m_iy;
   //! type
   int8_t type;
+  //! 0<fit<1
+  R m_fitness;
   
   V2D m_oldSpeed;
   R m_oldDirection;

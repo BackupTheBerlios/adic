@@ -123,6 +123,13 @@ Game::collidePlayer(unsigned pid, bool test)
 	  
 	  if (test)
 	    return true;
+	  // increase fitness if team members
+	  unsigned t1=getTeamIDofPlayer(pid);
+	  if ((t1!=~0U)&&(t1==getTeamIDofPlayer(o))) {
+	    m_players[pid].setFitness();
+	    m_players[o].setFitness();
+	  }
+	  
 	  // now calculate impuls
 	  V2D oimp(cv.project(p.getSpeed()));
 	  V2D timp((-cv).project(m_players[o].getSpeed()));
@@ -327,5 +334,19 @@ Game::collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor)
   d.commit();
   collision.emit(p.m_pos,oimp.length()+timp.length());
   return true;
+}
+
+TeamID 
+Game::getTeamIDofPlayer(PlayerID pid)
+{
+  if (!m_players[pid].isPlayer())
+    return ~0U;
+  // find team this player is in
+  for (unsigned i=0;i<m_teams.size();++i) {
+    std::vector<PlayerID>::const_iterator it(std::find(m_teams[i].playerIDs.begin(),m_teams[i].playerIDs.end(),pid));
+    if (it!=m_teams[i].playerIDs.end())
+      return i;
+  }
+  return ~0U;
 }
 

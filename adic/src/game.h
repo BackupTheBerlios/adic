@@ -236,6 +236,8 @@ public:
       return &(*it);
     return NULL;
   }
+  TeamID getTeamIDofPlayer(PlayerID pid);
+  
   //! get team by ID
   Team *getTeam(unsigned id)
   {
