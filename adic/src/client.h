@@ -34,50 +34,9 @@
 
 #include <signal.h>
 
-#include "typedefs.h"
 #include "game.h"
-#include "messages.h"
-#include "guiconfig.h"
-#include "soundconfig.h"
 #include "sound.h"
-#include <stdlib.h>
-
-struct ClientConfig
-{
-  ClientConfig() : m_port(40700), m_server("localhost")
-  {}
-  
-  void setDefaults() 
-  {
-    if (m_users.users.empty()) {
-      const char *tmp=getenv("USER");
-      if (tmp)
-	m_users.users.push_back(User(tmp));
-      else
-	m_users.users.push_back(User("Player 1"));
-      /*
-	tmp=getenv("HOSTNAME");
-	if (tmp)
-	m_users.team=tmp;
-	else
-	m_users.team="Unkown";
-      */
-    }
-  }
-  
-  unsigned short int m_port;
-  std::string m_server;
-  GUIConfig m_gui;
-  SoundConfig m_sc;
-  UserSetting m_users;
-};
-DOPE_CLASS(ClientConfig);
-template <typename Layer2>
-inline void composite(Layer2 &layer2, ClientConfig &c)
-{
-  layer2.simple(c.m_port,"port").simple(c.m_server,"server")
-    .simple(c.m_gui,"gui").simple(c.m_sc,"sound").simple(c.m_users,"users");
-}
+#include "clientconfig.h"
 
 class GUI;
 

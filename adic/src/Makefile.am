@@ -65,6 +65,7 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 @PACKAGE@server_LDADD = @DOPE_LIBS@
 
 @PACKAGE@client_SOURCES = $(gamecommon) \
+	clientconfig.h \
 	client.h client.cpp \
 	guiconfig.h \
 	gui.h gui.cpp \
@@ -82,7 +83,8 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	sdlkeyboard.h sdlkeyboard.cpp \
 	sdljoystick.h sdljoystick.cpp \
 	sdlmouse.h sdlmouse.cpp \
-	sdlinputfield.h
+	sdlinputfield.h \
+	sdlmenu.h sdlmenu.cpp
 
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer

@@ -30,6 +30,7 @@
 //! wrapper around OpenGL functions to allow dlopening OpenGL
 /*!
   this class uses SDL to look up the symbols
+  \example take a look at sdlglgui.cpp on how to use it
 */
 struct SDLGL
 {

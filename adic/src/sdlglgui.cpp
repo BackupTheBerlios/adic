@@ -95,6 +95,7 @@ SDLGLGUI::resize(int width, int height)
   if (height==0)			
     height=1;
 
+  // todo: resize should not set video mode
   if ( SDL_SetVideoMode(width, height, 0, m_flags) == NULL ) {
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   }

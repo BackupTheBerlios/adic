@@ -56,8 +56,11 @@ public:
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
 
+  //! the opengl wrapper
   SDLGL gl;
+  //! simple terminal
   GLTerminal m_terminal;
+  //! our font
   DOPE_SMARTPTR<GLFont> m_fontPtr;
 
   std::ostream &getOstream() 
@@ -68,18 +71,31 @@ public:
   {
     return m_inputDevices.size();
   }
+
+  void drawCircle(const V2D &p, float r);
+  void drawWall(const Wall &wall);
+  void drawTexture(const Texture &tex, const V2D &p, R rot=0);
+
+  //! return width - Attention: may change during the game
+  int getWidth() const
+  {
+    return m_width;
+  }
+  //! return height - Attention: may change during the game
+  int getHeight() const
+  {
+    return m_height;
+  }
 protected:
+  //! \todo not yet implemented
+  void drawPolygon(const std::vector<V2D> &p);
+
   //! create window
   void createWindow();
   //! resize gui
   void resize(int width, int height);
   //! close window
   void killWindow();
-
-  void drawCircle(const V2D &p, float r);
-  void drawWall(const Wall &wall);
-  void drawPolygon(const std::vector<V2D> &p);
-  void drawTexture(const Texture &tex, const V2D &p, R rot=0);
   
   std::vector<DOPE_SMARTPTR<SDLInputDev> > m_inputDevices;
 
