@@ -1,7 +1,6 @@
 #include "blackbot.h"
 
-
-static R threshold=5;
+const R BlackBot::threshold=5;
 
 BlackBot::BlackBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
   : Bot(_client,_pid,_inputID), followMode(false)

@@ -93,6 +93,7 @@ lookupGLSymbols()
 #define FUNC(ret,name,parm) do{typedef ret (*T##name) parm ;name=(T##name)SDL_GL_GetProcAddress(STRINGIFY(name));if(!name) name=(T##name)GetGluProcAddress(STRINGIFY(name));assert(name);DEBUG_GL("got address of:" STRINGIFY(name) " it is at: " << ((void *)name));}while(0)
 #include "glfunctions.h"
 #undef FUNC
+#undef STRINGIFY
 }
 #endif
 

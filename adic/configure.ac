@@ -38,6 +38,15 @@ AC_ARG_ENABLE([staticcpp],
 		[],
 		[enable_staticcpp=no])
 
+AC_ARG_ENABLE([fastcompile],
+     [  --enable-fastcompile    Use fast compilation hack],
+     [case "${enableval}" in
+       yes) fastcompile=true ;;
+       no)  fastcompile=false ;;
+       *) AC_MSG_ERROR(bad value ${enableval} for --enable-fastcompile) ;;
+     esac],[fastcompile=false])
+     AM_CONDITIONAL(FASTCOMPILE, test x$fastcompile = xtrue)
+
 dnl checks for libraries
 AM_PATH_DOPE(0.0.8, , [AC_MSG_ERROR([dope++ required])])
 dnl MDL_HAVE_OPENGL

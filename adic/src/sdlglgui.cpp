@@ -174,6 +174,10 @@ SDLGLGUI::resize(int width, int height)
   m_width=width;
   m_height=height;
 
+  int db=0;
+  if (SDL_GL_GetAttribute( SDL_GL_DOUBLEBUFFER, &db )) DOPE_WARN("could not get attribute");
+  if (!db) DOPE_WARN("did not get double buffer");
+
   // Reset The Current Viewport
   glViewport(0,0,width,height);
   GL_ERRORS();

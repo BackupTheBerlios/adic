@@ -1,7 +1,6 @@
 #include "karmebot.h"
 
-
-static R threshold=5;
+const R KarmeBot::threshold=5;
 
 KarmeBot::KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
   : Bot(_client,_pid,_inputID), followMode(false)

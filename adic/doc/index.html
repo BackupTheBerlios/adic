@@ -26,11 +26,12 @@
       Beside of playing the game you can write a bot and use the game as test bed for AI/robotics algorithms.
     </p>
     <h2><a name="news">News/Changelog:</a></h2>
-<h3>only in CVS for now (2002-12-26)</h3>
+<h3>only in CVS for now (2003-02-19)</h3>
 <UL>
   <LI>Improved graphics (Rooms are now textured)</LI>
   <LI>tuned parameters (due to popular demand - gameplay is faster now => more action)</LI>
   <LI>added music from Olech Kaczanowski (amuzen)</LI>
+  <LI>added --enable-fastcompile configure switch. You should use it for faster one time compilation. It creates on the fly some cpp's that include other cpps  (=>this reduces the overhead of parsing the headers again and again - it seems gcc does not have precompiled headers yet?). This works as long as .cpp files don't assume they are one compilation unit (=> no static variables, no obscure macros, ...)</LI>
 </UL>
 <p>
 <h3>Experimental debian package</h3>

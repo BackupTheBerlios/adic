@@ -56,6 +56,9 @@ protected:
   bool followMode;
   //! the id of the player we follow
   PlayerID rabbit;
+
+  //! we accept a direction +-threshold
+  static const R threshold;
 };
 
 #endif
