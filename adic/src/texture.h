@@ -20,6 +20,7 @@
    \file texture.h<2>
    \brief texture class
    \author Jens Thiele
+   \note should be called GLTexture
 */
 
 
