@@ -49,7 +49,16 @@ public:
   }
   
 
-  //! collide circle and adge
+  const Line &getLine() const
+  {
+    return m_l;
+  }
+  R getPillarRadius() const
+  {
+    return m_pr;
+  }
+  
+  //! collide circle and wall
   /*
     \param cv collision vector - is only set if there is a collision and is the 
     "surface" normal
@@ -57,6 +66,18 @@ public:
     \return true if there is a collision otherwise false
   */
   bool collide(const Circle &circle, V2D &cv) const;
+
+  //! collide circle and wall
+  /*
+    \param cv collision vector - is only set if there is a collision and is the 
+    "surface" normal
+    \param dist the distance of the collision point to the start of the wall
+                this is needed to calculate the angular momentum on collision
+		(f.e. doors) - is only set if there is a collision
+
+    \return true if there is a collision otherwise false
+  */
+  bool collide(const Circle &circle, V2D &cv, R dist) const;
 };
 
 #endif
