@@ -77,7 +77,7 @@ if [ "x$DIR" = "x" ]; then
     echo Fatal error
     exit 1
 fi
-
+cp $BUILDDIR/$PACKAGE/$DISTFILE $UPLOADDIR
 cd $BUILDDIR
 if test -e $DIR; then
     echo Warning `pwd`/$DIR directory already exists - assuming we already unpacked distribution
