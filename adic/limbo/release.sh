@@ -15,6 +15,7 @@ SETUPCROSS=~/develop/cross/config
 ADIC_CROSS_CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX/cross --disable-shared"
 HTTPGET=curl
 BUILDDEB="dpkg-buildpackage -rfakeroot -us -uc"
+export UPLOADDIR=$BUILDDIR/upload
 #end of configuration
 
 set -e
@@ -97,9 +98,9 @@ else
     tar xzvf $BUILDDIR/$PACKAGE/$DISTFILE
     cd $DIR
     $BUILDDEB
-    mkdir -p $BUILDDIR/upload
-    mv $BUILDDIR/build/debian/adic_${DIR#adic-*}* $BUILDDIR/upload
-    mv $BUILDDIR/build/debian/adic-data_${DIR#adic-*}* $BUILDDIR/upload
+    mkdir -p $UPLOADDIR
+    mv $BUILDDIR/build/debian/adic_${DIR#adic-*}* $UPLOADDIR
+    mv $BUILDDIR/build/debian/adic-data_${DIR#adic-*}* $UPLOADDIR
 fi
 
 
@@ -166,8 +167,9 @@ else
     rm -rf data
     mv d2 data
     strip adicclient adicserver adicbot
-    tar cvf - $DISTNAME|gzip --best > $BUILDDIR/upload/$DISTNAME.tar.gz
-    tar cvf - $DISTNAME|bzip2 --best > $BUILDDIR/upload/$DISTNAME.tar.bz2
+    cd ..
+    tar cvf - $DISTNAME|gzip --best > $UPLOADDIR/$DISTNAME.tar.gz
+    tar cvf - $DISTNAME|bzip2 --best > $UPLOADDIR/$DISTNAME.tar.bz2
 fi
 
 #todo build static binary package for linux/fbdev
@@ -202,8 +204,8 @@ if test -e $SETUPCROSS; then
 	mv d2 data
 	$STRIP *.exe
 	cd ..
-	mkdir -p $BUILDDIR/upload
-	zip -r $BUILDDIR/upload/$DISTNAME.zip $DISTNAME
+	mkdir -p $UPLOADDIR
+	zip -r $UPLOADDIR/$DISTNAME.zip $DISTNAME
     fi
 else
     echo cross compiler config script not found
@@ -214,8 +216,8 @@ fi
 exit 0
 #copy packages to repository
 #todo
-cp -i $BUILDDIR/upload/adic_* $ADIC_DEBREP
-cp -i $BUILDDIR/upload/adic-data_* $ADIC_DEBREP
+cp -i $UPLOADDIR/adic_* $ADIC_DEBREP
+cp -i $UPLOADDIR/adic-data_* $ADIC_DEBREP
 cd $ADIC_DEBREP/..
 ./gen-packages.sh
 ./update.sh

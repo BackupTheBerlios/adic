@@ -33,14 +33,6 @@ struct GUIConfig
 {
   GUIConfig() 
     : implementation("SDLGLGUI"), title(PACKAGE), 
-#ifdef DLOPEN_OPENGL
-      libGL(""), 
-#ifndef WINDOOF
-      libGLU("/usr/lib/libGLU.so"),
-#else
-error - which is the default path for libGLU on windows ?
-#endif
-#endif
       width(640), height(480), bits(32), fullscreen(true), quality(0), flush(true)
   {}
   
