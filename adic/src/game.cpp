@@ -528,5 +528,5 @@ Game::restart()
   m_closedRooms.clear();
   m_playerNames.clear();
   m_teams.clear();
-  setWorldPtr(WorldPtr(NULL));
+  setWorldPtr(WorldPtr());
 }

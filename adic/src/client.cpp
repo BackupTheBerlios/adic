@@ -43,7 +43,7 @@ NetStream::NetStream(const std::string &name, unsigned short int port)
 }
 
 Client::Client(ClientConfig &config) 
-  : m_config(config), m_quit(false), m_soundPtr(NULL), m_csong(0), m_guiPtr(NULL),
+  : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
   m_songs.push_back("data/music.mod");
@@ -365,8 +365,8 @@ Client::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;*/
   }
-  m_soundPtr=DOPE_SMARTPTR<Sound>(NULL);
-  m_guiPtr=DOPE_SMARTPTR<GUI>(NULL);
+  m_soundPtr=DOPE_SMARTPTR<Sound>();
+  m_guiPtr=DOPE_SMARTPTR<GUI>();
   return 0;
 }
 
