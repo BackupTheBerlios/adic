@@ -50,19 +50,20 @@ Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
   //  std::cerr << "\nGot game data\n";
   TimeStamp myTime(m_game.getTimeStamp());
   TimeStamp serverTime(gPtr->getTimeStamp());
+  /* lag compensation
   if (serverTime<myTime) {
     // packet lag
     TimeStamp lag(myTime-serverTime);
     R dt=lag.getSec()+R(lag.getUSec())/1000000;
     std::cerr << "\nLag: "<<dt<<" sec.\n";
     gPtr->step(dt);
-  }
+    }*/
   // todo later we will perhaps need a replace method
   // backup worldPtr - otherwise it would be verry time-consuming (build world from mesh ...)
   Game::WorldPtr w=m_game.getWorldPtr();
-  std::cerr << "\nGot Game with "<<gPtr->getPlayers().size() << " players (was: "<<m_game.getPlayers().size()<<")\n";
+  //  std::cerr << "\nGot Game with "<<gPtr->getPlayers().size() << " players (was: "<<m_game.getPlayers().size()<<")\n";
   m_game=*gPtr.get();
-  std::cerr << "after copy have "<<m_game.getPlayers().size()<<" players\n";
+  //  std::cerr << "after copy have "<<m_game.getPlayers().size()<<" players\n";
   m_game.setWorldPtr(w);
   m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
 }
@@ -76,7 +77,7 @@ Client::handleCollision(V2D pos, R strength)
   R volume=strength/40;
   if (volume>1) volume=1;
   m_soundPtr->modifyChannel(c,volume);
-  std::cerr << "\nPlay sample\n";
+  //  std::cerr << "\nPlay sample\n";
 }
 
 void
