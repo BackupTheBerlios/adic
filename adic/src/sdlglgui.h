@@ -110,7 +110,7 @@ public:
   void flush() 
   {
     if (!getGUIConfig().flush) return;
-    gl.Flush();
+    glFlush();
   }
 protected:
   void drawPillars();

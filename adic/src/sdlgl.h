@@ -34,7 +34,23 @@
 #undef DLOPEN_OPENGL
 #endif
 
+#ifdef DLOPEN_OPENGL
+
+#define FUNC(ret,name,parm) extern ret (* name ) parm
+#include "minigl.h"
+#include "glfunctions.h"
+#undef FUNC
+
+#else
 #include <GL/gl.h>
+#endif
+
+#include <dope/dope.h>
+
+#define DEBUG_GL
+//#define DEBUG_GL(msg) DOPE_MSG("DEBUG: OpenGL: ", msg)
+
+#define GL_ERRORS() do{if (gl.printErrors()) DOPE_MSG("gl error at", "^^^^^");}while(0)
 
 //! wrapper around OpenGL functions to allow dlopening OpenGL
 /*!
@@ -56,71 +72,11 @@ public:
   */
   void init();
   
-  typedef void (*voidFunc)(void);
-  typedef void (*intFunc)(int);
-  typedef void (*uintFunc)(unsigned int);
-  typedef void (*uint2Func)(unsigned int,unsigned int);
-  typedef void (*uintuintPFunc)(unsigned int, unsigned int *);
-  typedef void (*uintintPFunc)(unsigned int, int *);
-  typedef void (*uint2intFunc)(unsigned int,unsigned int,int);
-  typedef void (*floatFunc)(float);
-  typedef void (*fvec2Func)(float,float);
-  typedef void (*fvec3Func)(float,float,float);
-  typedef void (*fvec4Func)(float,float,float,float);
-  typedef void (*fvec5Func)(float,float,float,float,float);
-  typedef void (*fvec6Func)(float,float,float,float,float,float);
-  typedef void (*dvec6Func)(double,double,double,double,double,double);
-  typedef void (*ivec2Func)(int,int);
-  typedef void (*ivec4Func)(int,int,int,int);
-  typedef void (*ivec4voidPFunc)(int,int,int,int, void *);
-  typedef void (*uintfloatPFunc)(unsigned int, float *);
-
-
-  typedef void (*glTexImage2DFunc) ( GLenum target, GLint level,
-				     GLint internalFormat,
-				     GLsizei width, GLsizei height,
-				     GLint border, GLenum format, GLenum type,
-				     const GLvoid *pixels );
-  typedef int (*glErrorFunc) ();
-
-#define LOOKUP(m,t) t m
-  LOOKUP(Clear,uintFunc);
-  LOOKUP(MatrixMode,uintFunc);
-  LOOKUP(LoadIdentity,voidFunc);
-  LOOKUP(Color3f,fvec3Func);
-  LOOKUP(Color4f,fvec4Func);
-  LOOKUP(Translatef,fvec3Func);
-  LOOKUP(Scalef,fvec3Func);
-  LOOKUP(Begin,uintFunc);
-  LOOKUP(Vertex2i,ivec2Func);
-  LOOKUP(Vertex2f,fvec2Func);
-  LOOKUP(End,voidFunc);
-  LOOKUP(Viewport,ivec4Func);
-  LOOKUP(Ortho,dvec6Func);
-  LOOKUP(ClearColor,fvec4Func);
-  LOOKUP(PushMatrix,voidFunc);
-  LOOKUP(PopMatrix,voidFunc);
-  LOOKUP(GetFloatv,uintfloatPFunc);
-  LOOKUP(GetIntegerv,uintintPFunc);
-  LOOKUP(LineWidth,floatFunc);
-  LOOKUP(Flush,voidFunc);
-  LOOKUP(Finish,voidFunc);
-  LOOKUP(Enable,uintFunc);
-  LOOKUP(Disable,uintFunc);
-  LOOKUP(BlendFunc,uint2Func);
-  LOOKUP(TexCoord2f,fvec2Func);
-  LOOKUP(BindTexture,uint2Func);
-  LOOKUP(GenTextures,uintuintPFunc);
-  LOOKUP(TexParameteri,uint2intFunc);
-  LOOKUP(TexImage2D,glTexImage2DFunc);
-  LOOKUP(Rotatef,fvec4Func);
-  LOOKUP(ShadeModel, uintFunc);
-  LOOKUP(RasterPos2i, ivec2Func);
-  LOOKUP(PixelStorei, uint2Func);
-  LOOKUP(DrawPixels, ivec4voidPFunc);
-  LOOKUP(PixelZoom, fvec2Func);
-  LOOKUP(GetError, glErrorFunc);
-#undef LOOKUP
+  //! print out current opengl errors
+  /*!
+    \return the number of errors
+  */
+  int printErrors();
 };
 
 #endif

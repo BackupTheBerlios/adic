@@ -36,9 +36,9 @@
   this is just the model not the view (model-view-controller pattern)
 
   \example how to draw a InputField (s.a. sdlglgui.cpp)
-  gl.LoadIdentity();
-  gl.Translatef(0,0,0);
-  gl.Color3f(1.0,1.0,1.0);
+  glLoadIdentity();
+  glTranslatef(0,0,0);
+  glColor3f(1.0,1.0,1.0);
   m_fontPtr->drawText(m_chatLine.getContent());
 */
 class SDLInputField : public SigC::Object

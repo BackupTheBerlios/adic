@@ -192,72 +192,72 @@ SDLMenu::step(R dt)
 
   case 1:
     // Screen 1: "Choose Server", hilite Inputfield
-    gl.LoadIdentity();
+    glLoadIdentity();
     if (serverName.isActive())
       gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)+26), float(M_PI/2));
     else
       gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)-25), float(M_PI/2));
-    gl.Translatef(float(w/2),float(h/2)+18,0);
+    glTranslatef(float(w/2),float(h/2)+18,0);
     if (serverName.isActive())
-      gl.Color3f(0.0,1.0,0.0);
+      glColor3f(0.0,1.0,0.0);
     else
-      gl.Color3f(1.0,1.0,1.0);
+      glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText(serverName.getContent(),true);
-    gl.Translatef(0,-gui.m_fontPtr->getHeight()-34,0);
+    glTranslatef(0,-gui.m_fontPtr->getHeight()-34,0);
     if (serverPort.isActive())
-      gl.Color3f(0.0,1.0,0.0);
+      glColor3f(0.0,1.0,0.0);
     else
-      gl.Color3f(1.0,1.0,1.0);
+      glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText(serverPort.getContent(),true);
     break;
   case 2:
     // Screen 2: "Number of Players", hilite Selection
-    gl.LoadIdentity();
+    glLoadIdentity();
     gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)+90-m_playerNum*40), float(M_PI/2));
     break;
   case 3:
     // Screen 3: "Player Data", hilite Inputfield, draw player number
-    gl.LoadIdentity();
+    glLoadIdentity();
     if (playerName.isActive())
       gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)+26), float(M_PI/2));
     else
       gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)-25), float(M_PI/2));
-    gl.Translatef(float(w/2),float(h/2)+58,0);
-    gl.Color3f(1.0,1.0,1.0);
+    glTranslatef(float(w/2),float(h/2)+58,0);
+    glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText("Player " + anyToString(player_i+1),true);
 
-    gl.Translatef(0, -40,0);
+    glTranslatef(0, -40,0);
     if (playerName.isActive())
-      gl.Color3f(0.0,1.0,0.0);
+      glColor3f(0.0,1.0,0.0);
     else
-      gl.Color3f(1.0,1.0,1.0);
+      glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText(playerName.getContent(),true);
-    gl.Translatef(0,-gui.m_fontPtr->getHeight()-34,0);
+    glTranslatef(0,-gui.m_fontPtr->getHeight()-34,0);
     if (teamName.isActive())
-      gl.Color3f(0.0,1.0,0.0);
+      glColor3f(0.0,1.0,0.0);
     else
-      gl.Color3f(1.0,1.0,1.0);
+      glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText(teamName.getContent(),true);
-    gl.Translatef(0,-gui.m_fontPtr->getHeight()-34,0);
+    glTranslatef(0,-gui.m_fontPtr->getHeight()-34,0);
     break;
   case 4:
     // Screen 4: "ADIC Info", show all input
-    gl.LoadIdentity();
-    gl.Translatef(float(w/2),float(h/2)+48,0);
-    gl.Color3f(1.0,1.0,1.0);
+    glLoadIdentity();
+    glTranslatef(float(w/2),float(h/2)+48,0);
+    glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText("Server",true);
-    gl.Translatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
-    gl.Color3f(0.625,0.625,0.625);
+    glTranslatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
+    glColor3f(0.625,0.625,0.625);
     gui.m_fontPtr->drawText("IP: " + config.m_server + " Port: " + anyToString(config.m_port),true);
-    gl.Translatef(0,-2*gui.m_fontPtr->getHeight(),0);
-    gl.Color3f(1.0,1.0,1.0);
+    glTranslatef(0,-2*gui.m_fontPtr->getHeight(),0);
+    glColor3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText("Player [ Team ]",true);
-    gl.Translatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
-    gl.Color3f(0.625,0.625,0.625);
+    glTranslatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
+    glColor3f(0.625,0.625,0.625);
     for (int i=0; i<config.m_users.users.size(); i++)
       {
 	gui.m_fontPtr->drawText(config.m_users.users[i].m_uname + " [ " + config.m_users.users[i].m_tname + " ]",true);
-	gl.Translatef(0,-1.1*gui.m_fontPtr->getHeight(),0);
+	glTranslatef(0,-1.1*gui.m_fontPtr->getHeight(),0);
       }
     break;
 

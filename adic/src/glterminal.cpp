@@ -38,7 +38,7 @@ GLTerminal::step(R dt)
   const std::string &newtext(out.str());
   if (newtext.size()) {
     int view[4];
-    gl.GetIntegerv(GL_VIEWPORT,view);
+    glGetIntegerv(GL_VIEWPORT,view);
     int w=view[2];
     int h=view[3];
     maxcols=(w-x)/gui.m_fontPtr->getWidth();
@@ -94,14 +94,14 @@ GLTerminal::step(R dt)
   }
   if (rows.empty())
     return;
-  gl.PushMatrix();
-  gl.LoadIdentity();
-  gl.Translatef(x,y-int(gui.m_fontPtr->getHeight()*stimer/scrollspeed),0);
+  glPushMatrix();
+  glLoadIdentity();
+  glTranslatef(x,y-int(gui.m_fontPtr->getHeight()*stimer/scrollspeed),0);
   std::list<std::string>::iterator it(rows.begin());
   while (it!=rows.end()) {
     gui.m_fontPtr->drawTextRow(*it,centered);
-    gl.Translatef(0,-gui.m_fontPtr->getHeight(),0);
+    glTranslatef(0,-gui.m_fontPtr->getHeight(),0);
     ++it;
   }
-  gl.PopMatrix();
+  glPopMatrix();
 }

@@ -19,37 +19,37 @@ GLFont::drawTextRow(const std::string &text, bool centered)
     offset=-int(ts)*dx/2;
   }
   
-  gl.Enable(GL_TEXTURE_2D);
-  gl.Enable(GL_BLEND);
-  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  gl.BindTexture(GL_TEXTURE_2D, texPtr->getTextureID());
-  gl.Begin(GL_QUADS);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTexture(GL_TEXTURE_2D, texPtr->getTextureID());
+  glBegin(GL_QUADS);
   unsigned col=0;
   for (unsigned i=0;i<text.size();++i){
     if (text[i]>=32) {
       float cx=float((int(text[i]-32)%tilex)*dx)/fw;
       float cy=float((int(text[i]-32)/tilex)*dy)/fh;
       int x=col*dx+offset;
-      gl.TexCoord2f(cx,cy);
-      gl.Vertex2i(x,dy);
-      gl.TexCoord2f(cx+fdx,cy);
-      gl.Vertex2i(x+dx,dy);
-      gl.TexCoord2f(cx+fdx,cy+fdy);
-      gl.Vertex2i(x+dx,0);
-      gl.TexCoord2f(cx,cy+fdy);
-      gl.Vertex2i(x,0);
+      glTexCoord2f(cx,cy);
+      glVertex2i(x,dy);
+      glTexCoord2f(cx+fdx,cy);
+      glVertex2i(x+dx,dy);
+      glTexCoord2f(cx+fdx,cy+fdy);
+      glVertex2i(x+dx,0);
+      glTexCoord2f(cx,cy+fdy);
+      glVertex2i(x,0);
       ++col;
       continue;
     }
     if ((text[i]>=11)&&(text[i]<32)&&colors.size()) {
       unsigned t=text[i]-11;
       t%=colors.size();
-      gl.Color3f(colors[t].c[0],colors[t].c[1],colors[t].c[2]);
+      glColor3f(colors[t].c[0],colors[t].c[1],colors[t].c[2]);
     }
   }
-  gl.End();
-  gl.Disable(GL_BLEND);
-  gl.Disable(GL_TEXTURE_2D);
+  glEnd();
+  glDisable(GL_BLEND);
+  glDisable(GL_TEXTURE_2D);
 }
 
 void 
@@ -60,7 +60,7 @@ GLFont::drawText(const std::string &text, bool centered)
     std::string row(text,0,pos);
     drawTextRow(row,centered);
     if (pos+1<text.size()) {
-      gl.Translatef(0,-texPtr->getHeight()/tiley,0);
+      glTranslatef(0,-texPtr->getHeight()/tiley,0);
       drawText(std::string(text,pos+1),centered);
     }
     return;

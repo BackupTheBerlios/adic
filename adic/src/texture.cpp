@@ -106,14 +106,14 @@ Texture::Texture(SDLGL &gl, const char* name, int quality)
     SDL_UnlockSurface(image);
   }
   
-  gl.GenTextures(1,&textureID);
-  gl.BindTexture(GL_TEXTURE_2D,textureID);
+  glGenTextures(1,&textureID);
+  glBindTexture(GL_TEXTURE_2D,textureID);
   int q=(quality>0) ? GL_LINEAR : GL_NEAREST;
-  gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,q); 
-  gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,q);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,q); 
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,q);
   // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image,
   // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-  gl.TexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format , type, image->pixels);
+  glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format , type, image->pixels);
   SDL_FreeSurface(image);
 }
 

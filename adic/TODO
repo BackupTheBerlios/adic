@@ -56,12 +56,6 @@ FEATURES:
 
 BUGS/QUESTIONS:
 - it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO
-- zum debuggen brauche ich:
-	anzeige der raumnummer
-	anzeige der koordinaten
-	anzeige der kantennummer
-	anzeige der türnummer
-	...
 - win codition wrong ? teamStat wrong ? i think this is fixed now
 - uriloader muss besser werden
   => uriloader sollte immer verwendet werden
@@ -69,7 +63,7 @@ BUGS/QUESTIONS:
 - spieler auf teams verteilen scheint nicht immer zu klappen
   v.a. wenn selbst benannte teams dabei sind ?
 - client crash in fullscreen mode => X schwer brauchbar da maus fehlt und auflösung falsch
-- zu viele sounds auf einmal v.a. beim crash
+- zu viele sounds auf einmal v.a. bei kollisionen
 - teamID and playerID are now 16bit but I often use unsigned and ~0U
   check if this is still all correct
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
@@ -92,9 +86,11 @@ MISC:
 - clean up
 - resize bug:
   this is probably a bug in sawfish or libSDL - but not in ADIC
-- solve the min max problem (std::min did not work on mingw 3.1.?)
-CROSS-COMPILE to WIN with mingw:
-- wrong GL.h is included - i think simply disabling the check should be enough if SDL
-  is configured correct
 
-ich wollte grad schauen was für libs bei dem sdl opengl bsp. dazugelinkt werden
+CROSS-COMPILE to WIN with mingw:
+- solve the min max problem (std::min did not work on mingw 3.1.?)
+  this was because winver.h (or similar) did define min and max
+  now i could use std::min/max again
+- wrong GL.h is included - i think simply disabling the check should be enough if SDL
+  is configured correct - i disabled the check is it fixed now ?
+- adic client still just crashes win

@@ -76,6 +76,7 @@ adicclient_SOURCES = $(gamecommon) \
 	client.h client.cpp \
 	guiconfig.h \
 	gui.h gui.cpp \
+	glfunctions.h minigl.h \
 	sdlgl.h sdlgl.cpp \
 	sdlglgui.h sdlglgui.cpp \
 	texture.h texture.cpp \

@@ -3,8 +3,6 @@
 #include <algorithm>
 
 
-#define DEBUG_GL(msg) std::cerr << __FILE__ << ":" << __LINE__ << ":" << msg << std::endl
-
 SDLGLGUI::SDLGLGUI(Client &client) 
   : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
     //    m_textureTime(5), 
@@ -38,13 +36,16 @@ SDLGLGUI::init()
   DEBUG_GL("sdl init success");
   
 #ifdef DLOPEN_OPENGL
+  DEBUG_GL("dlopening opengl");
   // load the lib before we call setvidmode
-  if (SDL_GL_LoadLibrary(getGUIConfig().libGL.c_str())==-1) {
+  const char *lib=NULL;
+  if (!getGUIConfig().libGL.empty()) lib=getGUIConfig().libGL.c_str();
+  if (SDL_GL_LoadLibrary(lib)==-1) {
     DEBUG_GL("failed to load gl library");
     throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+getGUIConfig().libGL.c_str()+"\": "+SDL_GetError());
   }
 #endif
-  
+  DEBUG_GL("run gl.init");  
   gl.init();
   DEBUG_GL("returned from gl.init");
 
@@ -79,6 +80,10 @@ SDLGLGUI::init()
   // handle input
   m_chatLine.input.connect(SigC::slot(*this,&SDLGLGUI::handleChatInput));
 
+  DEBUG_GL("prepare to call createwindow");
+  std::cerr << std::flush;
+  TimeStamp t(2,0);
+  t.sleep();
   DEBUG_GL("calling createwindow");
   createWindow();
 
@@ -94,7 +99,7 @@ SDLGLGUI::init()
   m_menuPtr->configured.connect(SigC::slot(m_client,&Client::sendGreeting));
   m_menuPtr->printed.connect(printed.slot());
   DEBUG_GL("init complete");
-  DEBUG_GL("gl error state: " << gl.GetError());
+  GL_ERRORS();
   return true;
 }
 
@@ -119,19 +124,29 @@ SDLGLGUI::createWindow()
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
   m_circlePtr=getTexture("data:pillar.png");
   m_texCircle=true;
-  gl.Disable(GL_NORMALIZE);
-  gl.Disable(GL_LIGHTING);
-  gl.Disable(GL_CULL_FACE);
+  glDisable(GL_NORMALIZE);
+  GL_ERRORS();
+  glDisable(GL_LIGHTING);
+  GL_ERRORS();
+  glDisable(GL_CULL_FACE);
+  GL_ERRORS();
   float range[2];
-  gl.GetFloatv(GL_LINE_WIDTH_RANGE,range);
+  glGetFloatv(GL_LINE_WIDTH_RANGE,range);
+  GL_ERRORS();
   //  std::cerr << range[0] << "<LINE_WIDTH<"<<range[1]<<"\n";
-  if (!m_lineSmooth)
-    gl.Disable(GL_LINE_SMOOTH);
-  else
-    gl.Enable(GL_LINE_SMOOTH);
-  gl.ShadeModel(GL_FLAT);
-  if (getGUIConfig().quality<=0)
-    gl.Disable(GL_DITHER);
+  if (!m_lineSmooth) {
+    glDisable(GL_LINE_SMOOTH);
+    GL_ERRORS();
+  }else{
+    glEnable(GL_LINE_SMOOTH);
+    GL_ERRORS();
+  }
+  glShadeModel(GL_FLAT);
+  GL_ERRORS();
+  if (getGUIConfig().quality<=0) {
+    glDisable(GL_DITHER);
+    GL_ERRORS();
+  }
 }
 
 void
@@ -156,12 +171,17 @@ SDLGLGUI::resize(int width, int height)
   m_height=height;
 
   // Reset The Current Viewport
-  gl.Viewport(0,0,width,height);
+  glViewport(0,0,width,height);
+  GL_ERRORS();
   // Select The Projection Matrix
-  gl.MatrixMode(GL_PROJECTION);		
-  gl.LoadIdentity();
-  gl.Ortho(0.0f,width,0.0f,height,-100.0f,100.0f);
-  gl.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glMatrixMode(GL_PROJECTION);		
+  GL_ERRORS();
+  glLoadIdentity();
+  GL_ERRORS();
+  glOrtho(0.0f,width,0.0f,height,-100.0f,100.0f);
+  GL_ERRORS();
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  GL_ERRORS();
 }
 
 void
@@ -316,8 +336,8 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
   case SDLK_l:
     if (pressed) {
       m_lineSmooth=!m_lineSmooth;
-      if (!m_lineSmooth) gl.Disable(GL_LINE_SMOOTH);
-      else gl.Enable(GL_LINE_SMOOTH);
+      if (!m_lineSmooth) glDisable(GL_LINE_SMOOTH);
+      else glEnable(GL_LINE_SMOOTH);
     }
     return true;
     break;
@@ -389,12 +409,12 @@ SDLGLGUI::step(R dt)
   sf.produce();
 
   // Clear The Screen And The Depth Buffer
-  //  gl.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  gl.Clear(GL_COLOR_BUFFER_BIT);
+  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);
   // Reset The View
-  gl.MatrixMode(GL_MODELVIEW);
-  gl.LoadIdentity();
-  gl.Color3f(1.0,1.0,1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glColor3f(1.0,1.0,1.0);
 
   // set up camera
   setupCamera(dt);
@@ -415,11 +435,11 @@ SDLGLGUI::step(R dt)
     m_textureTime-=dt;
 
     if (m_toggles&(1<<9)) {
-      gl.Enable(GL_BLEND);
-      gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       float alpha=1.0-fabs(m_textureTime-2.5)/2.5;
       if (getGUIConfig().quality<=0) alpha=(alpha > 0.1) ? 1.0 : 0.0;
-      gl.Color4f(1.0,1.0,1.0,alpha);
+      glColor4f(1.0,1.0,1.0,alpha);
     }
     if (m_toggles&(1<<8)) {
       if (!test) {
@@ -440,35 +460,35 @@ SDLGLGUI::step(R dt)
 	}
 	delete [] row;
 	SDL_UnlockSurface(test);
-	gl.PixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	gl.PixelZoom(1.0,1.0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	glPixelZoom(1.0,1.0);
       }
-      gl.LoadIdentity();
-      gl.RasterPos2i(0,0);
+      glLoadIdentity();
+      glRasterPos2i(0,0);
       //      SDL_LockSurface(test);
-      gl.DrawPixels(test->w, test->h, GL_RGBA, GL_UNSIGNED_BYTE, test->pixels);
+      glDrawPixels(test->w, test->h, GL_RGBA, GL_UNSIGNED_BYTE, test->pixels);
       //      SDL_UnlockSurface(test);
     }else{
-      gl.LoadIdentity();
-      gl.Enable(GL_TEXTURE_2D);
-      gl.BindTexture(GL_TEXTURE_2D,m_texturePtr->getTextureID());
+      glLoadIdentity();
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D,m_texturePtr->getTextureID());
       float mx=m_width/2-0.375;
       float my=m_height/2-0.375;
       float dx=m_texturePtr->getWidth()/2;
       float dy=m_texturePtr->getHeight()/2;
-      gl.Begin(GL_QUADS);
-      gl.TexCoord2f(0,1);
-      gl.Vertex2f(mx-dx,my-dy);
-      gl.TexCoord2f(1,1);
-      gl.Vertex2f(mx+dx,my-dy);
-      gl.TexCoord2f(1,0);
-      gl.Vertex2f(mx+dx,my+dy);
-      gl.TexCoord2f(0,0);
-      gl.Vertex2f(mx-dx,my+dy);
-      gl.End();
-      gl.Disable(GL_TEXTURE_2D);
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,1);
+      glVertex2f(mx-dx,my-dy);
+      glTexCoord2f(1,1);
+      glVertex2f(mx+dx,my-dy);
+      glTexCoord2f(1,0);
+      glVertex2f(mx+dx,my+dy);
+      glTexCoord2f(0,0);
+      glVertex2f(mx-dx,my+dy);
+      glEnd();
+      glDisable(GL_TEXTURE_2D);
     }
-    gl.Disable(GL_BLEND);
+    glDisable(GL_BLEND);
   }
   */
 
@@ -482,17 +502,17 @@ SDLGLGUI::step(R dt)
   o << "Up: " << std::fixed << std::setprecision(2) << std::setw(7) << uptime 
     << "\nFPS: " << std::setw(6) << R(m_frames)/uptime;
   //	      << " Frame: " << std::setw(10) << m_frames;
-  gl.LoadIdentity();
-  gl.Translatef(0,m_height-m_fontPtr->getHeight(),0);
-  gl.Color3f(1.0,1.0,1.0);
+  glLoadIdentity();
+  glTranslatef(0,m_height-m_fontPtr->getHeight(),0);
+  glColor3f(1.0,1.0,1.0);
   m_fontPtr->drawText(o.str());
 
   // paint terminal
   m_terminal.step(dt);
   // paint chat line
-  gl.LoadIdentity();
-  gl.Translatef(0,0,0);
-  gl.Color3f(1.0,1.0,1.0);
+  glLoadIdentity();
+  glTranslatef(0,0,0);
+  glColor3f(1.0,1.0,1.0);
   m_fontPtr->drawText(m_chatLine.getContent());
 
   // paint menu
@@ -501,7 +521,7 @@ SDLGLGUI::step(R dt)
       m_menuPtr=DOPE_SMARTPTR<SDLMenu>();
 
   flush();
-  gl.Finish();
+  glFinish();
   SDL_GL_SwapBuffers();
   return true;
 }
@@ -520,16 +540,16 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
     unsigned res=12;
     if (d>1) res/=d;
     if (res>=3) {
-      gl.PushMatrix();
-      gl.Translatef(p[0], p[1], 0);
-      gl.Begin(GL_TRIANGLE_FAN);
-      gl.Vertex2f(0, 0);
+      glPushMatrix();
+      glTranslatef(p[0], p[1], 0);
+      glBegin(GL_TRIANGLE_FAN);
+      glVertex2f(0, 0);
       for (unsigned i=0;i<res;++i) {
 	double angle(double(i)*2*M_PI/double(res-1));
-	gl.Vertex2f(r * cos(angle), r * sin(angle));
+	glVertex2f(r * cos(angle), r * sin(angle));
       }
-      gl.End();
-      gl.PopMatrix();
+      glEnd();
+      glPopMatrix();
       flush();
     }
   }
@@ -543,28 +563,28 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
       int w2=w>>1;
       int h2=h>>1;
 
-      gl.PushMatrix();
-      gl.Translatef(p[0], p[1], 0);
+      glPushMatrix();
+      glTranslatef(p[0], p[1], 0);
 
-      gl.Enable(GL_TEXTURE_2D);
-      gl.Enable(GL_BLEND);
-      gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
+      glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glBindTexture(GL_TEXTURE_2D,tex.getTextureID());
 
-      gl.Begin(GL_QUADS);
-      gl.TexCoord2f(0,1);
-      gl.Vertex2f(-w2,-h2);
-      gl.TexCoord2f(1,1);
-      gl.Vertex2f(w2,-h2);
-      gl.TexCoord2f(1,0);
-      gl.Vertex2f(w2,h2);
-      gl.TexCoord2f(0,0);
-      gl.Vertex2f(-w2,h2);
-      gl.End();
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,1);
+      glVertex2f(-w2,-h2);
+      glTexCoord2f(1,1);
+      glVertex2f(w2,-h2);
+      glTexCoord2f(1,0);
+      glVertex2f(w2,h2);
+      glTexCoord2f(0,0);
+      glVertex2f(-w2,h2);
+      glEnd();
 
-      gl.Disable(GL_BLEND);
-      gl.Disable(GL_TEXTURE_2D);
-      gl.PopMatrix();
+      glDisable(GL_BLEND);
+      glDisable(GL_TEXTURE_2D);
+      glPopMatrix();
     }
 }
 void
@@ -572,7 +592,7 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
 {
   // backup line width
   float lw;
-  gl.GetFloatv(GL_LINE_WIDTH,&lw);
+  glGetFloatv(GL_LINE_WIDTH,&lw);
 
   int q=getGUIConfig().quality;
   float nlw;
@@ -584,11 +604,11 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
   float wt=w.getWallWidth();
   nlw=wt*m_zoom/float(numlines);
   if (m_lineSmooth) {
-    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    gl.Enable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
   }
   // now set the line width
-  gl.LineWidth(nlw);
+  glLineWidth(nlw);
 
   Line l(w.getLine());
   const V2D &ln(l.normal());
@@ -599,41 +619,41 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
     float o=wt/numlines;
     a+=ln*o;
     b+=ln*o;
-    if (cwClosed) gl.Color3f(0.5,0.0,0.0);
-    else gl.Color3f(0.0,0.5,0.0);
-    gl.Begin(GL_LINES);
-    gl.Vertex2f(a[0],a[1]);
-    gl.Vertex2f(b[0],b[1]);
-    gl.End();
+    if (cwClosed) glColor3f(0.5,0.0,0.0);
+    else glColor3f(0.0,0.5,0.0);
+    glBegin(GL_LINES);
+    glVertex2f(a[0],a[1]);
+    glVertex2f(b[0],b[1]);
+    glEnd();
     // draw counter clockwise side
     a=l.m_a;
     b=l.m_b;
     a+=ln*-o;
     b+=ln*-o;
-    if (ccwClosed) gl.Color3f(0.5,0.0,0.0);
-    else gl.Color3f(0.0,0.5,0.0);
-    gl.Begin(GL_LINES);
-    gl.Vertex2f(a[0],a[1]);
-    gl.Vertex2f(b[0],b[1]);
-    gl.End();
+    if (ccwClosed) glColor3f(0.5,0.0,0.0);
+    else glColor3f(0.0,0.5,0.0);
+    glBegin(GL_LINES);
+    glVertex2f(a[0],a[1]);
+    glVertex2f(b[0],b[1]);
+    glEnd();
   }
   if (numlines!=2) {
     // draw middle    
     float hs=(numlines<3) ? 0.5f : 0.7f;
-    if (cwClosed&&ccwClosed) gl.Color3f(hs,0.0,0.0);
-    else if (cwClosed||ccwClosed) gl.Color3f(hs,0.4,0.0);
-    else gl.Color3f(0.0,hs,0.0);
+    if (cwClosed&&ccwClosed) glColor3f(hs,0.0,0.0);
+    else if (cwClosed||ccwClosed) glColor3f(hs,0.4,0.0);
+    else glColor3f(0.0,hs,0.0);
     V2D a(l.m_a);
     V2D b(l.m_b);
-    gl.Begin(GL_LINES);
-    gl.Vertex2f(a[0],a[1]);
-    gl.Vertex2f(b[0],b[1]);
-    gl.End();
+    glBegin(GL_LINES);
+    glVertex2f(a[0],a[1]);
+    glVertex2f(b[0],b[1]);
+    glEnd();
   }
 
   // restore linewidth
-  gl.LineWidth(lw);
-  if (m_lineSmooth) gl.Disable(GL_BLEND);
+  glLineWidth(lw);
+  if (m_lineSmooth) glDisable(GL_BLEND);
 }
 
 void
@@ -641,28 +661,28 @@ SDLGLGUI::drawDoor(const Wall &w, bool closed)
 {
   // backup line width
   float lw;
-  gl.GetFloatv(GL_LINE_WIDTH,&lw);
+  glGetFloatv(GL_LINE_WIDTH,&lw);
 
   // now set the line width
-  gl.LineWidth(w.getWallWidth()*m_zoom);
+  glLineWidth(w.getWallWidth()*m_zoom);
 
   Line l(w.getLine());
 
   // draw 
   const V2D &a(l.m_a);
   const V2D &b(l.m_b);
-  if (closed) gl.Color3f(0.5,0.0,0.0);
-  else gl.Color3f(0.0,0.0,0.5);
-  gl.Begin(GL_LINES);
-  gl.Vertex2f(a[0],a[1]);
-  gl.Vertex2f(b[0],b[1]);
-  gl.End();
+  if (closed) glColor3f(0.5,0.0,0.0);
+  else glColor3f(0.0,0.0,0.5);
+  glBegin(GL_LINES);
+  glVertex2f(a[0],a[1]);
+  glVertex2f(b[0],b[1]);
+  glEnd();
 
   // restore linewidth
-  gl.LineWidth(lw);
+  glLineWidth(lw);
 
   // draw pillar
-  gl.Color3f(1.0,1.0,1.0);
+  glColor3f(1.0,1.0,1.0);
   drawCircle(l.m_b,w.getPillarRadius());
   //  drawCircle(l.m_b,w.getPillarRadius());
 }
@@ -680,32 +700,32 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   int h=tex.getHeight();
   int w2=w>>1;
   int h2=h>>1;
-  gl.PushMatrix();
-  gl.Translatef(p[0], p[1], 0);
+  glPushMatrix();
+  glTranslatef(p[0], p[1], 0);
   rot=-rot*180/M_PI;
-  gl.Rotatef(rot+90,0,0,1);
-  gl.Color3f(1.0,1.0,1.0);
-  gl.Enable(GL_TEXTURE_2D);
+  glRotatef(rot+90,0,0,1);
+  glColor3f(1.0,1.0,1.0);
+  glEnable(GL_TEXTURE_2D);
   if (tex.isTransparent()) {
-    gl.Enable(GL_BLEND);
-    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
-  gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
-  gl.Begin(GL_QUADS);
-  gl.TexCoord2f(0,1);
-  gl.Vertex2f(-w2,-h2);
-  gl.TexCoord2f(1,1);
-  gl.Vertex2f(w2,-h2);
-  gl.TexCoord2f(1,0);
-  gl.Vertex2f(w2,h2);
-  gl.TexCoord2f(0,0);
-  gl.Vertex2f(-w2,h2);
-  gl.End();
+  glBindTexture(GL_TEXTURE_2D,tex.getTextureID());
+  glBegin(GL_QUADS);
+  glTexCoord2f(0,1);
+  glVertex2f(-w2,-h2);
+  glTexCoord2f(1,1);
+  glVertex2f(w2,-h2);
+  glTexCoord2f(1,0);
+  glVertex2f(w2,h2);
+  glTexCoord2f(0,0);
+  glVertex2f(-w2,h2);
+  glEnd();
   if (tex.isTransparent()) {
-    gl.Disable(GL_BLEND);
-    gl.Disable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
   }
-  gl.PopMatrix();
+  glPopMatrix();
 }
 
 const std::vector<TeamStat> &
@@ -737,36 +757,36 @@ SDLGLGUI::drawTextRow(const std::string &text, bool centered)
     offset=-int(ts)*dx/2;
   }
   
-  gl.Enable(GL_TEXTURE_2D);
-  gl.Enable(GL_BLEND);
-  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  gl.BindTexture(GL_TEXTURE_2D, m_fontPtr->getTextureID());
-  gl.Begin(GL_QUADS);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTexture(GL_TEXTURE_2D, m_fontPtr->getTextureID());
+  glBegin(GL_QUADS);
   unsigned col=0;
   for (unsigned i=0;i<text.size();++i){
     if (text[i]>=32) {
       float cx=float((int(text[i]-32)%xtiles)*dx)/fw;
       float cy=float((int(text[i]-32)/xtiles)*dy)/fh;
       int x=col*dx+offset;
-      gl.TexCoord2f(cx,cy);
-      gl.Vertex2i(x,dy);
-      gl.TexCoord2f(cx+fdx,cy);
-      gl.Vertex2i(x+dx,dy);
-      gl.TexCoord2f(cx+fdx,cy+fdy);
-      gl.Vertex2i(x+dx,0);
-      gl.TexCoord2f(cx,cy+fdy);
-      gl.Vertex2i(x,0);
+      glTexCoord2f(cx,cy);
+      glVertex2i(x,dy);
+      glTexCoord2f(cx+fdx,cy);
+      glVertex2i(x+dx,dy);
+      glTexCoord2f(cx+fdx,cy+fdy);
+      glVertex2i(x+dx,0);
+      glTexCoord2f(cx,cy+fdy);
+      glVertex2i(x,0);
       ++col;
     }else if ((text[i]>=11)&&(text[i]<15)) {
       unsigned t=text[i]-11;
       t%=teams.size();
       assert(t<teams.size());
-      gl.Color3f(teams[t].color[0],teams[t].color[1],teams[t].color[2]);
+      glColor3f(teams[t].color[0],teams[t].color[1],teams[t].color[2]);
     }
   }
-  gl.End();
-  gl.Disable(GL_BLEND);
-  gl.Disable(GL_TEXTURE_2D);
+  glEnd();
+  glDisable(GL_BLEND);
+  glDisable(GL_TEXTURE_2D);
 }
 
 void 
@@ -778,7 +798,7 @@ SDLGLGUI::drawText(const std::string &text, bool centered)
     drawTextRow(row,centered);
     if (pos+1<text.size()) {
       int ytiles=16;
-      gl.Translatef(0,-m_fontPtr->getHeight()/ytiles,0);
+      glTranslatef(0,-m_fontPtr->getHeight()/ytiles,0);
       drawText(std::string(text,pos+1),centered);
     }
     return;
@@ -790,7 +810,7 @@ SDLGLGUI::drawText(const std::string &text, bool centered)
 void
 SDLGLGUI::drawPillars()
 {
-  gl.Color3f(1.0,1.0,1.0);
+  glColor3f(1.0,1.0,1.0);
   // hand crafted drawTexture
   // drawTexture(*m_circlePtr,p);
   const Texture &tex(*m_circlePtr.get());
@@ -800,30 +820,30 @@ SDLGLGUI::drawPillars()
   int h2=h>>1;
   
   
-  gl.Enable(GL_TEXTURE_2D);
-  gl.Enable(GL_BLEND);
-  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTexture(GL_TEXTURE_2D,tex.getTextureID());
 
-  gl.Begin(GL_QUADS);
+  glBegin(GL_QUADS);
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
   unsigned np=worldPtr->getNumVertices();
   const std::vector<V2D> &v(worldPtr->getVertices());
   for (unsigned p=0;p<np;++p) {
     float x=v[p][0];
     float y=v[p][1];
-    gl.TexCoord2f(0,1);
-    gl.Vertex2f(x-w2,y-h2);
-    gl.TexCoord2f(1,1);
-    gl.Vertex2f(x+w2,y-h2);
-    gl.TexCoord2f(1,0);
-    gl.Vertex2f(x+w2,y+h2);
-    gl.TexCoord2f(0,0);
-    gl.Vertex2f(x-w2,y+h2);
+    glTexCoord2f(0,1);
+    glVertex2f(x-w2,y-h2);
+    glTexCoord2f(1,1);
+    glVertex2f(x+w2,y-h2);
+    glTexCoord2f(1,0);
+    glVertex2f(x+w2,y+h2);
+    glTexCoord2f(0,0);
+    glVertex2f(x-w2,y+h2);
   }
-  gl.End();
-  gl.Disable(GL_BLEND);
-  gl.Disable(GL_TEXTURE_2D);
+  glEnd();
+  glDisable(GL_BLEND);
+  glDisable(GL_TEXTURE_2D);
   flush();
 }
 
@@ -888,8 +908,8 @@ SDLGLGUI::setupCamera(R dt)
     m_zoom*=1.0+0.1*dt*R(m_zoomOp);
     m_zoom=std::max(m_zoom,R(0.1));
   }
-  gl.Translatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
-  gl.Scalef(m_zoom,m_zoom,1);
+  glTranslatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
+  glScalef(m_zoom,m_zoom,1);
 }
 
 void
@@ -899,7 +919,7 @@ SDLGLGUI::drawWalls()
      did not significantly improve performance and does not look good 
      // backup line width
      float lw;
-     gl.GetFloatv(GL_LINE_WIDTH,&lw);
+     glGetFloatv(GL_LINE_WIDTH,&lw);
 
      // we assume all walls have the same thickness
      Wall dummy;
@@ -908,16 +928,16 @@ SDLGLGUI::drawWalls()
      float nlw=wt*2*m_zoom;
      if (!m_lineSmooth) nlw=ceil(nlw); // todo this is not enough
      // now set the line width
-     gl.LineWidth(nlw);
+     glLineWidth(nlw);
   
      // for each wall we paint 2 lines
      const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
      Game &game(m_client.getGame());
 
      int oldtype=0;
-     gl.Color3f(0.0,0.5,0.0);
+     glColor3f(0.0,0.5,0.0);
      for (unsigned r=0;r<worldPtr->getNumRooms();++r) {
-     gl.Begin(GL_LINE_STRIP);
+     glBegin(GL_LINE_STRIP);
      World::EdgeIterator it(*worldPtr.get(),r);
      World::EdgeIterator end(*worldPtr.get());
      while (it!=end) {
@@ -933,14 +953,14 @@ SDLGLGUI::drawWalls()
      type|=(door<<1);
      if (type!=oldtype) {
      float s=(door ? 0.3 : 0.6);
-     if (closed) gl.Color3f(s,0.0,0.0);
-     else gl.Color3f(0.0,s,0.0);
+     if (closed) glColor3f(s,0.0,0.0);
+     else glColor3f(0.0,s,0.0);
      }
-     gl.Vertex2f(a[0],a[1]);
-     gl.Vertex2f(b[0],b[1]);
+     glVertex2f(a[0],a[1]);
+     glVertex2f(b[0],b[1]);
      ++it;
      }
-     gl.End();
+     glEnd();
      }*/
   
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
@@ -1021,24 +1041,24 @@ SDLGLGUI::drawPlayers(R dt)
     {
       const Player &cp(players[p]);
       if (m_client.getGame().playerIsLocked(p))
-	gl.Color3f(1.0,0.0,0.0);
+	glColor3f(1.0,0.0,0.0);
       else
-	gl.Color3f(0.0,1.0,0.0);
+	glColor3f(0.0,1.0,0.0);
       if (players[p].isPlayer())
 	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
       else
 	m_animations[p].step(dt*20);
       drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
       if (cp.isPlayer()&&m_showNames) {
-	gl.PushMatrix();
-	gl.Translatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
+	glPushMatrix();
+	glTranslatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
 	float s=1.0f/m_zoom;
-	gl.Scalef(s,s,1);
+	glScalef(s,s,1);
 	m_fontPtr->drawText(m_client.getPlayerName(p),true);
 
 	if (!(m_toggles&(1<<8))) {
 	  // draw some info
-	  gl.Translatef(0,-40,0);
+	  glTranslatef(0,-40,0);
 	  std::ostringstream o;
 	  o.setf(std::ios::fixed);
 	  o.precision(2);
@@ -1047,7 +1067,7 @@ SDLGLGUI::drawPlayers(R dt)
 	  m_fontPtr->drawText(o.str(),true);
 	}
 
-	gl.PopMatrix();
+	glPopMatrix();
       }
     }
 }
@@ -1061,14 +1081,14 @@ SDLGLGUI::drawTeamStat()
     const std::vector<TeamStat> &teamStat(getTeamStats());
     assert(teams.size()==teamStat.size());
     int dx=m_width/(teams.size()+1);
-    gl.PushMatrix();
+    glPushMatrix();
     if (teams.size()>m_fontPtr->numColors()) {
       for (unsigned i=0;i<teams.size();++i)
 	m_fontPtr->setColor(i,teams[i].color);
     }
     for (unsigned i=0;i<teams.size();++i) {
-      gl.LoadIdentity();
-      gl.Translatef(dx*(i+1),30,0);
+      glLoadIdentity();
+      glTranslatef(dx*(i+1),30,0);
       m_fontPtr->drawText(
 	       m_fontPtr->getColor(i)
 	       +teams[i].name+"\n"
@@ -1077,6 +1097,6 @@ SDLGLGUI::drawTeamStat()
 	       true);
       flush();
     }
-    gl.PopMatrix();
+    glPopMatrix();
   }
 }

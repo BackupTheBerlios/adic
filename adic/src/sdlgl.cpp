@@ -3,8 +3,17 @@
 #include <SDL/SDL.h>
 #include <assert.h>
 #include <iostream>
+#include <dope/dope.h>
+#include <iomanip>
 
-#define DEBUG_GL(msg) std::cerr << __FILE__ << ":" << __LINE__ << ":" << msg << std::endl
+#ifdef DLOPEN_OPENGL
+
+#define FUNC(ret,name,parm) ret (* name ) parm=0;
+#include "glfunctions.h"
+#undef FUNC
+
+#endif
+
 
 SDLGL::SDLGL()
 {
@@ -16,48 +25,33 @@ SDLGL::init()
 #define STRINGIFY(m) #m
 
 #ifdef DLOPEN_OPENGL
+  DEBUG_GL("looking up symbols with SDL_GL_GetProcAddress");
   DEBUG_GL("init called => we loaded the dll and now lookup the symbols");
-#define LOOKUP(m,t) m=(t)SDL_GL_GetProcAddress(STRINGIFY(gl##m));assert(m);DEBUG_GL("got address of:" STRINGIFY(gl##m) " it is at: " << ((void *)m));
-#else
-#define LOOKUP(m,t) m=(t)&gl##m;
+
+#define FUNC(ret,name,parm) do{typedef ret (*T##name) parm ;name=(T##name)SDL_GL_GetProcAddress(STRINGIFY(name));assert(name);DEBUG_GL("got address of:" STRINGIFY(name) " it is at: " << ((void *)name));}while(0)
+
+#include "glfunctions.h"
+
+#undef FUNC
+
 #endif
+}
 
-
-  LOOKUP(Clear,uintFunc);
-  LOOKUP(MatrixMode,uintFunc);
-  LOOKUP(LoadIdentity,voidFunc);
-  LOOKUP(Color3f,fvec3Func);
-  LOOKUP(Color4f,fvec4Func);
-  LOOKUP(Translatef,fvec3Func);
-  LOOKUP(Scalef,fvec3Func);
-  LOOKUP(Begin,uintFunc);
-  LOOKUP(Vertex2i,ivec2Func);
-  LOOKUP(Vertex2f,fvec2Func);
-  LOOKUP(End,voidFunc);
-  LOOKUP(Viewport,ivec4Func);
-  LOOKUP(Ortho,dvec6Func);
-  LOOKUP(ClearColor,fvec4Func);
-  LOOKUP(PushMatrix,voidFunc);
-  LOOKUP(PopMatrix,voidFunc);
-  LOOKUP(GetFloatv,uintfloatPFunc);
-  LOOKUP(GetIntegerv,uintintPFunc);
-  LOOKUP(LineWidth,floatFunc);
-  LOOKUP(Flush,voidFunc);
-  LOOKUP(Finish,voidFunc);
-  LOOKUP(Enable,uintFunc);
-  LOOKUP(Disable,uintFunc);
-  LOOKUP(BlendFunc,uint2Func);
-  LOOKUP(TexCoord2f,fvec2Func);
-  LOOKUP(BindTexture,uint2Func);
-  LOOKUP(GenTextures,uintuintPFunc);
-  LOOKUP(TexParameteri,uint2intFunc);
-  LOOKUP(TexImage2D,glTexImage2DFunc);
-  LOOKUP(Rotatef,fvec4Func);
-  LOOKUP(ShadeModel, uintFunc);
-  LOOKUP(RasterPos2i, ivec2Func);
-  LOOKUP(PixelStorei, uint2Func);
-  LOOKUP(DrawPixels, ivec4voidPFunc);
-  LOOKUP(PixelZoom, fvec2Func);
-  LOOKUP(GetError, glErrorFunc);
-#undef LOOKUP
+int
+SDLGL::printErrors()
+{
+  int res=0;
+  int e;
+  while ((e=glGetError())) {
+    DOPE_MSG("GL Error: ", e);
+    std::ios::fmtflags old=std::cerr.flags();
+    std::cerr << "GL Error: " << e << "=0x" << std::hex << e << std::endl;
+    std::cerr.flags(old);
+    ++res;
+    if (res>5) {
+      DOPE_WARN("stop printing errors because there are too much (parhaps some other problem)");
+      return res;
+    }
+  }
+  return res;
 }
