@@ -27,6 +27,11 @@ SDLMenu::SDLMenu(SDLGLGUI &_gui)
   serverPort.input.connect(SigC::slot(*this,&SDLMenu::handleServerPort));
   playerName.input.connect(SigC::slot(*this,&SDLMenu::handlePlayerName));
   teamName.input.connect(SigC::slot(*this,&SDLMenu::handleTeamName));
+  // connect to sound
+  serverName.printed.connect(printed.slot());
+  serverPort.printed.connect(printed.slot());
+  playerName.printed.connect(printed.slot());
+  teamName.printed.connect(printed.slot());
 
   m_hiPtr = DOPE_SMARTPTR<Texture>(gui.getTexture("data/hi.png"));
   for (int i = 0; i<7; i++)
@@ -38,6 +43,9 @@ SDLMenu::SDLMenu(SDLGLGUI &_gui)
 void
 SDLMenu::handleInput(Input &i)
 {
+  if (int(i.devno)==2) return;
+  if ((i.x==0) && (i.y==0)) return;
+
   switch (m_screen)
     {
     case 0:
@@ -46,17 +54,19 @@ SDLMenu::handleInput(Input &i)
       m_screen = 1;
       i.x = 0;
       i.y = 0;
+      printed.emit('\n');
       break;
     case 2:
       // screen: "number of players", next: "player data"
-      // std::cerr << "users: " << config.m_users.users.size() << std::endl;
       if (i.y < 0)
 	{
 	  if (m_playerNum<4) m_playerNum++;
+	  printed.emit('a');
 	}
       else if (i.y > 0)
 	{
 	  if (m_playerNum>1) m_playerNum--;
+	  printed.emit('b');
 	}
       if (i.x > 0)
 	{
@@ -67,16 +77,18 @@ SDLMenu::handleInput(Input &i)
 	  player_i = 0;
 	  i.x = 0;
 	  i.y = 0;
+	  printed.emit('\n');
 	}
       break;
     case 4:
       // screen: "adic info", next: start game
-      save.emit();
+      printed.emit('\n');
       step_return = false;
       finish();
       break;
     case 5:
       // screen: "server error - conn", next: "choose server"
+      printed.emit('\n');
       serverName.setActive(true);
       m_screen = 1;
       i.x = 0;
@@ -152,9 +164,6 @@ SDLMenu::handleTeamName(const std::string &name)
     }
   else
     {
-      if (!serverSelected.emit())
-	m_screen = 5;
-      else
 	m_screen = 4;
     }
   std::cerr << "users: " << config.m_users.users.size() << std::endl;
@@ -207,7 +216,7 @@ SDLMenu::step(R dt)
     gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)+90-m_playerNum*40), float(M_PI/2));
     break;
   case 3:
-    // Screen 3: Player Data
+    // Screen 3: "Player Data", hilite Inputfield, draw player number
     gl.LoadIdentity();
     if (playerName.isActive())
       gui.drawTexture(*m_hiPtr.get(),V2D(float(w/2),float(h/2)+26), float(M_PI/2));
@@ -230,6 +239,26 @@ SDLMenu::step(R dt)
       gl.Color3f(1.0,1.0,1.0);
     gui.m_fontPtr->drawText(teamName.getContent(),true);
     gl.Translatef(0,-gui.m_fontPtr->getHeight()-34,0);
+    break;
+  case 4:
+    // Screen 4: "ADIC Info", show all input
+    gl.LoadIdentity();
+    gl.Translatef(float(w/2),float(h/2)+48,0);
+    gl.Color3f(1.0,1.0,1.0);
+    gui.m_fontPtr->drawText("Server",true);
+    gl.Translatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
+    gl.Color3f(0.625,0.625,0.625);
+    gui.m_fontPtr->drawText("IP: " + config.m_server + " Port: " + anyToString(config.m_port),true);
+    gl.Translatef(0,-2*gui.m_fontPtr->getHeight(),0);
+    gl.Color3f(1.0,1.0,1.0);
+    gui.m_fontPtr->drawText("Player [ Team ]",true);
+    gl.Translatef(0,-1.5*gui.m_fontPtr->getHeight(),0);
+    gl.Color3f(0.625,0.625,0.625);
+    for (int i=0; i<config.m_users.users.size(); i++)
+      {
+	gui.m_fontPtr->drawText(config.m_users.users[i].m_uname + " [ " + config.m_users.users[i].m_tname + " ]",true);
+	gl.Translatef(0,-1.1*gui.m_fontPtr->getHeight(),0);
+      }
     break;
 
   }
