@@ -92,6 +92,7 @@ protected:
   std::vector<std::string> m_songs;
   unsigned m_csong;
   DOPE_SMARTPTR<GUI> m_guiPtr;
+  SignalOutAdapter<OutProto> *soPtr;
 public:
   Client(ClientConfig &config);
   ~Client();

@@ -123,11 +123,7 @@ Connection::singleTeam() const
 Server::Server(ServerConfig &config) 
   : m_config(config), m_game(config.m_meshURI), m_quit(false), m_emitFilter(m_allFilter)
 {
-  Game::WorldPtr w(m_game.getWorldPtr());
-  assert(w.get());
-  const Mesh::StartObjects &objpos(w->getStartObjects());
-  for (unsigned i=0;i<objpos.size();++i)
-    m_game.addObject(objpos[i]);
+  addStartObjects();
 }
 
 Team *
@@ -230,7 +226,8 @@ Server::main()
       msg.reason=winner;
       msg.winner=wt;
       broadcast(msg);
-      // todo restart game
+      restart();
+      
     }
     
     oldTime=newTime;
@@ -330,4 +327,24 @@ Server::getTeamIDs(const Connection *c) const
   return res;
 }
 
+void
+Server::restart()
+{
+  m_game.restart();
+  Connections::iterator it(connections.begin());
+  while (it!=connections.end()) {
+    it->second->restart();
+    ++it;
+  }
+  addStartObjects();
+}
 
+void
+Server::addStartObjects()
+{
+  Game::WorldPtr w(m_game.getWorldPtr());
+  assert(w.get());
+  const Mesh::StartObjects &objpos(w->getStartObjects());
+  for (unsigned i=0;i<objpos.size();++i)
+    m_game.addObject(objpos[i]);
+}

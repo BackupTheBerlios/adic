@@ -131,7 +131,12 @@ public:
   {
     return playerIDs;
   }
-  
+
+  //! do everything needed for a game restart
+  void restart()
+  {
+    playerIDs.clear();
+  }
 protected:
   //! pointer to out layer0 network stream
   DOPE_SMARTPTR<NetStreamBuf> streamPtr;
@@ -284,6 +289,10 @@ public:
     assert(t);
     return t->name;
   }
+
+protected:
+  void restart();
+  void addStartObjects();
 };
 
 #endif

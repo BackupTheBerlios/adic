@@ -374,7 +374,7 @@ Game::getWorldPtr()
 }
 
 void
-Game::setWorldPtr(WorldPtr &w)
+Game::setWorldPtr(const WorldPtr &w)
 {
   m_worldPtr=w;
 }
@@ -503,16 +503,30 @@ Game::getWinner(TeamID &teamID)
   const std::vector<TeamStat> &teamStat(getTeamStat());
   for (unsigned i=0;i<teamStat.size();++i) {
     if (!teamStat[i].allLocked()) {
-      if (winTeam!=noWin) {
+      if (winTeam!=noWin)
 	// second team with unlocked players => no win
 	return 0;
-	break;
-      }else
-	winTeam=i;
+      //else
+      winTeam=i;
     }
   }
   if (winTeam==noWin)
     return 2; // all teams are locked
   teamID=winTeam;
   return 1;
+}
+
+void
+Game::restart()
+{
+  m_players.clear();
+  m_icons.clear();
+  m_doors.clear();
+  m_stepFault=0;
+  m_playerRoomMap.clear();
+  m_roomDoors.clear();
+  m_closedRooms.clear();
+  m_playerNames.clear();
+  m_teams.clear();
+  setWorldPtr(WorldPtr(NULL));
 }

@@ -112,7 +112,7 @@ public:
   */
   WorldPtr getWorldPtr();
 
-  void setWorldPtr(WorldPtr &w);
+  void setWorldPtr(const WorldPtr &w);
   
   const Players &getPlayers() const
   {
@@ -263,6 +263,9 @@ public:
 	    - 2 if it ended in a draw
   */
   int getWinner(TeamID &teamID);
+  
+  //! do everything needed for a restart
+  void restart();
 protected:
   bool miniStep(R dt);
   void calcClosedRooms();

@@ -164,21 +164,36 @@ void
 Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
 {
   std::cout << "Game Over !\n";
+  std::string msg;
   switch (egPtr->reason) {
   case 0:
     std::cout << "Server will quit.\n";
+    m_quit=true;
+    return;
     break;
   case 1:
-    std::cout << "Team \"";
-    if (egPtr->winner<m_game.getTeams().size()) {
-      std::cout << m_game.getTeams()[egPtr->winner].name;
-    }
-    std::cout << "\" wins !! \n";
+    msg="*** Team ";
+    if (egPtr->winner<m_game.getTeams().size())
+      msg+=m_game.getTeams()[egPtr->winner].name;
+    else
+      msg+="?";
+    msg+=" wins !! ***";
     break;
   case 2:
-    std::cout << "The game ends in a draw\n";
+    msg="*** The game ends in a draw ***";
     break;
   }
+  std::string stars(msg.size(),'*');
+  std::cout << stars << "\n";
+  std::cout << msg << "\n";
+  std::cout << stars << "\n";
+  // restart
+  m_game.restart();
+  m_playerIDs.clear();
+  ClientGreeting g;
+  g.m_userSetting=m_config.m_users;
+  assert(soPtr);
+  soPtr->emit(g);
 }
 
 
@@ -201,6 +216,7 @@ Client::main()
   InProto l2in(layer0,TimeStamp(0,300),2);
 #endif
   SignalOutAdapter<OutProto> so(l2out);
+  soPtr=&so;
   SignalInAdapter<InProto> si(l2in);
   si.connect(SigC::slot(*this,&Client::handleGreeting));
   si.connect(SigC::slot(*this,&Client::handleGame));
@@ -305,6 +321,7 @@ Client::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;*/
   }
+  soPtr=NULL;
   m_soundPtr=DOPE_SMARTPTR<Sound>(NULL);
   m_guiPtr=DOPE_SMARTPTR<GUI>(NULL);
   return 0;

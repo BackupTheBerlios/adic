@@ -7,6 +7,9 @@ TUNING:
   da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
   daß ich erst schaue in welchem raum ist der spieler und dann schaue ob der spieler mit
   einer türkante kollidiert falls ja ist er auch im benachbarten raum
+  auf der anderen seite liegt der worst case, daß sich alle spieler in einem raum tummeln durchaus
+  im bereich des möglichen (zumindest solange die räume so groß sind uns es keine unsichtbaren
+  kanten gibt)
 - ersetze DOPE_CHECK durch assert wo sinnvoll
 - mesa noch schnell genug ? 
   ist noch erstaunlich schnell (10fps) aber muß schon noch schneller werden
@@ -20,43 +23,36 @@ TUNING:
 FEATURES:
 - sound:
   - (walking, breath, ...)
-  - mehrere lieder
 - improve the physics
 - MOTIVATION zum riskanten rumlaufen:
   - evtl. betten/sessel wo man sich hinlegen/hinsetzen kann
-- schreibe opengl terminal
-- game over and restart
 - locked anzeigen
 - AI gegner oder robots (könnte rumlaufen und türen schließen)
 - i18n (localization)
 - metaserver
 - schlüssel
 - Türen kaputtbar
-- keyboard kram gescheit machen
-- joystick
-- maus?
 
 BUGS/QUESTIONS:
+- win codition wrong ? teamStat wrong ? 
+  (spieler die noch garnicht bewegt wurden sind anscheinend nie gelockt - aber die räume
+  werden als closed erkannt => müßte eigentlich daran liegen, daß die spieler nicht im richtigen
+  raum aufgefunden werden also ein problem mit playerInRoomCached)
 - teamID and playerID are now 16bit but I often use unsigned and ~0U
   check if this is still all correct
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)
-- kollisions-sound geht nicht mehr (nur nicht beim statisch linken)
 - server closes connection, client doesn't detect it (fixed?)
 - dope todo: darüber nachdenken
   ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
   können verändert werden)
-- autocenter zoom bei mehr als 2 spielern an einem rechner ist falsch
 
 MISC:
 - compile with -O9 and check the warnings about uninitialized usage
 - generic_pointer funktioniert ?
 	nur nicht bei xmlsaxinstream
 	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
-- guikram wird langsam fett
-	besser modularisieren
-	v.a. opengl lader sollte wohl doch nicht direkt im sdlglgui.cpp sein
 - a thanks file
   thanks to the unknown creator of the mod file
   thanks to the xemacs people for the wav file
