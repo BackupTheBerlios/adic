@@ -455,17 +455,7 @@ SDLGLGUI::step(R dt)
   // paint team statistics
   const std::vector<Team> &teams(m_client.getGame().getTeams());
   if (teams.size()) {
-    std::vector<unsigned> numPlayers(teams.size());
-    std::vector<unsigned> locked(teams.size());
-    for (unsigned i=0;i<teams.size();++i) {
-      numPlayers[i]=teams[i].playerIDs.size();
-      for (unsigned j=0;j<numPlayers[i];++j) {
-	PlayerID id=teams[i].playerIDs[j];
-	// perhaps we did not receive this player yet
-	if (id<players.size()&&m_client.getGame().playerIsLocked(id))
-	  ++locked[i];
-      }
-    }
+    const std::vector<TeamStat> &teamStat(m_client.getGame().getTeamStat());
     int dx=m_width/(teams.size()+1);
     gl.PushMatrix();
     if (teams.size()>m_fontPtr->numColors()) {
@@ -478,7 +468,8 @@ SDLGLGUI::step(R dt)
       m_fontPtr->drawText(
 	       m_fontPtr->getColor(i)
 	       +teams[i].name+"\n"
-	       +anyToString(numPlayers[i]-locked[i])+"/"+anyToString(numPlayers[i]),
+	       +anyToString(teamStat[i].numPlayers-teamStat[i].locked)+"/"
+	       +anyToString(teamStat[i].numPlayers),
 	       true);
       gl.Flush();
     }

@@ -27,6 +27,17 @@
 
 #include "typedefs.h"
 
+struct TeamStat
+{
+  unsigned locked;
+  unsigned numPlayers;
+
+  bool allLocked() const
+  {
+    return locked==numPlayers;
+  }
+};
+
 struct Team
 {
   Team() {}

@@ -217,6 +217,22 @@ Server::main()
     m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
     if (!(frames%100))
       broadcast(m_game);
+    // check for win condition
+    TeamID wt;
+    int winner(m_game.getWinner(wt));
+    if (winner) {
+      if (winner==2)
+	std::cout << "\nThe game ended in a draw\n";
+      else
+	// the winner is
+	std::cout << "\nTeam \""<<m_game.getTeams()[wt].name << "\" wins\n";
+      EndGame msg;
+      msg.reason=winner;
+      msg.winner=wt;
+      broadcast(msg);
+      // todo restart game
+    }
+    
     oldTime=newTime;
     ++frames;
     dt=newTime-start;

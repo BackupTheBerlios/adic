@@ -1,6 +1,7 @@
 #include "glterminal.h"
 #include "sdlglgui.h"
 #include "sdlgl.h"
+#include <cstdlib>
 
 GLTerminal::GLTerminal
 (SDLGLGUI &_gui, int _x, int _y, bool _centered, R _scrollspeed, R _writespeed)
@@ -75,6 +76,7 @@ GLTerminal::step(R dt)
 	std::string &dest(rows.back());
 	std::string w(src.substr(0,chars));
 	printed.emit(w[0]);
+	wtimer-=R(rand()/(RAND_MAX/100))*0.01*30/writespeed;
 	dest+=w;
 	if (chars<src.size())
 	  src=src.substr(chars);

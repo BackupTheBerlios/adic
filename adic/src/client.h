@@ -104,7 +104,8 @@ public:
   void playNextSong();
   void printed(char c);
   void handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr);
-
+  void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr);
+  
   int main();
 
   Game::WorldPtr getWorldPtr()

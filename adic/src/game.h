@@ -248,6 +248,21 @@ public:
   {
     m_playerNames=playerNames;
   }
+  //! get team statistics
+  /*!    
+    \note is not const because playerIsLocked isn't
+  */
+  std::vector<TeamStat> getTeamStat();
+
+  //! get the winning team
+  /*!
+    \param winner is only set if there is a winner
+
+    returns - 0 if the game continues
+            - 1 if there is a winner
+	    - 2 if it ended in a draw
+  */
+  int getWinner(TeamID &teamID);
 protected:
   bool miniStep(R dt);
   void calcClosedRooms();

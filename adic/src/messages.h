@@ -193,3 +193,23 @@ inline void composite(Layer2 &layer2, NewClient &o)
 {
   layer2.simple(o.playerNames,"playerNames").simple(o.teams,"teams");
 }
+
+struct EndGame
+{
+  //! 0=server quit 1=winner 2=draw
+  uint8_t reason;
+  //! only set if reason==1
+  TeamID winner;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    l2.SIMPLE(reason).SIMPLE(winner);
+  }
+};
+DOPE_CLASS(EndGame);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, EndGame &o)
+{
+  o.composite(layer2);
+}

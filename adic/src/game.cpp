@@ -472,3 +472,47 @@ Game::setPlayerName(PlayerID id,const std::string &name)
   }
   m_playerNames[id]=rname;
 }
+
+std::vector<TeamStat>
+Game::getTeamStat()
+{
+  std::vector<TeamStat> res(m_teams.size());
+  for (unsigned i=0;i<m_teams.size();++i) {
+    TeamStat stat;
+    stat.numPlayers=m_teams[i].playerIDs.size();
+    stat.locked=0;
+    for (unsigned j=0;j<stat.numPlayers;++j) {
+      unsigned id=m_teams[i].playerIDs[j];
+      // perhaps we did not receive this player yet
+      if (id<m_players.size()&&playerIsLocked(id))
+	++stat.locked;
+    }
+    res[i]=stat;
+  }
+  return res;
+}
+
+int
+Game::getWinner(TeamID &teamID) 
+{
+  if (getTeams().size()<2)
+    return 0;
+
+  TeamID noWin=TeamID(~0U);
+  TeamID winTeam=noWin;
+  const std::vector<TeamStat> &teamStat(getTeamStat());
+  for (unsigned i=0;i<teamStat.size();++i) {
+    if (!teamStat[i].allLocked()) {
+      if (winTeam!=noWin) {
+	// second team with unlocked players => no win
+	return 0;
+	break;
+      }else
+	winTeam=i;
+    }
+  }
+  if (winTeam==noWin)
+    return 2; // all teams are locked
+  teamID=winTeam;
+  return 1;
+}

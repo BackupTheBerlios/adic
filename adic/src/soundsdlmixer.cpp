@@ -71,11 +71,12 @@ SoundSDLMixer::SoundSDLMixer(SoundConfig &sc)
 SoundSDLMixer::~SoundSDLMixer()
 {
   deinit();
-  thisptr=NULL;
 }
 
 void SoundSDLMixer::deinit()
 {
+  Mix_HookMusicFinished(NULL);
+  thisptr=NULL;
   stopMusic(NULL);
   for (Samples::iterator it=samples.begin();it!=samples.end();++it)
     {

@@ -54,7 +54,8 @@ void
 Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 {
   assert(gPtr.get());
-  std::cout << "\nGot Greeting from server.\nServer is running ver. "<< gPtr->m_adicVersion.asString() << " (DOPE++ ver. "<<gPtr->m_dopeVersion.asString()<<")\n";
+  std::cout << "\nGot Greeting from server.\nServer is running ver. "<< gPtr->m_adicVersion.asString() << "\n";
+  std::cout << "(DOPE++ ver. "<<gPtr->m_dopeVersion.asString()<<")\n";
   m_playerIDs=gPtr->m_players;
 
   unsigned got=m_playerIDs.size();
@@ -140,12 +141,17 @@ Client::printed(char c)
 {
   if (!m_soundPtr.get())
     return;
-  if (c!='\n') {
+  switch (c) {
+  case '\n':
+  case ' ':
+    m_soundPtr->playSample("data/newline.wav");
+    break;
+  default:
     int ch=m_soundPtr->playSample("data/printer.wav");
-    R volume=1.0-R(c%6)/10;
+    R volume=1.0-R(c%6)/7;
     m_soundPtr->modifyChannel(ch,volume);
+    break;
   }
-  else m_soundPtr->playSample("data/newline.wav");
 }
 
 void
@@ -153,6 +159,28 @@ Client::handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr)
 {
   std::cout << chatPtr->sender << ">" << chatPtr->message << "\n";
 }
+
+void
+Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
+{
+  std::cout << "Game Over !\n";
+  switch (egPtr->reason) {
+  case 0:
+    std::cout << "Server will quit.\n";
+    break;
+  case 1:
+    std::cout << "Team \"";
+    if (egPtr->winner<m_game.getTeams().size()) {
+      std::cout << m_game.getTeams()[egPtr->winner].name;
+    }
+    std::cout << "\" wins !! \n";
+    break;
+  case 2:
+    std::cout << "The game ends in a draw\n";
+    break;
+  }
+}
+
 
 int
 Client::main()
@@ -179,6 +207,7 @@ Client::main()
   si.connect(SigC::slot(*this,&Client::handlePlayerInput));
   si.connect(SigC::slot(*this,&Client::handleNewClient));
   si.connect(SigC::slot(*this,&Client::handleChatMessage));
+  si.connect(SigC::slot(*this,&Client::handleEndGame));
 
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
@@ -204,7 +233,8 @@ Client::main()
   m_coutbuf=std::cout.rdbuf();
   std::cout.rdbuf(m_guiPtr->getOstream().rdbuf());
   m_soundPtr=DOPE_SMARTPTR<Sound>(Sound::create(m_config.m_sc));
-  m_soundPtr->musicFinished.connect(SigC::slot(*this,&Client::playNextSong));
+  if (m_soundPtr.get())
+    m_soundPtr->musicFinished.connect(SigC::slot(*this,&Client::playNextSong));
   playNextSong();
   m_guiPtr->printed.connect(SigC::slot(*this,&Client::printed));
   
