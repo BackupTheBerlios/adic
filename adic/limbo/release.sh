@@ -126,6 +126,12 @@ if test -e $SETUPCROSS; then
     CROSSPREFIX=$PREFIX/cross/adic-bin-win32-${DIR#adic-*}
     $BUILDDIR/$DIR/configure $CROSS_CONFIGURE_OPTIONS $ADIC_CROSS_CONFIGURE_OPTIONS --enable-fastcompile --prefix=$CROSSPREFIX --bindir=$CROSSPREFIX --datadir=$CROSSPREFIX/data
     make install
+    # rearange files
+    cd $CROSSPREFIX
+    mv data/doc/* .
+    mv data/adic d2
+    rm -rf data
+    mv d2 data
 else
     echo cross compiler config script not found
 fi
