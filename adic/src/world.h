@@ -39,12 +39,12 @@ struct FWEdge
   {
   }
   
-  typedef int VID;
-  typedef int EID;
-  typedef int RoomID;
+  typedef unsigned VID;
+  typedef unsigned EID;
+  typedef unsigned RoomID;
   
-  static const EID noEdge=-1;
-  static const RoomID noRoom=-1;
+  static const EID noEdge=~0U;
+  static const RoomID noRoom=~0U;
 
   //! start vertice
   VID m_sv;
@@ -170,6 +170,23 @@ public:
     \room the ID of the room
   */
   std::vector<V2D> getLineLoop(FWEdge::RoomID room) const;
+
+  //! return all doors
+  std::vector<FWEdge::EID> getAllDoors() const;
+  
+  //! get edge
+  const FWEdge &getEdge(FWEdge::EID eid) const
+  {
+    DOPE_CHECK(eid<m_edges.size());
+    return m_edges[eid];
+  }
+  //! get start point of edge
+  const V2D &getPoint(FWEdge::VID v) const
+  {
+    DOPE_CHECK(v<m_vertices.size());
+    return m_vertices[v];
+  }
+  
   
   void setFromMesh(const Mesh &mesh);
   
