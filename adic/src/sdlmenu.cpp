@@ -1,4 +1,5 @@
 #include "sdlmenu.h"
+#include "glfont.h"
 
 static int player_i;
 static bool step_return = true;

@@ -26,50 +26,56 @@
 #define GLTERMINAL_H
 
 #include "typedefs.h"
-#include <sstream>
 #include <sigc++/signal_system.h>
 #include <list>
+#include <string>
 
-class SDLGLGUI;
-class SDLGL;
+class GLFont;
 
 //! a simple terminal class using opengl
-/*!
-  \todo remove dependency on SDLGLGUI. Just pass a font
-  \todo handle screen resizes ?
-*/
 class GLTerminal
 {
 public:
   //! create terminal
   /*!
-    \param _gl the GL Functions
+    \param font the font to use
+    \param _x left postion of terminal (pixels)
+    \param _y top postion of terminal (pixels)
+    \param _centered (center text horizontally?)
+    \param _scrollspeed how fast the text is scrolled away
+    \param _writespeed how fast the text is printed
   */    
-  GLTerminal(SDLGLGUI &_gui, int _x, int _y, bool _centered=false, R _scrollspeed=4, R _writespeed=15);
+  GLTerminal(const GLFont &font,
+	     int _x, int _y,
+	     bool _centered=false,
+	     R _scrollspeed=4, R _writespeed=15);
   
   ~GLTerminal(){}
+
+  //! step time forward and draw terminal
   void step(R dt);
 
+  //! clear terminal
   void clear() 
   {
-    out.str("");
     rows.clear();
   }
 
-  //! the stream you can write to
-  /*!
-    \bug it is assumed you always write a complete line
-  */
-  std::ostringstream out;
-  //! is emitted if a character is printed
+  //! print text to terminal
+  void print(const std::string &newText);
+
+  //! signal emitted if a character is printed (you can use it for example to play a sound)
   SigC::Signal1<void, char> printed;
-  
+
 protected:
-  SDLGLGUI &gui;
+  typedef std::basic_string<char> String;
+
+  const GLFont &m_font;
+
   int x,y;
   bool centered;
-  std::list<std::string> rows;
-  std::list<std::string> buffered;
+  std::list<String> rows;
+  std::list<String> buffered;
   
   unsigned maxcols,maxrows;
   R stimer,wtimer;
@@ -78,8 +84,8 @@ protected:
   //! how many characters/sec. ?
   R writespeed;
   
-  void append(const std::string &t);
-  void appendRow(std::string r);
+  void append(const String &t);
+  void appendRow(String r);
 };
 
 #endif

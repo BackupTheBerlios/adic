@@ -1,54 +1,58 @@
 #include "glterminal.h"
-#include "sdlglgui.h"
-#include "sdlgl.h"
+#include "glfont.h"
+#include "sdlgl.h" // to get the OpenGL function declarations (no dependency on SDL)
 #include <cstdlib>
 
 GLTerminal::GLTerminal
-(SDLGLGUI &_gui, int _x, int _y, bool _centered, R _scrollspeed, R _writespeed)
-  : gui(_gui), x(_x), y(_y), centered(_centered),
+(const GLFont &font, int _x, int _y, bool _centered, R _scrollspeed, R _writespeed)
+  : m_font(font), x(_x), y(_y), centered(_centered),
     stimer(_scrollspeed), wtimer(0), 
     scrollspeed(_scrollspeed),
     writespeed(_writespeed)
 {}
 
 void
-GLTerminal::appendRow(std::string r)
+GLTerminal::appendRow(String r)
 {
   while (r.size()>maxcols) {
-    buffered.push_back(std::string(r,0,maxcols));
+    buffered.push_back(String(r,0,maxcols));
     r=r.substr(maxcols);
   }
   buffered.push_back(r);
 }
 
 void
-GLTerminal::append(const std::string &text)
+GLTerminal::append(const String &text)
 {
-  std::string::size_type pos(text.find_first_of('\n'));
-  if (pos!=std::string::npos)
-    appendRow(std::string(text,0,pos));
+  String::size_type pos(text.find_first_of('\n')); // todo '\n'
+  if (pos!=String::npos)
+    appendRow(String(text,0,pos));
   if (pos+1<text.size()) {
-    append(std::string(text,pos+1));
+    append(String(text,pos+1));
   }
 }
+
+
+void
+GLTerminal::print(const std::string &newText)
+{
+  if (!newText.size()) return;
+  int view[4];
+  glGetIntegerv(GL_VIEWPORT,view);
+  int w=view[2];
+  int h=view[3];
+  maxcols=(w-x)/m_font.getWidth();
+  maxrows=y/m_font.getHeight();
+  append(newText);
+  while (rows.size()>maxrows) {
+    rows.pop_front();
+  }
+}
+
 
 void
 GLTerminal::step(R dt)
 {
-  const std::string &newtext(out.str());
-  if (newtext.size()) {
-    int view[4];
-    glGetIntegerv(GL_VIEWPORT,view);
-    int w=view[2];
-    int h=view[3];
-    maxcols=(w-x)/gui.m_fontPtr->getWidth();
-    maxrows=y/gui.m_fontPtr->getHeight();
-    append(newtext);
-    out.str("");
-    while (rows.size()>maxrows) {
-      rows.pop_front();
-    }
-  }
   if (rows.size()) {
     if ((buffered.empty())||(rows.size()>2))
       stimer-=dt;
@@ -59,7 +63,7 @@ GLTerminal::step(R dt)
     }
   }
   if (buffered.size()) {
-    std::string &src(buffered.front());
+    String &src(buffered.front());
     wtimer+=dt*writespeed;
     unsigned chars=0;
     if (wtimer>0) chars=wtimer;
@@ -71,12 +75,12 @@ GLTerminal::step(R dt)
       if (!chars) {
 	  buffered.pop_front();
 	  rows.push_back();
-	  printed.emit('\n');
+	  printed.emit('\n'); // todo \n
 	  wtimer-=R(maxcols)/writespeed;
       }else{
 	if (rows.empty()) rows.push_back();
-	std::string &dest(rows.back());
-	std::string w(src.substr(0,chars));
+	String &dest(rows.back());
+	String w(src.substr(0,chars));
 	printed.emit(w[0]);
 	wtimer-=R(rand()/(RAND_MAX/100))*0.01*30/writespeed;
 	dest+=w;
@@ -86,7 +90,7 @@ GLTerminal::step(R dt)
 	  {
 	    buffered.pop_front();
 	    rows.push_back();
-	    printed.emit('\n');
+	    printed.emit('\n'); // todo \n
 	    wtimer-=R(maxcols)/writespeed;
 	  }
       }
@@ -96,11 +100,11 @@ GLTerminal::step(R dt)
     return;
   glPushMatrix();
   glLoadIdentity();
-  glTranslatef(x,y-int(gui.m_fontPtr->getHeight()*stimer/scrollspeed),0);
-  std::list<std::string>::iterator it(rows.begin());
+  glTranslatef(x,y-int(m_font.getHeight()*stimer/scrollspeed),0);
+  std::list<String>::iterator it(rows.begin());
   while (it!=rows.end()) {
-    gui.m_fontPtr->drawTextRow(*it,centered);
-    glTranslatef(0,-gui.m_fontPtr->getHeight(),0);
+    m_font.drawTextRow(*it,centered);
+    glTranslatef(0,-m_font.getHeight(),0);
     ++it;
   }
   glPopMatrix();

@@ -31,13 +31,15 @@
 #include "sdlsigfactory.h"
 #include "sdlinputdev.h"
 #include "animation.h"
-#include "glterminal.h"
-#include "glfont.h"
 #include "sdlinputfield.h"
 #include "glpoly.h"
 #include "camera.h"
 
+#include <sstream>
+
+class GLFont;
 class SDLMenu;
+class GLTerminal;
 
 //! currently the only GUI implementation. It uses SDL with OpenGL/Mesa
 class SDLGLGUI : public GUI
@@ -83,14 +85,18 @@ public:
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
 
   //! simple terminal
-  GLTerminal m_terminal;
+  DOPE_SMARTPTR<GLTerminal> m_terminalPtr;
   //! our font
   DOPE_SMARTPTR<GLFont> m_fontPtr;
+  //! out terminal output stream buffer
+  std::basic_stringbuf<char> m_streamBuf;
 
-  std::ostream &getOstream() 
+  //! get stream buffer you can write to
+  std::basic_streambuf<char>* rdbuf()
   {
-    return m_terminal.out;
+    return &m_streamBuf;
   }
+  
   unsigned numInputDevices() const
   {
     return m_inputDevices.size();

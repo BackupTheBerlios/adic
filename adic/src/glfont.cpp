@@ -1,6 +1,6 @@
 #include "glfont.h"
 void 
-GLFont::drawTextRow(const std::string &text, bool centered)
+GLFont::drawTextRow(const std::string &text, bool centered) const
 {
   int w=texPtr->getWidth(),h=texPtr->getHeight();
   float fw=w,fh=h;
@@ -53,7 +53,7 @@ GLFont::drawTextRow(const std::string &text, bool centered)
 }
 
 void 
-GLFont::drawText(const std::string &text, bool centered)
+GLFont::drawText(const std::string &text, bool centered) const
 {
   std::string::size_type pos(text.find_first_of('\n'));
   if (pos!=std::string::npos) {

@@ -51,7 +51,8 @@ public:
   SigC::Signal1<void, char> printed;
   SigC::Signal1<void, ChatMessage &> chatMessage;
   
-  virtual std::ostream &getOstream()=0;
+  //! get stream buffer you can write to
+  virtual std::basic_streambuf<char>* rdbuf()=0;
 
   virtual unsigned numInputDevices() const=0;
 

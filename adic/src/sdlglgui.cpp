@@ -1,11 +1,14 @@
 #include "sdlglgui.h"
+#include "glfont.h"
 #include "sdlmenu.h"
+#include "glterminal.h"
+
 #include <algorithm>
 #include <iomanip>
 
 
 SDLGLGUI::SDLGLGUI(Client &client) 
-  : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
+  : GUI(client), 
     //    m_textureTime(5), 
     m_autoCenter(true), 
     m_zoomOp(0), m_autoZoom(true),
@@ -17,7 +20,6 @@ SDLGLGUI::SDLGLGUI(Client &client)
   m_scrollOp[0]=m_scrollOp[1]=0;
   sf.quitSignal.connect(SigC::slot(*this,&SDLGLGUI::handleQuit));
   sf.resize.connect(SigC::slot(*this,&SDLGLGUI::handleResize));
-  m_terminal.printed.connect(printed.slot());
   m_start.now();
 }
 
@@ -120,6 +122,11 @@ SDLGLGUI::createWindow()
   //  m_texturePtr=getTexture("data:gui_0001.png");
   m_fontTexPtr=getTexture("data:font.png");
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(m_fontTexPtr));
+
+  assert(m_fontPtr.get());
+  m_terminalPtr=DOPE_SMARTPTR<GLTerminal>(new GLTerminal(*m_fontPtr,0,getGUIConfig().height-48));
+  m_terminalPtr->printed.connect(printed.slot());
+
   m_circlePtr=getTexture("data:pillar.png");
   m_texCircle=true;
 
@@ -167,9 +174,8 @@ SDLGLGUI::resize(int width, int height)
   if (height==0)			
     height=1;
 
-  // todo: resize should not set video mode
   if ( SDL_SetVideoMode(width, height, 0, m_flags) == NULL ) {
-    throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
+    throw std::runtime_error(std::string("Couldn't set video mode: ")+SDL_GetError());
   }
 
   // hack for 8bit displays (especially for my sdl+osmesa+aalib and sdl+osmesa+fbcon hack)
@@ -597,7 +603,13 @@ SDLGLGUI::step(R dt)
   }
 
   // paint terminal
-  m_terminal.step(dt);
+  assert(m_terminalPtr.get());
+  // copy text from input buffer to terminal
+  m_terminalPtr->print(m_streamBuf.str());
+  m_streamBuf.str("");
+  m_terminalPtr->step(dt);
+
+
   // paint chat line
   glLoadIdentity();
   glTranslatef(0,0,0);

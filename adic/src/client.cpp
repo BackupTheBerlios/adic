@@ -321,7 +321,7 @@ Client::main()
     std::cerr.rdbuf(m_guiPtr->getOstream().rdbuf());
   */
   m_coutbuf=std::cout.rdbuf();
-  std::cout.rdbuf(m_guiPtr->getOstream().rdbuf());
+  std::cout.rdbuf(m_guiPtr->rdbuf());
   m_soundPtr=DOPE_SMARTPTR<Sound>(Sound::create(m_config.m_sc));
   if (m_soundPtr.get())
     m_soundPtr->musicFinished.connect(SigC::slot(*this,&Client::playNextSong));

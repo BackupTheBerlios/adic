@@ -30,8 +30,6 @@
 #include <boost/smart_ptr.hpp>
 #include <vector>
 
-class SDLGL;
-
 //! a font representation/text printing class using opengl
 /*!
   currently this implementation uses texture mapped quads.
@@ -46,8 +44,8 @@ public:
   {}
   ~GLFont(){}
 
-  void drawTextRow(const std::string &text, bool centered=false);
-  void drawText(const std::string &text, bool centered=false);
+  void drawTextRow(const std::string &text, bool centered=false) const;
+  void drawText(const std::string &text, bool centered=false) const;
   int getWidth() const 
   {
     return texPtr->getWidth()/tilex;

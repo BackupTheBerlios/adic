@@ -73,23 +73,7 @@ typedef int64_t Frame;
 #define ADIC_NEED_SDLMAIN
 #endif
 
-/*
-// std::streambuf
-#include <iostream>
-// layer 2 mini xml output stream
-#include <dope/minixml.h>
-// layer 2 xml sax input
-#include <dope/xmlsaxinstream.h>
-// DOPE_CLASS
-#include <dope/typenames.h>
-// simple for STL types
-#include <dope/dopestl.h>
-#include <sigc++/signal_system.h>
-*/
-
 #define SIMPLE(d) simple(d,#d)
-
-//#include "genericpointer.h"
 
 // all win conditional code should use WINDOOF
 #if defined(__WIN32__) || defined(WIN32)
