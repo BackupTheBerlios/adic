@@ -44,6 +44,19 @@ public:
 
   V2D m_pos;
   R m_r;
+
+  template <typename Layer2>
+  inline void composite(Layer2 &layer2)
+  {
+    layer2.SIMPLE(m_pos).SIMPLE(m_r);
+  }
 };
+DOPE_CLASS(Circle);
+
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Circle &c)
+{
+  c.composite(layer2);
+}
 
 #endif
