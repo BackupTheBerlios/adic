@@ -1,6 +1,35 @@
 #include "game.h"
 #include "input.h"
 
+RealDoor::RealDoor(Door &_d, const V2D &_s, const V2D &_e)
+  : d(_d), s(_s), e(_e), mass(0.1)
+{}
+
+
+V2D 
+RealDoor::getImpuls(R dist)
+{
+  R tSpeed=d.getSpeed()*dist*2*M_PI*mass;
+  // calculate normal
+  V2D dv((e-s).rot(d.getAngle()));
+  dv.rot90();
+  dv.normalize();
+  dv*=tSpeed;
+  return dv;
+}
+
+void 
+RealDoor::applyImpuls(R dist, V2D impuls)
+{
+  V2D n((e-s).rot(d.getAngle()));
+  n.rot90();
+  V2D i(n.project(impuls));
+  R m=i.length();
+  if (n.dot(i)<0)
+    m=-m;
+  d.addSpeed(m/(dist*2*M_PI*mass));
+}
+
 void
 Game::init()
 {
@@ -41,6 +70,8 @@ Game::miniStep(R dt)
 	if (m_players[p].collide(m_players[o],cv))
 	  {
 	    m_players[p].rollback();
+	    DOPE_CHECK(!m_players[p].collide(m_players[o],cv));
+	    
 	    // now calculate impuls
 	    V2D oimp(cv.project(m_players[p].getSpeed()));
 	    V2D timp((-cv).project(m_players[o].getSpeed()));
@@ -52,40 +83,45 @@ Game::miniStep(R dt)
 	    break;
 	  }
       }
-      if (!collided) {
-	WorldPtr w(getWorldPtr());
-	if (w.get()) {
-	  // 2. collide with walls
-	  FWEdge::RoomID r=w->inRoom(m_players[p].m_pos);
-	  if (r!=FWEdge::noRoom) {
-	    V2D cv;
-	    if (w->collide(m_players[p],r,cv))
-	      {
-		m_players[p].rollback();
-		collided=true;
-		V2D imp(cv.project(m_players[p].getSpeed()));
-		m_players[p].applyImpuls(imp*-2);
-		m_players[p].commit();
-	      }
-	  }
-	  if (!collided) {
-	    // 3. collide with doors
-	    for (unsigned d=0;d<m_doors.size();++d)
-	      {
-		if (collideDoorAndPlayer(m_doors[d],m_players[p]))
-		  {
-		    collided=true;
-		    break;
-		  }
-	      }
-	    if (!collided)
-	      m_players[p].commit();
-	  }
+      // we rolled back this player -> there can't be any collision any moor
+      if (collided) continue;
 
+      WorldPtr w(getWorldPtr());
+      if (w.get()) {
+	// 2. collide with walls
+	FWEdge::RoomID r=w->inRoom(m_players[p].m_pos);
+	if (r!=FWEdge::noRoom) {
+	  V2D cv;
+	  // collide with room
+	  if (w->collide(m_players[p],r,cv))
+	    {
+	      m_players[p].rollback();
+	      DOPE_CHECK(!w->collide(m_players[p],r,cv));
+	      collided=true;
+	      V2D imp(cv.project(m_players[p].getSpeed()));
+	      m_players[p].applyImpuls(imp*-2);
+	      m_players[p].commit();
+	    }
 	}
+	if (collided) continue;
+	// 3. collide with doors
+	for (unsigned d=0;d<m_doors.size();++d)
+	  {
+	    if (collideDoorAndPlayer(m_doors[d],m_players[p],false))
+	      {
+		DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],m_players[p],false));
+		collided=true;
+		break;
+	      }
+	  }
+	if (collided) continue;
       }
       // "collide" collect icons
+
+      // commit move because there was no collision
+      m_players[p].commit();
     }
+
   // step doors
   for (unsigned d=0;d<m_doors.size();++d)
     {
@@ -94,14 +130,15 @@ Game::miniStep(R dt)
       bool collided=false;
       for (unsigned p=0;p<m_players.size();++p)
 	{
-	  if (collideDoorAndPlayer(m_doors[d],m_players[p]))
+	  if (collideDoorAndPlayer(m_doors[d],m_players[p],true))
 	    {
+	      DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],m_players[p],true));
 	      collided=true;
 	      break;
 	    }
 	}
-      if (!collided)
-	m_doors[d].commit();
+      if (collided) continue;
+      m_doors[d].commit();
     }
   return true;
 }
@@ -155,7 +192,7 @@ Game::doorInWorld(Door &d)
   return RealDoor(d,sv,ev);
 }
 bool
-Game::collideDoorAndPlayer(Door &d, Player &p)
+Game::collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor)
 {
   RealDoor rd(doorInWorld(d));
   Wall w(rd.asWall());
@@ -165,8 +202,10 @@ Game::collideDoorAndPlayer(Door &d, Player &p)
     return false;
   // todo apply imulses - unfortunately i don't know the distance of the
   // collision point => i can't calculate the momentum
-  p.rollback();
-  d.rollback();
+  if (!rollbackdoor)
+    p.rollback();
+  else
+    d.rollback();
   V2D oimp(cv.project(p.getSpeed()));
   // todo this seems a bit stupid since the speed of the door is always in the direction
   // of cv (no not really because of the pillars at the end of the door)
