@@ -37,7 +37,7 @@ public:
     
     \returns parameter r in f=a+(b-a)*r; with (f-a)*(p-f)=0
   */
-  R project(const V2D &p); // todo
+  R project(const V2D &p) const; // todo
 
   //! distance of point to line
   R dist(const V2D &p); // todo

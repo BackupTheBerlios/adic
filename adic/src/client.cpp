@@ -34,7 +34,7 @@ void
 Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
 {
   assert(gPtr.get());
-  std::cerr << "\nGot game data\n";
+  //  std::cerr << "\nGot game data\n";
   TimeStamp myTime(m_game.getTimeStamp());
   TimeStamp serverTime(gPtr->getTimeStamp());
   if (serverTime<myTime) {
@@ -111,9 +111,9 @@ Client::main()
     ++frames;
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
-    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime 
-	      << " FPS: " << std::setw(10) << R(frames)/uptime 
-	      << " Frame: " << std::setw(20) << frames;
+    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(10) << uptime 
+	      << " FPS: " << std::setw(8) << R(frames)/uptime 
+	      << " Frame: " << std::setw(10) << frames;
   }
   delete guiPtr;
   std::cout << std::endl;

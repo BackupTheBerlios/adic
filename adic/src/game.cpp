@@ -52,6 +52,28 @@ Game::step(R dt)
   return true;
 }
 
+/*!
+  \todo don't calculate it on each call - only calculate it once per step
+ */
+FWEdge::RoomID
+Game::playerInRoom(unsigned p)
+{
+  WorldPtr w(getWorldPtr());
+  if (!w.get())
+    return FWEdge::noRoom;
+  FWEdge::RoomID r=FWEdge::noRoom;
+  PlayerRoomMap::iterator it(m_playerRoomMap.find(p));
+  if (it!=m_playerRoomMap.end()) {
+    if (w->isInRoom(m_players[p].m_pos,it->second))
+      r=it->second;
+  }
+  if (r==FWEdge::noRoom)
+    r=w->inRoom(m_players[p].m_pos);
+  if (r!=FWEdge::noRoom)
+    m_playerRoomMap[p]=r;
+  return r;
+}
+
 bool
 Game::miniStep(R dt)
 {
@@ -60,36 +82,41 @@ Game::miniStep(R dt)
   bool collided=false;
   for (unsigned p=0;p<m_players.size();++p)
     {
-      // calculate step
-      m_players[p].step(dt);
-      // now collide and rollback on collision
-      // 1. collide with other players
-      for (unsigned o=0;o<m_players.size();++o){
-	if (o==p) continue;
-	V2D cv;
-	if (m_players[p].collide(m_players[o],cv))
-	  {
-	    m_players[p].rollback();
-	    DOPE_CHECK(!m_players[p].collide(m_players[o],cv));
-	    
-	    // now calculate impuls
-	    V2D oimp(cv.project(m_players[p].getSpeed()));
-	    V2D timp((-cv).project(m_players[o].getSpeed()));
-	    m_players[p].applyImpuls(timp-oimp);
-	    m_players[o].applyImpuls(oimp-timp);
-	    m_players[p].commit();
-	    m_players[o].commit();
-	    collided=true;
-	    break;
-	  }
-      }
-      // we rolled back this player -> there can't be any collision any moor
-      if (collided) continue;
-
       WorldPtr w(getWorldPtr());
       if (w.get()) {
+	// find room this player is in
+	FWEdge::RoomID r=playerInRoom(p);
+
+	// calculate player step
+	if (roomIsClosed(r))
+	  m_players[p].setControl(0,0);
+
+	m_players[p].step(dt);
+	// now collide and rollback on collision
+	// 1. collide with other players
+	for (unsigned o=0;o<m_players.size();++o){
+	  if (o==p) continue;
+	  V2D cv;
+	  if (m_players[p].collide(m_players[o],cv))
+	    {
+	      m_players[p].rollback();
+	      DOPE_CHECK(!m_players[p].collide(m_players[o],cv));
+	      
+	      // now calculate impuls
+	      V2D oimp(cv.project(m_players[p].getSpeed()));
+	      V2D timp((-cv).project(m_players[o].getSpeed()));
+	      m_players[p].applyImpuls(timp-oimp);
+	      m_players[o].applyImpuls(oimp-timp);
+	      m_players[p].commit();
+	      m_players[o].commit();
+	      collided=true;
+	      break;
+	    }
+	}
+	// we rolled back this player -> there can't be any collision any moor
+	if (collided) continue;
+
 	// 2. collide with walls
-	FWEdge::RoomID r=w->inRoom(m_players[p].m_pos);
 	if (r!=FWEdge::noRoom) {
 	  V2D cv;
 	  // collide with room
@@ -140,7 +167,23 @@ Game::miniStep(R dt)
       if (collided) continue;
       m_doors[d].commit();
     }
+  calcClosedRooms();
   return true;
+}
+
+void Game::calcClosedRooms()
+{
+  m_closedRooms.clear();
+  WorldPtr w(getWorldPtr());
+  if (!w.get())
+    return;
+  for (unsigned r=0;r<w->getNumRooms();++r)
+    {
+      // select room color
+      RealRoom room(*w.get(),m_doors,r);
+      if (room.getADIC())
+	m_closedRooms.push_back(r);
+    }
 }
 
 void 
@@ -159,7 +202,7 @@ Game::getWorldPtr()
 {
   if (m_meshPtr.get()&&(!m_worldPtr.get()))
     {
-      DOPE_WARN("reached");
+      //      DOPE_WARN("reached");
       m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
       DOPE_CHECK(m_worldPtr.get());
       // get all doors

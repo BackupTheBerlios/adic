@@ -46,7 +46,7 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   PlayerInput i(*inputPtr.get(),playerID);
   server.setInput(i);
   server.broadcast(i);
-  std::cerr << "\nGot input signal\n";
+  //  std::cerr << "\nGot input signal\n";
 }
 
 int 
@@ -87,10 +87,9 @@ Server::main()
     ++frames;
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
-    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime 
-	      << " FPS: " << std::setw(10) << R(frames)/uptime 
-	      << " Frame: " << std::setw(20) << frames
-	      << " Stamp: " << m_game.getTimeStamp().getSec() << "sec "<<m_game.getTimeStamp().getUSec() << "usec";
+    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(10) << uptime 
+	      << " FPS: " << std::setw(8) << R(frames)/uptime 
+	      << " Frame: " << std::setw(10) << frames;
   }
   connections.clear();
   return 0;

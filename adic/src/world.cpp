@@ -43,7 +43,7 @@ World::World(const Mesh &mesh)
 void
 World::setFromMesh(const Mesh &mesh)
 {
-  DOPE_WARN("called");
+  //  DOPE_WARN("called");
   // this does not have to be fast since it is called only once or twice ;-)
 
   // copy all vertices

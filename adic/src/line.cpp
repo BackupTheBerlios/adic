@@ -1,6 +1,6 @@
 #include "line.h"
 
-R Line::project(const V2D &p)
+R Line::project(const V2D &p) const
 {
   return (m_vn*(p-m_a));
 }

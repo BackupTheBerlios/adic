@@ -1,11 +1,16 @@
+startplatz aussuchen
+
+skaliert schlecht zumindest der client
+musik
+
+teams fehlen
+
 - profiling (especially the client)
   i think the most time is consumed in the client
   for the lag compensation
 
-
 collision is good but still not perfect
 think about the right point for a commit
-
 
 habe fehler bei -O3
 
