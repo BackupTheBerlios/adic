@@ -27,6 +27,7 @@
 
 #include "vector2d.h"
 
+//! a circle class
 class Circle
 {
 public:

@@ -39,7 +39,11 @@
 
 class GUI;
 
-// GUI client
+//! GUI client
+/*!
+  \todo the BotClient class and this class do have a lot of code in common.
+  Perhaps create a common base class
+*/
 class Client : public SigC::Object
 {
 protected:

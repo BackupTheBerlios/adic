@@ -33,6 +33,11 @@
 class SDLGLGUI;
 class SDLGL;
 
+//! a simple terminal class using opengl
+/*!
+  \todo remove dependency on SDLGLGUI. Just pass a font
+  \todo handle screen resizes ?
+*/
 class GLTerminal
 {
 public:
@@ -51,6 +56,10 @@ public:
     rows.clear();
   }
 
+  //! the stream you can write to
+  /*!
+    \bug it is assumed you always write a complete line
+  */
   std::ostringstream out;
   //! is emitted if a character is printed
   SigC::Signal1<void, char> printed;

@@ -70,6 +70,12 @@ public:
   void applyImpuls(R dist, V2D impuls);
 };
 
+//! this is the main model of the game. Model-View(-controller) pattern
+/*!
+  Client and server is this model. The server sends it to its clients
+  from time to time. In between those messages the clients try to do the
+  same calculations as the server by using this class, too.
+*/
 class Game
 {
 public:

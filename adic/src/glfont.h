@@ -32,6 +32,12 @@
 
 class SDLGL;
 
+//! a font representation/text printing class using opengl
+/*!
+  currently this implementation uses texture mapped quads.
+  There is one texture representing the the font which is passed to
+  the constructor.
+*/
 class GLFont
 {
 public:

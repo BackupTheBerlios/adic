@@ -199,6 +199,10 @@ inline void composite(Layer2 &layer2, NewClient &o)
   layer2.simple(o.playerNames,"playerNames").simple(o.teams,"teams");
 }
 
+//! end of game message
+/*!
+  this message is sent by the server to all clients on the end of one game/level
+*/
 struct EndGame
 {
   //! 0=server quit 1=winner 2=draw
@@ -219,6 +223,7 @@ inline void composite(Layer2 &layer2, EndGame &o)
   o.composite(layer2);
 }
 
+//! ping message
 struct Ping
 {
   TimeStamp m_ctime;

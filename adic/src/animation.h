@@ -33,6 +33,7 @@
 
 class SDLGLGUI;
 
+//! animation class
 struct Animation
 {
   Animation(SDLGLGUI &gui, const std::vector<std::string> &uris);

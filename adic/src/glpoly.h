@@ -28,6 +28,10 @@
 #include "vector2d.h"
 #include <vector>
 
+//! class to draw a filled/textured polygon
+/*
+  currently implemented using glu functions
+*/
 class GLPoly
 {
 public:
