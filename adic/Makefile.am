@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = config src doc data
+SUBDIRS = config debian src doc data
 
 EXTRA_DIST = bootstrap.sh

@@ -65,7 +65,7 @@ test_world_LDADD = @DOPE_LIBS@
 test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 
 adicserver_SOURCES = $(gamecommon) server.h server.cpp
-adicserver_LDADD = @DOPE_LIBS@
+adicserver_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
 
 # did not work with automake 1.4
 # adicclient_CFLAGS = @SDL_CFLAGS@
@@ -99,14 +99,15 @@ adicclient_SOURCES = $(clientcommon) \
 
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer
-adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer
+adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer @SPECIAL_LDADD@
 
 adicbot_SOURCES = $(clientcommon) \
 	botclient.h botclient.cpp \
 	bot.h bot.cpp \
 	karmebot.h karmebot.cpp
 
-adicbot_LDADD = @DOPE_LIBS@
+adicbot_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
+
 
 
 

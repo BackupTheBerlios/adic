@@ -24,13 +24,19 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config/config.h)
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
-AC_PROG_CC
-AC_PROG_CPP
+dnl AC_PROG_CC
+dnl AC_PROG_CPP
 AC_PROG_CXX
-AC_PROG_CXXCPP
+dnl AC_PROG_CXXCPP
 
 dnl build options
 AC_ARG_VAR(ADIC_PORT, the default port to use)
+
+AC_ARG_ENABLE([staticcpp],
+	AC_HELP_STRING([--enable-staticcpp],
+		[enable static cpp libs @<:@default=no@:>@]),
+		[],
+		[enable_staticcpp=no])
 
 dnl checks for libraries
 AM_PATH_DOPE(0.0.6, , [AC_MSG_ERROR([dope++ required])])
@@ -46,8 +52,17 @@ if test "x$ADIC_PORT" = "x"; then
 fi
 AC_DEFINE_UNQUOTED(ADIC_PORT, $ADIC_PORT, [default port to use])
 
+
+if test "x$enable_staticcpp" = "xno"; then
+     SPECIAL_LDADD=""
+else
+     dnl hack to get static linkage with libtool and g++-3.2 of stdc++ library
+     SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.so|sed s/\.so/.a/g` -lgcc_s -lc"
+fi
+AC_SUBST(SPECIAL_LDADD)
+
 dnl output files
-AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile src/Makefile data/Makefile])
+AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile src/Makefile debian/Makefile data/Makefile])
 AC_OUTPUT
 
 
