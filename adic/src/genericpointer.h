@@ -27,18 +27,14 @@
 
 //! generic pointer
 /*!
-  if (derefOnSet==true) the object will be fetched when the address is set 
-  => if the object can't be fetched the error will occur on the set
-  set it to 0 if the object should be fetched on first usage => the error will occur on the first usage
-
   \todo 
   - how to document template params with doxygen
   - how to document template concepts with doxygen
   - take a look at boost concept checks
-  - recheck that the default copy constructor is ok - especially if (!derefOnSet), 
+  - recheck that the default copy constructor is ok
   I think it only works if the factory acts as cache
 */
-template <typename X, typename Address, typename Factory, bool derefOnSet=true>
+template <typename X, typename Address, typename Factory>
 class GenericPointer
 {
 public:
@@ -65,35 +61,29 @@ public:
     setAddress(a);
   }
 
-  X& operator*()
+  X& operator*() const
   { 
     return *get(); 
   }
-  X* operator->() 
+  X* operator->() const
   { 
     return get(); 
   }
 
   //! get referenced object
-  /*!
-    \note not const because fetch might be called if (!derefOnSet)
-  */
-  X* get()
+  X* get() const
   {
-    if (derefOnSet)
-      return m_xp.get();
-    //    else
+    return m_xp.get();
+    /*
     if (!m_xp.get())
       fetch();
-    return m_xp.get();
+      return m_xp.get(); */
   }
+
   void setAddress(const Address &a) 
   {
     m_address=a;
-    if (derefOnSet)
-      fetch();
-    else
-      m_xp=DOPE_SMARTPTR<X>(NULL);
+    fetch();
   }
 protected:
   void fetch()
@@ -107,8 +97,8 @@ protected:
 };
 
 //! \todo how many template arguments do we want to pickle ?
-template <typename T1, typename T2, typename T3,bool T4> 
-struct TypeNameTrait<GenericPointer<T1,T2,T3,T4> > 
+template <typename T1, typename T2, typename T3> 
+struct TypeNameTrait<GenericPointer<T1,T2,T3> > 
 { 
   static DOPE_INLINE TypeNameType name() DOPE_FCONST 
   { 
@@ -133,8 +123,8 @@ struct TypeNameTrait<GenericPointer<T1,T2,T3,T4> >
   } 
 };
 
-template <typename Layer2, typename X, typename Address, typename Factory, bool derefOnSet>
-inline void composite(Layer2 &layer2,  GenericPointer<X, Address, Factory, derefOnSet> &p)
+template <typename Layer2, typename X, typename Address, typename Factory>
+inline void composite(Layer2 &layer2,  GenericPointer<X, Address, Factory> &p)
 {
   p.composite(layer2,typename Layer2::Traits::OutStream());
 }
