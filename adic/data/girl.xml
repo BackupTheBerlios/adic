@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<PlayerData
+	maxspeed="80"
+	acceleration="30"
+	mass="0.7"
+	type="1"
+	r="15"
+	>
+</PlayerData>
