@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 #configuration
 BUILDDIR=/tmp/adic
@@ -167,6 +167,14 @@ else
     rm -rf data
     mv d2 data
     strip adicclient adicserver adicbot
+    #create configuration
+    ./adicclient --dump --dataPath=data --width=800 --height=600 --quality=3 2>&1 |xmllint --format - >cconfig.xml
+    cat >startclient.sh <<-EOF
+	#!/bin/bash
+	cd ${0%/*}
+	./adicclient --file=cconfig.xml
+	EOF
+    chmod +x startclient.sh
     cd ..
     tar cvf - $DISTNAME|gzip --best > $UPLOADDIR/$DISTNAME.tar.gz
     tar cvf - $DISTNAME|bzip2 --best > $UPLOADDIR/$DISTNAME.tar.bz2
@@ -203,6 +211,16 @@ if test -e $SETUPCROSS; then
 	rm -rf data
 	mv d2 data
 	$STRIP *.exe
+	#create configuration
+        $BUILDDIR/build/debian/$DIR/src/adicserver --dump --dataPath=data 2>&1 |xmllint --format -|unix2dos >sconfig.xml
+	unix2dos >startserver.bat <<-EOF
+	adicserver --file=sconfig.xml
+	EOF
+        $BUILDDIR/build/debian/$DIR/src/adicclient --dump --dataPath=data --width=1024 --height=768 --quality=3 2>&1 |xmllint --format -|unix2dos >cconfig.xml
+	unix2dos >startclient.bat <<-EOF
+	adicclient --file=cconfig.xml
+	EOF
+	
 	cd ..
 	mkdir -p $UPLOADDIR
 	zip -r $UPLOADDIR/$DISTNAME.zip $DISTNAME
