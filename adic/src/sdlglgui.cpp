@@ -294,6 +294,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       m_showNames=!m_showNames;
     return true;
   case SDLK_KP_PLUS:
+  case SDLK_PLUS:
     if (pressed) {
       m_autoZoom=false;
       m_zoomOp=1;
@@ -301,6 +302,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       m_zoomOp=0;
     return true;
   case SDLK_KP_MINUS:
+  case SDLK_MINUS:
     if (pressed) {
       m_autoZoom=false;
       m_zoomOp=-1;
