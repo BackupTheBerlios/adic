@@ -279,6 +279,11 @@ public:
     m_emitFilter=efbackup;
   }
   
+  void broadcastGame()
+  {
+    broadcast(m_game);
+  }
+  
   PlayerID addPlayer(const std::string &name, const std::string &URI)
   {
     return m_game.addPlayer(name,URI);

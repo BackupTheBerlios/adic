@@ -55,15 +55,6 @@ BotClient::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
   std::cout << "I Got "<< got <<" player IDs (requested "<< req <<" )\n";
   if ((req>0)&&(!got))
     std::cout << "The server is full.\n";
-
-  BotFactory factory;
-  m_bots.clear();
-  const std::vector<PlayerID> &pids(getMyIDs());
-  for (unsigned p=0;p<pids.size();++p){
-    m_bots.push_back(DOPE_SMARTPTR<Bot>(factory.create(*this,pids[p],p)));
-    m_bots[p]->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
-    m_bots[p]->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
-  }
 }
 
 void 
@@ -73,6 +64,18 @@ BotClient::handleGame(DOPE_SMARTPTR<Game> gPtr)
   m_game.replace(*gPtr);
   //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&BotClient::handleCollision));
+
+  // we create the bots here (and not in handleGreeting)
+  // to make sure we only have bots for which we aleady have data
+  const std::vector<PlayerID> &pids(getMyIDs());
+  if (pids.size()&&(m_bots.size()!=pids.size())) {
+    BotFactory factory;
+    for (unsigned p=0;p<pids.size();++p){
+      m_bots.push_back(DOPE_SMARTPTR<Bot>(factory.create(*this,pids[p],p)));
+      m_bots[p]->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
+      m_bots[p]->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
+    }
+  }
 }
 
 void 
@@ -148,10 +151,8 @@ BotClient::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   // restart
   m_game.restart();
   m_playerIDs.clear();
-  ClientGreeting g;
-  g.m_userSetting=m_config.m_users;
-  assert(m_streamPtr.get());
-  m_streamPtr->so.emit(g);
+  m_bots.clear();
+  sendGreeting();
 }
 
 bool
@@ -188,6 +189,7 @@ BotClient::sendGreeting()
 {
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
+  assert(m_streamPtr.get());
   m_streamPtr->so.emit(g);
 }
 

@@ -73,6 +73,7 @@ Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
   g.m_players=playerIDs;
   emit(g);
   server.broadcastNewClient(this);
+  server.broadcastGame();
 }
 
 
@@ -325,7 +326,7 @@ Server::main()
 
     // todo perhaps choose different frames for different clients
     if (!(frames%m_config.m_broadcastFreq))
-      broadcast(m_game);
+      broadcastGame();
     // check for win condition
     TeamID wt;
     int winner(m_game.getWinner(wt));
