@@ -17,17 +17,18 @@
       <LI><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image >=1.2</a></LI>
       <LI><a href="http://www.opengl.org">OpenGL</a> or <a href="http://mesa3d.sourceforge.net/">Mesa</a></LI>
     </UL>
+    I suggest you <a href="http://developer.berlios.de/project/filelist.php?group_id=404">download</a> the semi-static binaries.
     <h2>License/Copyright</h2>
     <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;, Jens Schwarz
     <h2>Running</h2>
     <UL>
       <LI>Take a look at the <a href="http://adic.berlios.de/metaserver/">meta-server</a> to find a running server</LI>
-      <LI>If there is no running server start your own. Run adicserver (perhaps you want to disable the metaserver and choose another map. f.e: adicserver --metaServer="" --meshURI=data:mesh.xml, see adicserver --help for more info)</LI>
-      <LI>run adicclient (perhaps you need to set --libGL and perhaps you want to set --quality=1 if you have hardware accelerated OpenGL, see adicclient --help for more info)</LI>
+      <LI>if the list is empty start your own server. Run ./adicserver (perhaps you want to disable the metaserver and choose another map. f.e: ./adicserver --metaServer="" --meshURI=data:mesh.xml, see adicserver --help for more info)</LI>
+      <LI>run ./adicclient (perhaps you need to set --libGL and perhaps you want to set --quality=1 if you have hardware accelerated OpenGL, see adicclient --help for more info)</LI>
     </UL>
     <h2>Gameplay</h2>
     <h3>Goal</h3>
-    ADIC is a cooperative multiplayer game. The goal is to lock all players of the other teams. 
+    ADIC is a cooperative multiplayer game. The goal is to lock all players of the other teams. A player is locked if all doors of the room he is in are closed. A locked player can't move.
     <h3>The characters</h3>
     The characters differ in speed, mass, endurance, ...
     <h3>Fitness</h3>
@@ -82,7 +83,7 @@
     <address><a href="mailto:jens.thiele@student.uni-tuebingen.de">Jens Thiele</a></address>
 <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
 <!-- hhmts start -->
-Last modified: Thu Aug 15 18:09:06 CEST 2002
+Last modified: Thu Aug 15 18:15:59 CEST 2002
 <!-- hhmts end -->
   </body>
 </html>
