@@ -201,9 +201,8 @@ Server::main()
   Host host;
   //  host.adr=""; // we leave it blank and let the metaserver decide
   host.port=m_config.m_port;
-  std::string metaServerSecret;
-  bool msGood=false;
-  std::string msURI("http://adic.berlios.de/metaserver/index.php");
+  const std::string &msURI(m_config.m_metaServer);
+  
   try {
     MetaServer metaServer(msURI.c_str());
     RegisterServer reg;
@@ -211,10 +210,11 @@ Server::main()
     ServerRegistered answer;
     metaServer.rpc(reg,answer);
     std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
-    metaServerSecret=answer.secret;
-    msGood=true;
+    m_msecret=answer.secret;
+
+    updateMetaserver();
   }catch(...){
-    std::cerr << "Could not connect to Metaserver\n";
+    DOPE_WARN("Could not connect to Metaserver\n");
   }
   
   TimeStamp start;
@@ -269,18 +269,18 @@ Server::main()
   }
   connections.clear();
 
-  if (msGood) {
+  if (!m_msecret.empty()) {
     try {
       MetaServer metaServer(msURI.c_str());
       ServerExit exitmsg;
       exitmsg.host=host;
-      exitmsg.secret=metaServerSecret;
+      exitmsg.secret=m_msecret;
       
       Result answer;
       metaServer.rpc(exitmsg,answer);
-      std::cerr << "Metaserver answered:\nStatus: " << answer.status << " , message:"<<answer.message<<std::endl;
+      answer.print();
     }catch(...){
-      std::cerr << "Could not connect to Metaserver\n";
+      DOPE_WARN("Could not connect to Metaserver\n");
     }
   }
   
@@ -322,7 +322,11 @@ Server::broadcastNewClient(Connection* c)
   m.playerNames=m_game.getPlayerNames();
   m.teams=m_game.getTeams();
   broadcast(m);
+
+  // update metaserver info
+  updateMetaserver();
 }
+
 
 void 
 Server::sendChatMessage(ChatMessage &msg)
@@ -392,4 +396,33 @@ Server::addStartObjects()
   const Mesh::StartObjects &objpos(w->getStartObjects());
   for (unsigned i=0;i<objpos.size();++i)
     m_game.addObject(objpos[i]);
+}
+
+void
+Server::updateMetaserver()
+{
+  if (m_msecret.empty()||m_config.m_metaServer.empty())
+    return;
+  try {
+    MetaServer metaServer(m_config.m_metaServer.c_str());
+    ServerStatus status;
+    status.host.port=m_config.m_port;
+    status.level=m_config.m_meshURI;
+    status.clients=connections.size();
+    
+    const Game::Players &p(m_game.getPlayers());
+    unsigned realPlayers=0;
+    for (unsigned i=0;i<p.size();++i) if (p[i].isPlayer()) ++realPlayers;
+    status.players=realPlayers;
+    
+    UpdateStatus msg;
+    msg.status=status;
+    msg.secret=m_msecret;
+    Result res;
+    metaServer.rpc(msg,res);
+    res.print();
+  }catch(...){
+    // todo do not catch all exceptions
+    DOPE_WARN("Could not connect to Metaserver\n");
+  }
 }

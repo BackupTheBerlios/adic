@@ -48,6 +48,14 @@ IO_CLASS(ServerRegistered)
 //! current server status
 struct ServerStatus
 {
+  ServerStatus() 
+    : dopeVersion(dope_major_version,dope_minor_version,dope_micro_version),
+      adicVersion(PACKAGE_MAJOR_VERSION,PACKAGE_MINOR_VERSION,PACKAGE_MICRO_VERSION),
+      clients(0),
+      players(0),
+      full(false)
+  {}
+
   Host host;
   Version dopeVersion;
   Version adicVersion;
@@ -94,6 +102,11 @@ struct Result
 {
   int status;
   std::string message;
+
+  void print() 
+  {
+    std::cerr << "\nMetaserver RPC result: " << status << "=" << message << std::endl;
+  }
   
   IO
   {

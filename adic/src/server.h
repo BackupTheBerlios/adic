@@ -178,6 +178,8 @@ protected:
   Connections connections;
   //! emit will send the message to this client (m_emitFilter == m_allFilter => all clients)
   NetStreamBufServer::ID m_emitFilter;
+  //! meta server secret or empty if metaserver is not used
+  std::string m_msecret;
 
   static const NetStreamBufServer::ID m_allFilter=-1;
 public:
@@ -221,6 +223,7 @@ public:
     assert(it!=connections.end());
     std::cerr << "\nConnection ("<<id<<") closed\n";
     connections.erase(it);
+    updateMetaserver();
   }
 
   int main();
@@ -297,6 +300,8 @@ public:
 protected:
   void restart();
   void addStartObjects();
+  //! update metaserver status
+  void updateMetaserver();
 };
 
 #endif

@@ -29,17 +29,20 @@ struct CommonConfig
 {
 public:
   CommonConfig() 
-    : m_port(ADIC_PORT) 
+    : m_port(ADIC_PORT), m_metaServer("http://adic.berlios.de/metaserver/index.php")
   {}
 
   unsigned short int m_port;
   std::string m_dataPath;
+  std::string m_metaServer;
 };
 DOPE_CLASS(CommonConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, CommonConfig &c)
 {
-  layer2.simple(c.m_port,"port").simple(c.m_dataPath,"dataPath");
+  layer2.simple(c.m_port,"port")
+    .simple(c.m_dataPath,"dataPath")
+    .simple(c.m_metaServer,"metaServer");
 }
 
 #endif
