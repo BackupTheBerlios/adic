@@ -9,7 +9,7 @@ This is still too much work:
 
  4. build
 	- source package (make distcheck)
-	- debian package (partly automated limbo/build-deb)
+	- debian package (partly automated limbo/release.sh)
 	- linux i386 binary (not yet automated)
 	- cross-compile win32 binary (not yet automated)
  5. test (if test fails goto 0)
