@@ -29,26 +29,34 @@
 #include <config.h>
 #endif
 
-
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
 
 #else
 
-
-#error you must define int8_t int16_t ...
-
-// todo we should not assume that we use SDL
-#include <SDL_types.h>
-
-typedef Uint8 uint8_t;
-typedef Sint8 int8_t;
-typedef Uint16 uint16_t;
-typedef Sint16 int16_t;
-typedef Uint32 uint32_t;
-typedef Sint32 int32_t;
-
-#endif
+#ifdef __sun__ 
+#warning using sun hack 
+// hack because sun headers suck 
+// sun headers define int8_t to be char and not signed char 
+// you can't even work around it 
+#include <inttypes.h> 
+#define int8_t signed char 
+#else 
+ 
+// todo we should not assume that we use SDL 
+// #warning you must define int8_t int16_t ... 
+// #error you must define int8_t int16_t ... 
+#include <SDL_types.h> 
+ 
+typedef Uint8 uint8_t; 
+typedef Sint8 int8_t; 
+typedef Uint16 uint16_t; 
+typedef Sint16 int16_t; 
+typedef Uint32 uint32_t; 
+typedef Sint32 int32_t; 
+ 
+#endif 
+#endif 
 
 typedef float R;
 typedef uint16_t PlayerID;
