@@ -1,29 +1,3 @@
-/*
- * Copyright (C) 2002 
- * Jens Thiele <jens.thiele@student.uni-tuebingen.de>
- * Jens Schwarz
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
-/*!
-   \file line.h
-   \brief Line
-   \author Jens Thiele, Jens Schwarz
-*/
-
 #ifndef LINE_H
 #define LINE_H
 
@@ -38,9 +12,9 @@ public:
     m_a = V2D(0,0);
     m_b = V2D(1,1);
     m_v = V2D(m_b-m_a);
-    m_vn = V2D(m_v);
-    m_vn.normalize();
-    m_n = V2D(m_vn.rot90());
+    m_l = m_v.norm2();
+    m_vn = m_v/m_l;
+    m_n = V2D(m_vn).rot90();
   }
 
   Line(const V2D &a, const V2D &b)
@@ -48,12 +22,14 @@ public:
     m_a=a;
     m_b=b;
     m_v = V2D(m_b-m_a);
-    m_vn = V2D(m_v);
-    m_vn.normalize();
-    m_n = V2D(m_vn.rot90());
+    m_l = m_v.norm2();
+    m_vn = m_v/m_l;
+    m_n = V2D(m_vn);
+    m_n.rot90();
   }
     
   V2D m_a,m_b,m_v,m_vn,m_n;
+  R m_l;
 
   //! parallel projection of point p on Line orthogonal to line
   /*!
@@ -61,10 +37,11 @@ public:
     
     \returns parameter r in f=a+(b-a)*r; with (f-a)*(p-f)=0
   */
-  R project(const V2D &p);
+  R project(const V2D &p); // todo
 
   //! distance of point to line
-  R dist(const V2D &p);
+  R dist(const V2D &p); // todo
+  R dist(const V2D &p, V2D &vn);
   
   //! collide two line
   /*!
@@ -72,13 +49,13 @@ public:
     
     \returns true if the lines collide/cross otherwise false
   */
-  bool collide(const Line &o, V2D &cp);
+  bool collide(const Line &o, V2D &cp); // todo
 
   //! same as above but does not return cp
-  bool collide(const Line &o); 
+  bool collide(const Line &o); // todo
 
   //! same as above but does return the collision as parameter r in cp=a+(b-a)*r
-  bool collide(const Line &o, R &cp);
+  bool collide(const Line &o, R &cp); // todo
 
   //! translate line
   void translate(const V2D &tv)
@@ -95,3 +72,7 @@ public:
 };
 
 #endif
+
+
+
+
