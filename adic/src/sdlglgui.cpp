@@ -710,11 +710,11 @@ SDLGLGUI::drawPolys()
   unsigned nr=worldPtr->getNumRooms();
   if (nr!=m_polys.size()) {
     m_polys.resize(nr);
-    DOPE_MSG("Info: start tesselating polygons\n"<<std::flush);
+    DOPE_MSG("Info:","start tesselating polygons\n"<<std::flush);
     for (unsigned i=0;i<nr;++i){
       m_polys[i]=DOPE_SMARTPTR<GLPoly>(new GLPoly(worldPtr->getRoomPoly(i).getLineLoop()));
     }
-    DOPE_MSG("Info: finished tesselating polygons\n"<<std::flush);
+    DOPE_MSG("Info:","finished tesselating polygons\n"<<std::flush);
   }
   float cschemes[4][3]={
     {1.0,0.7,0.7},

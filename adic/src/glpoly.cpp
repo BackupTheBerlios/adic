@@ -12,8 +12,9 @@ void WINAPI myBegin(GLenum i)
   glBegin(i);
 }
 
-void WINAPI myVertex(R *v)
+void WINAPI myVertex(void *_v)
 {
+  R* v=(R *)_v;
   // todo 64 should not be hardcoded
   glTexCoord2f(v[0]/128, v[1]/128);
   glVertex2f(v[0],v[1]);
@@ -50,7 +51,7 @@ GLPoly::GLPoly(const std::vector<V2D> &poly)
   //  gluTessBeginPolygon(tobj,NULL);
   gluBeginPolygon(tobj);
   for (unsigned i=0;i<poly.size();++i) {
-    gluTessVertex(tobj, v[i], (GLvoid*)poly[i].m_v);
+    gluTessVertex(tobj, v[i], (GLvoid*)(poly[i].m_v));
   }
   l=glGenLists(1);
   glNewList(l,GL_COMPILE);
