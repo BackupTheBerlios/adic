@@ -174,14 +174,14 @@ else
 	cd \${0%/*}
 	exec ./adicserver --file=sconfig.xml
 	EOF
-    chmod +x startserver.sh
+    chmod +x startserver
     ./adicclient --dump --dataPath=data --width=800 --height=600 --quality=3 2>&1 |xmllint --format - >cconfig.xml
     cat >startclient <<-EOF
 	#!/bin/bash
 	cd \${0%/*}
 	exec ./adicclient --file=cconfig.xml
 	EOF
-    chmod +x startclient.sh
+    chmod +x startclient
     cd ..
     tar cvf - $DISTNAME|gzip --best > $UPLOADDIR/$DISTNAME.tar.gz
     tar cvf - $DISTNAME|bzip2 --best > $UPLOADDIR/$DISTNAME.tar.bz2
