@@ -171,7 +171,7 @@ World::setFromMesh(const Mesh &mesh)
 	  }
 
 	  // calculate corresponding wall
-	  DOPE_CHECK(newEdge.m_sv<m_vertices.size()&&newEdge.m_ev<m_vertices.size());
+	  assert(newEdge.m_sv<m_vertices.size()&&newEdge.m_ev<m_vertices.size());
 	  newEdge.m_wall=Wall(Line(m_vertices[newEdge.m_sv],m_vertices[newEdge.m_ev]));
 
 	  m_edges.push_back(newEdge);

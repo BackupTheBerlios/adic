@@ -1095,9 +1095,9 @@ SDLGLGUI::drawPlayers(R dt)
 	      break;
 	    }
 	  }
-	  DOPE_CHECK(i<teams.size());
-	  DOPE_CHECK(tid!=~0U);
-	  DOPE_CHECK(tid<teams[i].textures.size());
+	  assert(i<teams.size());
+	  assert(tid!=~0U);
+	  assert(tid<teams[i].textures.size());
 	  m_animations.push_back(Animation(*this,teams[i].textures[tid]));
 	}else{
 	  std::vector<std::string> uris;

@@ -90,7 +90,7 @@ Game::playerInRoom(Player &p)
     return FWEdge::noRoom;
   }
   FWEdge::RoomID r=w->inRoom(p.m_pos);
-  DOPE_CHECK(r<w->getNumRooms());
+  assert(r<w->getNumRooms());
   return r;
 }
 
@@ -248,7 +248,7 @@ void Game::calcClosedRooms()
 		    break;
 		  }
 		}
-	      DOPE_CHECK(doorID!=~0U);
+	      assert(doorID!=~0U);
 	      m_roomDoors[r].push_back(doorID);
 	    }
 	}
@@ -402,7 +402,6 @@ Game::getWorldPtr()
 {
   if ((!m_worldPtr.get())&&m_meshPtr.get())
     {
-      //      DOPE_WARN("reached");
       m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
       DOPE_CHECK(m_worldPtr.get());
       // get all doors
@@ -428,7 +427,7 @@ RealDoor
 Game::doorInWorld(Door &d)
 {
   const WorldPtr &w(getWorldPtr());
-  DOPE_CHECK(w.get());
+  assert(w.get());
   const FWEdge &e(w->getEdge(d.getEdgeID()));
   const V2D &sv=w->getPoint(e.m_sv);
   const V2D &ev=w->getPoint(e.m_ev);
@@ -442,7 +441,7 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
 
   // check if player and door are in the same room
   const WorldPtr &wp(getWorldPtr());
-  DOPE_CHECK(wp.get());
+  assert(wp.get());
   FWEdge::RoomID rooms[2];
   wp->getRoomIDs(d.getEdgeID(),rooms);
   FWEdge::RoomID proom(playerInRoomCached(pid));

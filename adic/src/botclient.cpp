@@ -88,7 +88,7 @@ BotClient::handleCollision(V2D pos, R strength)
 void
 BotClient::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
-  DOPE_CHECK(iPtr.get());
+  assert(iPtr.get());
   m_game.setInput(*iPtr.get());
     //    std::cerr << "\nGot Input\n";
 }
@@ -150,7 +150,7 @@ BotClient::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   m_playerIDs.clear();
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
-  DOPE_CHECK(m_streamPtr.get());
+  assert(m_streamPtr.get());
   m_streamPtr->so.emit(g);
 }
 

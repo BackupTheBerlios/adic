@@ -229,7 +229,7 @@ public:
   //! get team by ID
   Team *getTeam(unsigned id)
   {
-    DOPE_CHECK(id<m_teams.size());
+    assert(id<m_teams.size());
     return &m_teams[id];
   }
   

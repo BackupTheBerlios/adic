@@ -419,7 +419,7 @@ Server::sendChatMessage(ChatMessage &msg)
     // no => check if sender is a team name
     tid=m_game.getTeamID(msg.sender);
   }
-  DOPE_CHECK(tid!=TeamID(~0U));
+  assert(tid!=TeamID(~0U));
   // now we have the team id we want to send messages to
   // => send message to every client which has a member of this team
   Connections::iterator it(connections.begin());

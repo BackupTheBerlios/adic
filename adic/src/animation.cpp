@@ -12,8 +12,8 @@ Texture &
 Animation::getTexture() const
 {
   unsigned id=unsigned(fabs(time));
-  DOPE_CHECK(id<textures.size());
-  DOPE_CHECK(textures[id].get());
+  assert(id<textures.size());
+  assert(textures[id].get());
   return *textures[id].get();
 }
 
@@ -26,7 +26,7 @@ Animation::step(R dt)
 	time-=textures.size();
   while (time<0)
     time+=textures.size();
-  DOPE_CHECK(time>=0);
-  DOPE_CHECK(time<textures.size());
+  assert(time>=0);
+  assert(time<textures.size());
 }
 

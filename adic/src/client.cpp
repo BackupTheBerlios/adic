@@ -104,7 +104,7 @@ Client::handleCollision(V2D pos, R strength)
 void
 Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
-  DOPE_CHECK(iPtr.get());
+  assert(iPtr.get());
   if (m_config.m_lagCompensation) {
     // todo: implement lag compensation => input queue
     std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
@@ -129,7 +129,7 @@ Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
   std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
-  DOPE_CHECK(m_guiPtr.get());
+  assert(m_guiPtr.get());
   m_guiPtr->handleNewClient(mPtr);
 }
 
@@ -209,7 +209,7 @@ Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   m_playerIDs.clear();
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
-  DOPE_CHECK(m_streamPtr.get());
+  assert(m_streamPtr.get());
   m_streamPtr->so.emit(g);
 }
 
@@ -246,7 +246,7 @@ Client::connect()
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleEndGame));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handlePing));
 
-  DOPE_CHECK(m_guiPtr.get());
+  assert(m_guiPtr.get());
   m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
   m_guiPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
   return true;

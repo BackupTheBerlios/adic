@@ -1,12 +1,5 @@
 FOR 1.0.0:
-- remove any usage of <inttypes.h> and replace with <stdint.h> where possible
-
-rewrite lag compensation / main loop
-	(reduce lag problems - m_stepFault is one possible cause)
-	(is not sent via the network)
-	but i think it should be low ?
-	on the other hand it could accumulate up to stepsize
-	=> in the moment ~0.02 sec - which is quite much
+- rewrite world lag compensation
 - reduce text on startup (perhaps print text faster (glterminal))
 
 DEBIAN:
@@ -17,10 +10,6 @@ GAMEPLAY:
 - sichtbarkeit einschränken
 
 TUNING:
-- reduce latency
-     game::step loops
-     if it takes long (measure first) move the loop into the main loop and check for network traffic
-     and perhaps new input - it seems it really doesn matter <1ms
 - alpha-blending with mesa too slow - test alpha values of 0/1 with DrawPixels 
   (did not help)
   how do transparent (not semi-transparent/alpha blended) sprites work in opengl / colorkeying
@@ -28,7 +17,6 @@ TUNING:
 - stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
 - tueren uebertragen viel zu viel (angle und anglespeed sollte genuegen)
 - uebertrage nur tueren/spieler die sich bewegt haben
-- drawCircle ist lahm
 - collision:
 	- collision is good but still not perfect
 	  think about the right point for a commit (the best would be before a step now?)
@@ -39,7 +27,6 @@ TUNING:
 	  auf der anderen seite liegt der worst case, daß sich alle spieler in einem raum tummeln durchaus
 	  im bereich des möglichen (zumindest solange die räume so groß sind uns es keine unsichtbaren
 	  kanten gibt)
-- ersetze DOPE_CHECK durch assert wo sinnvoll
 - mesa
 - skaliert schlecht zumindest der client
 - profiling (especially the client)

@@ -12,7 +12,7 @@ Player::Player(const V2D &pos, R dir, const std::string &playerDataURI)
     m_fitness(1.0)
   //, m_oldDirection(0)
 {
-  DOPE_CHECK(m_playerDataPtr.get());
+  assert(m_playerDataPtr.get());
   m_r=m_playerDataPtr->r;
 }
 
