@@ -26,40 +26,53 @@
 #define GLFONT_H
 
 #include "typedefs.h"
-#include "texture.h"
+#include <dope/dope.h> // for DOPE_SMARTPTR
 #include <boost/smart_ptr.hpp>
 #include <vector>
 
-//! a font representation/text printing class using opengl
+class Texture;
+
+//! a fixed width font representation/text printing class using opengl
 /*!
   currently this implementation uses texture mapped quads.
   There is one texture representing the the font which is passed to
   the constructor.
+  you can encode colors into the text to be printed
 */
 class GLFont
 {
 public:
-  GLFont(const DOPE_SMARTPTR<Texture> &_texPtr, int _tilex=16, int _tiley=16)
-    : texPtr(_texPtr), tilex(_tilex), tiley(_tiley)
-  {}
-  ~GLFont(){}
+  //! construct font
+  /*!
+    \param _texPtr the texture containing the font
+    \param _tilex tiles in x direction
+    \param _tiley tiles in y direction
+  */
+  GLFont(const DOPE_SMARTPTR<Texture> &_texPtr, int _tilex=16, int _tiley=16);
 
+  //! draw one row of text
   void drawTextRow(const std::string &text, bool centered=false) const;
+  //! draw a text - possibly multiple rows
   void drawText(const std::string &text, bool centered=false) const;
-  int getWidth() const 
-  {
-    return texPtr->getWidth()/tilex;
-  }
-  int getHeight() const
-  {
-    return texPtr->getHeight()/tiley;
-  }
+  //! get width of one character
+  int getWidth() const;
+  //! get height of one character
+  int getHeight() const;
+  //! set color
+  /*!
+    \param num the color number
+    \param c the color
+  */
   void setColor(unsigned num, const float c[3]);
+  //! get number of defined colors
   unsigned numColors() const
   {
     return colors.size();
   }
-  
+  //! get character encoding color
+  /*!
+    \param num the color number
+  */
   std::string getColor(unsigned num)
   {
     return std::string()+char(11+num);

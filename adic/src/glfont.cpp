@@ -1,4 +1,10 @@
 #include "glfont.h"
+#include "texture.h"
+
+GLFont::GLFont(const DOPE_SMARTPTR<Texture> &_texPtr, int _tilex, int _tiley)
+  : texPtr(_texPtr), tilex(_tilex), tiley(_tiley)
+{}
+
 void 
 GLFont::drawTextRow(const std::string &text, bool centered) const
 {
@@ -67,6 +73,19 @@ GLFont::drawText(const std::string &text, bool centered) const
   }
   drawTextRow(text,centered);
 }
+
+int
+GLFont::getWidth() const
+{
+  return texPtr->getWidth()/tilex;
+}
+
+int
+GLFont::getHeight() const
+{
+  return texPtr->getHeight()/tiley;
+}
+
 void
 GLFont::setColor(unsigned num, const float c[3])
 {

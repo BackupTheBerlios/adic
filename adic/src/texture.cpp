@@ -24,6 +24,7 @@
 
 #include "typedefs.h"
 #include "texture.h"
+#include <SDL_image.h>
 
 Texture::Texture(const char* name, int quality)
 {

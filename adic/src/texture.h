@@ -28,13 +28,13 @@
 #define TEXTURE_H
 
 #include <SDL.h>
-#include <SDL_image.h>
 #include "sdlgl.h"
 
 //! class representing a OpenGL texture
 class Texture
 {
 public:
+  //! create texture
   Texture(const char* name, int quality);
 
   bool isTransparent() const {return haveAlphaChannel;}
@@ -47,7 +47,6 @@ protected:
   int width;
   int height;
   bool haveAlphaChannel;
-
 
   static SDL_Surface* loadImage(const char* filename);
 };

@@ -33,7 +33,7 @@
 
 class SDLGLGUI;
 
-//! animation class
+//! animation class - consists out of multiple textures
 struct Animation
 {
   Animation(SDLGLGUI &gui, const std::vector<std::string> &uris);
