@@ -49,8 +49,14 @@ struct RoundObject : public GameObject, public Circle
   
   void commit()
   {
-    m_oldCircle=*this;
+    setOldValues(*this);
   }
+
+  void setOldValues(RoundObject &o)
+  {
+    m_oldCircle=*(static_cast<Circle *>(&o));
+  }
+
 
   bool moved() const
   {
@@ -70,7 +76,7 @@ protected:
   inline void composite(Layer2 &layer2)
   {
     Circle::composite(layer2);
-    layer2.SIMPLE(m_oldCircle);
+    //    layer2.SIMPLE(m_oldCircle);
   }
 
   Circle m_oldCircle;

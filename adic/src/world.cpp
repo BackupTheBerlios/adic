@@ -179,6 +179,8 @@ World::setFromMesh(const Mesh &mesh)
 	  //	  std::cout << "Stored "<<mesh.edgelist[ce].vid<<","<<mesh.edgelist[ne].vid<<std::endl;
 	}
     }
+  for (unsigned r=0;r<m_rooms.size();++r)
+    m_rooms[r].m_poly=getLineLoop(r);
 }
 
 bool
@@ -227,7 +229,8 @@ World::getLineLoop(FWEdge::RoomID room) const
 bool 
 World::isInRoom(const V2D &p, FWEdge::RoomID r)
 {
-  return Polygon(getLineLoop(r)).inside(p);
+  assert(r<m_rooms.size());
+  return m_rooms[r].m_poly.inside(p);
   /*
   const std::vector<V2D> &ll(getLineLoop(r));
   bool res=Polygon(ll).inside(p);

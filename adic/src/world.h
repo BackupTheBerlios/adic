@@ -28,6 +28,7 @@
 #include "mesh.h"
 #include "circle.h"
 #include "wall.h"
+#include "polygon.h"
 
 //! full winged edge
 /*!
@@ -92,6 +93,7 @@ struct Room
   FWEdge::EID m_e;
   //! is this edge clockwise
   bool m_cw;
+  Polygon m_poly;
 };
 
 

@@ -80,12 +80,14 @@ public:
   }
   void commit()
   {
-    RoundObject::commit();
-    /*
-      m_oldSpeed=m_speed;
-      m_oldDirection=m_direction;
-    */
+    setOldValues(*this);
   }
+
+  void setOldValues(Player &p)
+  {
+    RoundObject::setOldValues(p);
+  }
+  
 
   const V2D& getSpeed() const
   {
@@ -121,7 +123,7 @@ public:
   {
     assert(m_playerDataPtr.get());
     return m_playerDataPtr->type;
-}
+  }
 protected:
   //! our crrent speed vector
   V2D m_speed;

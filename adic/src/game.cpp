@@ -187,9 +187,11 @@ Game::miniStep(R dt)
 	  m_players[p].setControl(0,0);
 	assert(!collidePlayer(p));
 	m_players[p].step(dt);
-	calcPlayerInRoom(p);
-	collidePlayer(p);
-	assert(!collidePlayer(p));
+	if (m_players[p].moved()) {
+	  calcPlayerInRoom(p);
+	  collidePlayer(p);
+	  assert(!collidePlayer(p));
+	}
       }
     }
 
@@ -267,6 +269,58 @@ Game::setInput(const PlayerInput &i)
     }
   m_players[i.id].setControl(i.i.x,i.i.y);
 }
+
+void 
+Game::replace(Game &o)
+{
+  /*  
+      TimeStamp myTime(getTimeStamp());
+      TimeStamp serverTime(o.getTimeStamp());
+      // lag compensation
+	 if (serverTime<myTime) {
+	 // packet lag
+	 TimeStamp lag(myTime-serverTime);
+	 R dt=lag.getSec()+R(lag.getUSec())/1000000;
+	 std::cerr << "\nLag: "<<dt<<" sec.\n";
+	 o.step(dt);
+    }*/
+  // m_players
+  m_players=o.m_players;
+  for (unsigned p=0;p<m_players.size();++p) {
+    m_players[p].commit();
+    calcPlayerInRoom(p);
+  }
+  
+  /*
+    DOPE_CHECK(m_players.size()<=o.m_players.size());
+    unsigned pmax=m_players.size();
+    pmax=0; // todo
+    for (unsigned p=0;p<pmax;++p) {
+    todo bug: old values are consistent among each other but not with the new values
+    a rollback might set a position with crash
+    lösung ?
+    einfach alle empfangenen positionen commiten ?
+    => geht nur wenn fpu precision auf allen rechnern gleich 
+    o.m_players[p].setOldValues(m_players[p]);
+    m_players[p]=o.m_players[p];
+    if (m_players[p].moved())
+    calcPlayerInRoom(p);
+    }
+    if (m_players.size()<o.m_players.size()) {
+    m_players.resize(o.m_players.size());
+    for (unsigned p=pmax;p<o.m_players.size();++p) {
+    m_players[p]=o.m_players[p];
+    m_players[p].commit();
+    calcPlayerInRoom(p);
+    }
+    }*/
+
+  m_doors=o.m_doors;
+  calcClosedRooms();
+  m_meshPtr=o.m_meshPtr;
+  m_timeStamp=o.m_timeStamp;
+}
+
 
 Game::WorldPtr
 Game::getWorldPtr()

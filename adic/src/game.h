@@ -173,6 +173,8 @@ public:
   
   void setInput(const PlayerInput &i);
 
+  void replace(Game &o);
+  
   //! collide player with world (players, walls, doors)
   /*!
     \param test is true if you only want to test it - and don't want to emit the collision signal

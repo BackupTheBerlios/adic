@@ -1,4 +1,5 @@
 TUNING:
+- drawCircle ist lahm
 - kollision in räume unterteilen
   da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
   daß ich erst schaue in welchem raum ist der spieler und dann schaue ob der spieler mit
@@ -21,32 +22,34 @@ TUNING:
 	also eigentlich ein dope problem
 
 FEATURES:
+- sound:
+  - (walking, breath, ...)
+  - mehrere lieder
 - improve the physics
 - MOTIVATION zum riskanten rumlaufen:
-  - essen holen - so ähnlich wie unten sessel
-- mehrere lieder
+  - essen holen
+  - rennen und ausruhen - evtl. betten/sessel wo man sich hinlegen/hinsetzen kann
 - schreibe opengl terminal
 - game over and restart
 - locked anzeigen
-- AI gegner
+- AI gegner oder robots (könnte rumlaufen und türen schließen)
 - i18n (localization)
 - metaserver
-- rennen und ausruhen - evtl. betten/sessel wo man sich hinlegen/hinsetzen kann
 - schlüssel
-- AI robot
 - Türen kaputtbar
 - keyboard kram gescheit machen
 - joystick
 - maus?
 
 BUGS/QUESTIONS:
+- different fpu precisions ? make some tests with dope
 - kollisions-sound geht nicht mehr (nur nicht beim statisch linken)
-- server closes connection, client doesn't detect it
+- server closes connection, client doesn't detect it (fixed?)
 
 MISC:
 - compile with -O9 and check the warnings about uninitialized usage
 - generic_pointer funktioniert ?
-	ich denke nicht wegen xmlsaxinstream
+	nur nicht bei xmlsaxinstream
 	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
 - guikram wird langsam fett
 	besser modularisieren

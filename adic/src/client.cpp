@@ -47,24 +47,7 @@ void
 Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
 {
   assert(gPtr.get());
-  //  std::cerr << "\nGot game data\n";
-  TimeStamp myTime(m_game.getTimeStamp());
-  TimeStamp serverTime(gPtr->getTimeStamp());
-  /* lag compensation
-  if (serverTime<myTime) {
-    // packet lag
-    TimeStamp lag(myTime-serverTime);
-    R dt=lag.getSec()+R(lag.getUSec())/1000000;
-    std::cerr << "\nLag: "<<dt<<" sec.\n";
-    gPtr->step(dt);
-    }*/
-  // todo later we will perhaps need a replace method
-  // backup data - which isn't pickled
-  Game::WorldPtr wp(m_game.getWorldPtr());
-  gPtr->setWorldPtr(wp);
-  gPtr->setPlayerNames(m_game.getPlayerNames());
-  gPtr->setTeams(m_game.getTeams());
-  m_game=*gPtr.get();
+  m_game.replace(*gPtr);
   //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
 }

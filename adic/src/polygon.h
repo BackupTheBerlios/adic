@@ -13,10 +13,14 @@ protected:
   std::vector<V2D> m_lineloop;
   R m_xmax;
 public:
+  //! empty polygon
+  Polygon()
+  {}
+  
   Polygon(const std::vector<V2D> &lineloop) : m_lineloop(lineloop)
   {
     m_xmax = 0;
-    for(int i=0; i<lineloop.size(); i++)
+    for(unsigned i=0; i<lineloop.size(); i++)
       {
 	m_xmax = std::max( m_xmax, lineloop[i].m_v[0] );
       }
