@@ -30,7 +30,7 @@
 #include "wall.h"
 #include "polygon.h"
 
-#include <boost/smart_ptr.hpp>
+#include <dope/smartptr.h>
 
 //! full winged edge
 /*!

@@ -26,8 +26,7 @@
 #define GLFONT_H
 
 #include "typedefs.h"
-#include <dope/dope.h> // for DOPE_SMARTPTR
-#include <boost/smart_ptr.hpp>
+#include <dope/smartptr.h>
 #include <vector>
 
 class Texture;

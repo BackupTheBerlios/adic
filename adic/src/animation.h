@@ -27,7 +27,7 @@
 
 #include "typedefs.h"
 #include "texture.h"
-#include <boost/smart_ptr.hpp>
+#include <dope/smartptr.h>
 #include <string>
 #include <vector>
 

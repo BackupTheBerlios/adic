@@ -27,7 +27,7 @@
 
 #include <dope/streamtraits.h>
 #include <dope/typenames.h>
-#include <boost/smart_ptr.hpp>
+#include <dope/smartptr.h>
 
 //! generic pointer
 /*!

@@ -34,7 +34,7 @@
 #include "team.h"
 
 #include <sigc++/signal_system.h>
-#include <boost/smart_ptr.hpp>
+#include <dope/smartptr.h>
 #include <dope/typenames.h>
 
 class PlayerInput;
