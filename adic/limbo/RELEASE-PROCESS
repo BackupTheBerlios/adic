@@ -14,7 +14,7 @@ This is still too much work:
 	- cross-compile win32 binary (not yet automated)
  5. test (if test fails goto 0)
 
- 6. cvs tag
+ 6. cvs tag (f.e. cvs tag adic-1-0-0)
  7. upload packages to berlios
 	- changelog again !
  8. regenerate debian packages file
