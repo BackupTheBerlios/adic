@@ -1,4 +1,6 @@
 FOR 1.0.0:
+- remove any usage of <inttypes.h> and replace with <stdint.h> where possible
+
 rewrite lag compensation / main loop
 	(reduce lag problems - m_stepFault is one possible cause)
 	(is not sent via the network)
