@@ -70,8 +70,10 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	gui.h gui.cpp \
 	sdlglgui.h sdlglgui.cpp \
 	texture.h texture.cpp \
+	soundconfig.h \
 	sound.h sound.cpp \
 	soundsdlmixer.h soundsdlmixer.cpp \
+	sdlsigfactory.h \
 	sdlinputdev.h sdlinputdev.cpp \
 	sdlkeyboard.h sdlkeyboard.cpp \
 	sdljoystick.h sdljoystick.cpp \
