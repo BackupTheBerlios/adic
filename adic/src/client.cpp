@@ -106,7 +106,6 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
   assert(iPtr.get());
   if (m_config.m_lagCompensation) {
-    // todo: implement lag compensation => input queue
     std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
     if (m_game.getFrame()-iPtr->frame>=0)
       m_game.setInput(*iPtr.get());
@@ -117,7 +116,6 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
   }else{
     m_game.setInput(*iPtr.get());
   }
-  //    std::cerr << "\nGot Input\n";
 }
 
 void

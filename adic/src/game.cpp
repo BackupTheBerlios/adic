@@ -456,17 +456,21 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
   if (!w.collide(p,cv,dist))
     return false;
 
+#ifndef NDEBUG
   // todo remove
   V2D preRollback=p.m_pos;
+#endif
 
   if (!rollbackdoor)
     p.rollback();
   else
     d.rollback();
 
+#ifndef NDEBUG
   // todo remove
   V2D postRollback=p.m_pos;
   V2D diff=preRollback-postRollback;
+#endif
 
   // player impuls
   V2D pimp(cv.project(p.getImpuls()));
@@ -484,6 +488,7 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
   d.commit();
   collision.emit(p.m_pos,pimp.length()+dimp.length());
   doorCollision.emit(pid,did,cv);
+#ifndef NDEBUG
   // todo remove it again
   {
     RealDoor rd(doorInWorld(d));
@@ -494,6 +499,7 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
       DOPE_FATAL("rollback failed - diff is: "<<diff);
     }
   }
+#endif
   return true;
 }
 
