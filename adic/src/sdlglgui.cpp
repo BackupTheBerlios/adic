@@ -200,7 +200,9 @@ void
 SDLGLGUI::killWindow()
 {
   // set all function pointers zero
+#ifdef DLOPEN_OPENGL
   deinitGLSymbols();
+#endif
   SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
 }
 
