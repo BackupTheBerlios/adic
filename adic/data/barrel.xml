@@ -4,5 +4,7 @@
 	mass="1.0"
 	type="10"
 	r="31"
+	hdamping="1"
+	vdamping="1"
 	>
 </PlayerData>

@@ -130,6 +130,10 @@ gamefiles_DATA = \
 	erfrischung_0010.png \
 	erfrischung_0011.png \
 	erfrischung_0012.png \
-	erfrischung_0013.png
+	erfrischung_0013.png \
+	room1.png \
+	room2.png \
+	room3.png \
+	room4.png 
 
 EXTRA_DIST = $(gamefiles_DATA)
