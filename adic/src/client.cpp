@@ -23,6 +23,7 @@
 */
 
 #include "client.h"
+#include "gui.h"
 
 void sigPipeHandler(int x){
   std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;
@@ -51,6 +52,10 @@ Client::main()
   TimeStamp null;
   oldTime.now();
   unsigned frames=0;
+
+  GUIFactory guif;
+  GUI* guiPtr=guif.create(*this,m_config.m_gui);
+  DOPE_CHECK(guiPtr->init());
   while (!m_quit) {
     // test if data available on layer0
     if (layer0.select(&null)) {
@@ -69,7 +74,10 @@ Client::main()
       newTime.now();
       dt=newTime-oldTime;
     }
-    m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
+    R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
+    m_game.step(rdt);
+    if (!guiPtr->step(rdt))
+      m_quit=true;
     oldTime=newTime;
     ++frames;
     dt=newTime-start;

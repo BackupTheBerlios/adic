@@ -165,6 +165,12 @@ public:
     return m_rooms.size();
   }
 
+  //! return lineloop for one room
+  /*!
+    \room the ID of the room
+  */
+  std::vector<V2D> getLineLoop(FWEdge::RoomID room) const;
+  
   void setFromMesh(const Mesh &mesh);
   
   /*

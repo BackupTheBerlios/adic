@@ -17,32 +17,41 @@
  */
 
 /*!
-   \file sdlglgui.h
-   \brief gui implementation using SDL and OpenGL
+   \file guiconfig.h
+   \brief GUIConfig
    \author Jens Thiele
 */
 
-#ifndef SDLGLGUI_H
-#define SDLGLGUI_H
+#ifndef GUICONFIG_H
+#define GUICONFIG_H
 
-#include "gui.h"
+#include "typedefs.h"
 
-class SDLGLGUI : public GUI
+struct GUIConfig
 {
-public:
-  SDLGLGUI(Client &client, const GUIConfig &config) 
-    : GUI(client,config) 
+  GUIConfig() 
+    : implementation("SDLGLGUI"), title(PACKAGE), width(640), height(480), bits(32), fullscreen(false)
   {}
-  bool init();
-  bool step(R dt);
-  ~SDLGLGUI(){killWindow();}
-protected:
+  
+  std::string implementation;
+  std::string title;
+  int width;
+  int height;
+  int bits;
+  bool fullscreen;
 
-  void resize(int width, int height);
-  void initSDL();
-  void createWindow(const char* title, int width, int height, int bits, bool fullscreenflag);
-  void initGL();
-  void killWindow();
+  template <typename Layer2>
+  void composite(Layer2 &layer2)
+  {
+    layer2.SIMPLE(implementation)
+      .SIMPLE(title).SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen);
+  }
 };
+DOPE_CLASS(GUIConfig);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, GUIConfig &c)
+{
+  c.composite(layer2);
+}
 
 #endif

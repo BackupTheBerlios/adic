@@ -37,7 +37,7 @@
 #include "typedefs.h"
 #include "game.h"
 #include "messages.h"
-
+#include "guiconfig.h"
 
 struct ClientConfig
 {
@@ -46,12 +46,13 @@ struct ClientConfig
   
   unsigned short int m_port;
   std::string m_server;
+  GUIConfig m_gui;
 };
 DOPE_CLASS(ClientConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ClientConfig &c)
 {
-  layer2.simple(c.m_port,"port").simple(c.m_server,"server");
+  layer2.simple(c.m_port,"port").simple(c.m_server,"server").simple(c.m_gui,"gui");
 }
 
 typedef XMLOutStream<std::streambuf> OutProto;
@@ -83,6 +84,11 @@ public:
   }
   
   int main();
+
+  Game::WorldPtr getWorldPtr()
+  {
+    return m_game.getWorldPtr();
+  }
 protected:
 };
 

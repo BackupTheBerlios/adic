@@ -63,6 +63,17 @@ public:
   }
 
   SigC::Signal1<void,PlayerID> playerAdded;
+
+  //! get World Ptr
+  /*!
+    \returns worldPtr - may be a NULL pointer
+  */
+  WorldPtr getWorldPtr()
+  {
+    if (m_meshPtr.get()&&(!m_worldPtr.get()))
+      m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
+    return m_worldPtr;
+  }
 protected:
   Players m_players;
   Icons m_icons;

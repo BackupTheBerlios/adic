@@ -1,4 +1,4 @@
-INCLUDES = @DOPE_CFLAGS@
+INCLUDES = @DOPE_CFLAGS@ @SDL_CFLAGS@ @GL_CFLAGS@
 
 # automatic tests - are build and run by make check
 TESTS =
@@ -57,8 +57,10 @@ test_world_LDADD = @DOPE_LIBS@
 
 @PACKAGE@client_SOURCES = $(gamecommon) \
 	client.h client.cpp \
-	gui.h \
+	guiconfig.h \
+	gui.h gui.cpp \
 	sdlglgui.h sdlglgui.cpp
 
-@PACKAGE@client_LDADD = @DOPE_LIBS@
+@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ @GL_LIBS@
+
 

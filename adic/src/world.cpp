@@ -28,6 +28,7 @@ World::EdgeIterator::inc()
     le=m_w.m_edges[m_c].m_sv;
     m_c=m_w.m_edges[m_c].m_nccw;
   }
+  // update clockwise
   m_cw=(m_w.m_edges[m_c].m_sv==le);
   m_end=(m_c==m_b);
   return *this;
@@ -115,7 +116,7 @@ World::setFromMesh(const Mesh &mesh)
 	    fe=lastID=FWEdge::noEdge;
 	  }else{
 	    lastID=cfweID;
-	    lastCW=true;
+	    lastCW=false;
 	  }
 	}
       else
@@ -206,15 +207,21 @@ World::inRoom(const V2D &p)
   return FWEdge::noRoom;
 }
 
-bool 
-World::isInRoom(const V2D &p, FWEdge::RoomID r)
+std::vector<V2D> 
+World::getLineLoop(FWEdge::RoomID room) const
 {
   std::vector<V2D> lineloop;
-  EdgeIterator it(*this,r);
+  EdgeIterator it(*this,room);
   lineloop.push_back(it.getStartPoint());  
   for (;it!=EdgeIterator(*this);++it)
     lineloop.push_back(it.getEndPoint());
-  return Polygon(lineloop).inside(p);
+  return lineloop;
+}
+
+bool 
+World::isInRoom(const V2D &p, FWEdge::RoomID r)
+{
+  return Polygon(getLineLoop(r)).inside(p);
 }
 
 

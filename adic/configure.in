@@ -35,6 +35,8 @@ dnl dope only works if those libraries are installed
 dnl AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
 dnl AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
 AM_PATH_DOPE(0.0.1, , [AC_MSG_ERROR([dope++ required])])
+MDL_HAVE_OPENGL
+AM_PATH_SDL(1.2.0)
 AC_CACHE_SAVE
 dnl checks for c++ header files
 AC_LANG([C++])

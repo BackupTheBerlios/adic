@@ -25,18 +25,30 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "guiconfig.h"
 #include "client.h"
 
 class GUI
 {
 public:
-  GUI(Client &client) : m_client(client)
+  GUI(Client &client, const GUIConfig &config) : m_client(client), m_config(config)
   {}
-  ~GUI(){}
+  virtual ~GUI(){}
   
+  virtual bool init()=0;
   virtual bool step(R dt)=0;
+
+  SigC::Signal1<void, int8_t> xChanged;
+  SigC::Signal1<void, int8_t> yChanged;
 protected:
   Client &m_client;
+  GUIConfig m_config;
+};
+
+class GUIFactory
+{
+public:
+  GUI* create(Client &client, const GUIConfig &config);
 };
 
 #endif
