@@ -86,6 +86,7 @@ void SoundSDLMixer::deinit()
     }
   if ( audio_open ) {
     Mix_CloseAudio();
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
     audio_open = 0;
   }
 }

@@ -105,6 +105,13 @@ deinitGLSymbols()
 #include "glfunctions.h"
 #undef FUNC
 #undef STRINGIFY
+  if (gluHandle) {
+    if (dlclose(gluHandle)) {
+      DOPE_WARN("GLU unload failed");
+    }else{
+      gluHandle=NULL;
+    }
+  }
 }
 
 

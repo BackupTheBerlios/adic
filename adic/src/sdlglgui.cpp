@@ -199,9 +199,9 @@ SDLGLGUI::resize(int width, int height)
 void
 SDLGLGUI::killWindow()
 {
-  SDL_QuitSubSystem(SDL_INIT_VIDEO);
   // set all function pointers zero
   deinitGLSymbols();
+  SDL_QuitSubSystem(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK);
 }
 
 DOPE_SMARTPTR<Texture> 
