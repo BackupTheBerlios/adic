@@ -105,7 +105,7 @@ Client::main()
   signal(SIGPIPE,sigPipeHandler);
   InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
   NetStreamBuf layer0(adr);
-  layer0.setBlocking(false);
+  //  layer0.setBlocking(false);
   OutProto l2out(layer0);
 #if USE_RAW_PROTOCOL == 1
   InProto l2in(layer0);

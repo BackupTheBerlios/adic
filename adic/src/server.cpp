@@ -32,7 +32,7 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
   : streamPtr(_streamPtr), server(_server),
     factory(*(streamPtr.get())), outProto(*(streamPtr.get())), emitter(outProto)
 {
-  streamPtr->setBlocking(false);
+  //  streamPtr->setBlocking(false);
   factory.connect(SigC::slot(*this,&Connection::handleInput));
   factory.connect(SigC::slot(*this,&Connection::handleGreeting));
 }
