@@ -58,6 +58,13 @@ public:
     return true;
   }
   bool collide(const Circle &c, V2D &cv);
+  //! is this door closed ?
+  /*!
+    this is used to test if all doors of a room are closed
+
+    \return true if door is closed
+  */
+  bool isClosed() const;
 };
 DOPE_CLASS(Door);
 template <typename Layer2>

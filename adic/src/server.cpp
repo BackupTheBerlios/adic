@@ -32,9 +32,20 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
   : streamPtr(_streamPtr), server(_server),
     factory(*(streamPtr.get())), outProto(*(streamPtr.get())), emitter(outProto)
 {
-  //    factory.connect(SigC::slot(*this,&Connection::handleFoo));
-  Greeting g;
+  streamPtr->setBlocking(false);
+  factory.connect(SigC::slot(*this,&Connection::handleInput));
+  playerID=server.addPlayer();
+  Greeting g(playerID);
   emit(g);
+}
+
+void 
+Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
+{
+  assert(inputPtr.get());
+  PlayerInput i(*inputPtr.get(),playerID);
+  server.setInput(i);
+  server.broadcast(i);
 }
 
 int 

@@ -28,19 +28,21 @@
 class Greeting
 {
 public:
-  Greeting() 
+  Greeting(uint16_t playerID=~0U)
     : m_dopeVersion(dope_major_version,dope_minor_version,dope_micro_version),
-      m_adicVersion(PACKAGE_MAJOR_VERSION,PACKAGE_MINOR_VERSION,PACKAGE_MICRO_VERSION)
+      m_adicVersion(PACKAGE_MAJOR_VERSION,PACKAGE_MINOR_VERSION,PACKAGE_MICRO_VERSION),
+      m_playerID(playerID)
   {}
   ~Greeting(){}
   
   Version m_dopeVersion;
   Version m_adicVersion;
+  uint16_t m_playerID;
 
   template <typename Layer2>
   void composite(Layer2 &l2)
   {
-    l2.SIMPLE(m_dopeVersion).SIMPLE(m_adicVersion);
+    l2.SIMPLE(m_dopeVersion).SIMPLE(m_adicVersion).SIMPLE(m_playerID);
   }
 protected:
 };

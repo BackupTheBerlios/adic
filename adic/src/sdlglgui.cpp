@@ -21,6 +21,7 @@ bool
 SDLGLGUI::step(R dt)
 {
   SDL_Event event;
+  bool ichanged=false;
   while ( SDL_PollEvent(&event) ) {
     switch (event.type) {
     case SDL_QUIT:
@@ -30,16 +31,20 @@ SDLGLGUI::step(R dt)
     case SDL_KEYUP:
       switch (event.key.keysym.sym) {
       case SDLK_LEFT:
-	xChanged.emit((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	i.x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged=true;
 	break;
       case SDLK_RIGHT:
-	xChanged.emit((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	i.x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged=true;
 	break;
       case SDLK_UP:
-	yChanged.emit((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	i.y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged=true;
 	break;
       case SDLK_DOWN:
-	yChanged.emit((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	i.y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged=true;
 	break;
       case SDLK_ESCAPE:
       case SDLK_q:
@@ -70,6 +75,8 @@ SDLGLGUI::step(R dt)
       break;
       }*/
   }
+  if (ichanged)
+    input.emit(i);
 
   // Clear The Screen And The Depth Buffer
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,6 +100,12 @@ SDLGLGUI::step(R dt)
   }else{
     DOPE_WARN("Did not receive world yet");
   }
+  // paint players
+  const Game::Players &players(m_client.getPlayers());
+  for (unsigned p=0;p<players.size();++p)
+    {
+      drawCircle(players[p].m_pos,players[p].m_r);
+    }
   SDL_GL_SwapBuffers();
   return true;
 }
@@ -168,3 +181,18 @@ void
 SDLGLGUI::killWindow()
 {}
 
+void 
+SDLGLGUI::drawCircle(const V2D &p, float r)
+{
+  double angle;
+
+  glPushMatrix();
+  glTranslatef(p[0], p[1], 0);
+  glBegin(GL_TRIANGLE_FAN);
+  glVertex2f(0, 0);
+  for (angle = 0.0; angle <= 2 * M_PI; angle += M_PI / 24) {
+    glVertex2f(r * cos(angle), r * sin(angle));
+  }
+  glEnd();
+  glPopMatrix();
+}

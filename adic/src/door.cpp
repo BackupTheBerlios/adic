@@ -16,3 +16,9 @@ Door::collide(const Circle &c, V2D &cv)
   */
 }
 
+bool
+Door::isClosed() const
+{
+  assert(0);
+  return true;
+}

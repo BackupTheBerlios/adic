@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Mesh>
 <stdvectorOfV2D this.name="vertices">
-<V2D x="10" y="20" />
-<V2D x="20" y="20" />
-<V2D x="20" y="30" />
-<V2D x="10" y="30" />
+<V2D x="10" y="200" />
+<V2D x="200" y="200" />
+<V2D x="200" y="300" />
+<V2D x="10" y="300" />
 </stdvectorOfV2D>
 <stdvectorOfEdge this.name="edgelist">
 <Edge vid="0" type="0" />

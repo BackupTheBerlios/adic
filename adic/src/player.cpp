@@ -4,6 +4,11 @@ const R Player::m_maxspeed=20;
 const R Player::m_acceleration=5;
 const R Player::m_damping=0.2;
 
+Player::Player(const V2D &pos)
+  : RoundObject(pos), m_direction(0), m_ix(0), m_iy(0)
+{
+}
+
 bool
 Player::step(R dt)
 {

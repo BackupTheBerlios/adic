@@ -27,6 +27,7 @@
 
 #include "guiconfig.h"
 #include "client.h"
+#include "input.h"
 
 class GUI
 {
@@ -38,8 +39,7 @@ public:
   virtual bool init()=0;
   virtual bool step(R dt)=0;
 
-  SigC::Signal1<void, int8_t> xChanged;
-  SigC::Signal1<void, int8_t> yChanged;
+  SigC::Signal1<void, Input &> input;
 protected:
   Client &m_client;
   GUIConfig m_config;

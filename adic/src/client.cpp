@@ -37,11 +37,12 @@ Client::main()
   NetStreamBuf layer0(adr);
   layer0.setBlocking(false);
   OutProto l2out(layer0);
-  InProto l2in(layer0);
+  InProto l2in(layer0,TimeStamp(0,100000),10);
   SignalOutAdapter<OutProto> so(l2out);
   SignalInAdapter<InProto> si(l2in);
   si.connect(SigC::slot(*this,&Client::handleGreeting));
   si.connect(SigC::slot(*this,&Client::handleGame));
+  si.connect(SigC::slot(*this,&Client::handlePlayerInput));
 
   TimeStamp start;
   start.now();
@@ -56,17 +57,11 @@ Client::main()
   GUIFactory guif;
   GUI* guiPtr=guif.create(*this,m_config.m_gui);
   DOPE_CHECK(guiPtr->init());
+  guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
   while (!m_quit) {
-    // test if data available on layer0
-    if (layer0.select(&null)) {
-      try {
-	do {
-	  si.read();
-	}while (layer0.in_avail());
-      }catch(ReadError error){
-	DOPE_WARN(error.what());
-      }
-    }
+    // read all messages
+    while (layer0.select(&null))
+      si.read();
     newTime.now();
     dt=newTime-oldTime;
     while(dt<minStep) {

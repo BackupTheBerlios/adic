@@ -42,7 +42,8 @@ gamecommon = \
 	player.h player.cpp \
 	game.h game.cpp \
 	uriloader.h \
-	version.h messages.h
+	version.h messages.h \
+	input.h
 
 test_line_SOURCES = test-line.cpp $(allcommon)
 test_vector2d_SOURCES = test-vector2d.cpp $(allcommon)

@@ -159,6 +159,12 @@ public:
     return m_v[i];
   }
 
+  const R& operator[](int i) const
+  {
+    assert((!i)||(i==1));
+    return m_v[i];
+  }
+
   R getX() const
   {
     return m_v[0];

@@ -40,6 +40,7 @@
 #include "typedefs.h"
 #include "game.h"
 #include "messages.h"
+#include "input.h"
 
 //! server configuration
 struct ServerConfig
@@ -65,14 +66,12 @@ template <typename INP = InProto>
 class StreamFactory
 {
 public:
-  StreamFactory(std::streambuf &_l0) : inp(_l0) , sigFactory(inp)
+  StreamFactory(std::streambuf &_l0) : inp(_l0,TimeStamp(0,100000),10) , sigFactory(inp)
   {
   }
 
   void read()
   {
-    // todo: only one object is read but perhaps there is more than one
-    // does it at least get read in the next loop ?
     sigFactory.read();
   }
   
@@ -102,7 +101,9 @@ public:
 
   void read()
   {
-    factory.read();
+    do {
+      factory.read();
+    }while(streamPtr->in_avail());
   }
   
   template <typename X>
@@ -110,6 +111,8 @@ public:
   {
     emitter.emit(x);
   }
+  
+  void handleInput(DOPE_SMARTPTR<Input> inputPtr);
   
   /*
   void handleFoo(DOPE_SMARTPTR<foo> fooPtr)
@@ -132,6 +135,8 @@ protected:
   OutProto outProto;
   //! class to emit objects to the network stream
   SignalOutAdapter<OutProto> emitter;
+  //! my player ID
+  Game::PlayerID playerID;
 };
 
 //! the server application
@@ -199,6 +204,25 @@ public:
   void emitGame() 
   {
     emit(m_game);
+  }
+
+  template <typename X>
+  void broadcast(X &x) 
+  {
+    NetStreamBufServer::ID efbackup=m_emitFilter;
+    m_emitFilter=m_allFilter;
+    emit(x);
+    m_emitFilter=efbackup;
+  }
+  
+  Game::PlayerID addPlayer()
+  {
+    return m_game.addPlayer();
+  }
+
+  void setInput(const PlayerInput &i)
+  {
+    m_game.setInput(i);
   }
 };
 

@@ -18,19 +18,60 @@
 
 /*!
    \file input.h
-   \brief input devices
+   \brief input message
    \author Jens Thiele
 */
 
 #ifndef INPUT_H
 #define INPUT_H
 
-//! Abstract simple input device
-class Input
+#include "game.h"
+
+//! input control message
+struct Input
 {
-public:
-  virtual int8_t getX() const=0;
-  virtual int8_t getY() const=0;
+  Input() : x(0), y(0)
+  {}
+  
+  uint8_t x;
+  uint8_t y;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    l2.SIMPLE(x).SIMPLE(y);
+  }
 };
+DOPE_CLASS(Input);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Input &g)
+{
+  g.composite(layer2);
+}
+
+struct PlayerInput
+{
+  PlayerInput(const Input &_i, Game::PlayerID _id) 
+    : i(_i), id(_id)
+  {}
+  PlayerInput()
+    : id(~0U)
+  {}
+  
+  Input i;
+  Game::PlayerID id;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    l2.SIMPLE(i).SIMPLE(id);
+  }
+};
+DOPE_CLASS(PlayerInput);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, PlayerInput &g)
+{
+  g.composite(layer2);
+}
 
 #endif

@@ -34,6 +34,12 @@
 */
 struct RoundObject : public GameObject, public Circle
 {
+  RoundObject()
+  {}
+  
+  RoundObject(const V2D &pos,R r=5) : Circle(pos,r)
+  {}
+  
   bool collide(const Circle &c, V2D &cv)
   {
     if (!Circle::collide(c))

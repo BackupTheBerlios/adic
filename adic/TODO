@@ -1,4 +1,12 @@
-- ich war gerade dabei einen gui prototypen zu machen
+input message enthaelt muell
+
+
+es scheint jetzt zu gehen
+=> close connection on error
+
+also er malt schonmal die welt (nur als linien)
+jetzt muss ich machen dass er die spieler malt und v.a. dass man sie bewegen kann
+
 
 änderungen reinmachen
 

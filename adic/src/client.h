@@ -82,13 +82,25 @@ public:
     // todo later we will perhaps need a replace method
     m_game=*gPtr.get();
   }
-  
+
+  void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
+  {
+    DOPE_CHECK(iPtr.get());
+    m_game.setInput(*iPtr.get());
+  }
+
   int main();
 
   Game::WorldPtr getWorldPtr()
   {
     return m_game.getWorldPtr();
   }
+
+  const Game::Players &getPlayers() const
+  {
+    return m_game.getPlayers();
+  }
+  
 protected:
 };
 

@@ -43,6 +43,10 @@ protected:
   void createWindow(const char* title, int width, int height, int bits, bool fullscreenflag);
   void initGL();
   void killWindow();
+
+  void drawCircle(const V2D &p, float r);
+
+  Input i;
 };
 
 #endif

@@ -31,10 +31,12 @@
 #include "icon.h"
 #include "uriloader.h"
 
+class PlayerInput;
+
 class Game
 {
 public:
-  typedef uint32_t PlayerID;
+  typedef uint16_t PlayerID;
   typedef std::vector<Player> Players;
   typedef std::vector<Icon> Icons;
   typedef std::vector<Door> Doors;
@@ -49,9 +51,6 @@ public:
 
   //! step dt seconds forward in time
   bool step(R dt);
-
-  //! add a new player
-  PlayerID addPlayer();
 
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
@@ -74,6 +73,22 @@ public:
       m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
     return m_worldPtr;
   }
+  const Players &getPlayers() const
+  {
+    return m_players;
+  }
+  //! add a new player
+  PlayerID addPlayer()
+  {
+    PlayerID id=m_players.size();
+    Player newp(V2D(50,50));
+    m_players.push_back(newp);
+    playerAdded.emit(id);
+    return id;
+  }
+
+  void setInput(const PlayerInput &i);
+
 protected:
   Players m_players;
   Icons m_icons;

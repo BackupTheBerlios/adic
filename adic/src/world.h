@@ -152,15 +152,15 @@ public:
   */
   bool collide(const Circle &c, FWEdge::RoomID room, V2D &cv) const;
 
-  int getNumVertices() const
+  unsigned getNumVertices() const
   {
     return m_vertices.size();
   }
-  int getNumWalls() const
+  unsigned getNumWalls() const
   {
     return m_edges.size();
   }
-  int getNumRooms() const
+  unsigned getNumRooms() const
   {
     return m_rooms.size();
   }

@@ -31,6 +31,8 @@
 class Player : public RoundObject
 {
 public:
+  Player(const V2D &pos=V2D(0,0));
+  
   bool step(R dt);
 
   template <typename Layer2>
@@ -38,6 +40,13 @@ public:
   {
     layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy);
   }
+
+  void setControl(int8_t x, int8_t y)
+  {
+    m_ix=x;
+    m_iy=y;
+  }
+  
 protected:
   int8_t getX() const
   {
