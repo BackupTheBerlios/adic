@@ -4,7 +4,7 @@
 	    minspeed="10"
 	    type="10"
 	    r="1.5"
-	    hdamping="0.2"
-	    vdamping="0.5"
+	    hdamping="0.3"
+	    vdamping="0.6"
 	    >
 </PlayerData>

@@ -9,7 +9,7 @@
 	    mass="0.75"
 	    maxfitness="3"
 	    minfitness="0.5"
-	    endurance="100"
+	    endurance="60"
 	    r="20"
 	    recoverTime="40"
 	    >

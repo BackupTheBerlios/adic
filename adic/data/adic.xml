@@ -377,8 +377,17 @@
   <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="2200" y="550" />
   </Object>
-  <Object dir="45" URI="data:barrel.xml">
+  <Object dir="70" URI="data:barrel.xml">
     <V2D this.name="pos" x="2250" y="500" />
+  </Object>
+  <Object dir="10" URI="data:barrel.xml">
+    <V2D this.name="pos" x="385" y="903" />
+  </Object>
+  <Object dir="20" URI="data:barrel.xml">
+    <V2D this.name="pos" x="973" y="596" />
+  </Object>
+  <Object dir="55" URI="data:barrel.xml">
+    <V2D this.name="pos" x="1719" y="475" />
   </Object>
   <Object dir="30" URI="data:barrel.xml">
     <V2D this.name="pos" x="700" y="280" />
