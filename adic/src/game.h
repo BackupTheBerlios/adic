@@ -175,7 +175,7 @@ public:
   /*!
     \param test is true if you only want to test it - and don't want to emit the collision signal
   */
-  bool collidePlayer(Player &p, bool test=false);
+  bool collidePlayer(unsigned pid, bool test=false);
   
   //! collide door and player
   /*!
@@ -197,16 +197,16 @@ public:
   {
     return m_timeStamp;
   }
-  //! in which room is this player ?
-  /*!
-    remembers old results and tests the old room first
 
-    \param p the ID of the player
-  */
-  FWEdge::RoomID playerInRoom(unsigned p);
+  //! calculate in which room this player is in
+  void calcPlayerInRoom(unsigned pid);
+  
+  //! in which room is this player ?
+  FWEdge::RoomID playerInRoomCached(unsigned pid);
+  
   //! in which room is this player ?
   /*!
-    \nore This is slow - use playerInRoom(unsigned p) instead
+    \note This is slow - use the map instead
     \param p the player
   */
   FWEdge::RoomID playerInRoom(Player &p);
@@ -221,7 +221,7 @@ public:
   }
   bool playerIsLocked(unsigned p)
   {
-    return roomIsClosed(playerInRoom(p));
+    return roomIsClosed(playerInRoomCached(p));
   }
 protected:
   bool miniStep(R dt);

@@ -52,41 +52,57 @@ Game::step(R dt)
   return true;
 }
 
-FWEdge::RoomID
-Game::playerInRoom(unsigned p)
+void
+Game::calcPlayerInRoom(unsigned p)
 {
   WorldPtr w(getWorldPtr());
-  if (!w.get())
-    return FWEdge::noRoom;
+  if (!w.get()) return;
   FWEdge::RoomID r=FWEdge::noRoom;
   PlayerRoomMap::iterator it(m_playerRoomMap.find(p));
-  if (it!=m_playerRoomMap.end()) {
-    if (w->isInRoom(m_players[p].m_pos,it->second))
-      r=it->second;
-  }
-  if (r==FWEdge::noRoom)
-    playerInRoom(m_players[p]);
+  if ((it!=m_playerRoomMap.end())&&(w->isInRoom(m_players[p].m_pos,it->second)))
+    r=it->second;
+  else
+    r=playerInRoom(m_players[p]);
   if (r!=FWEdge::noRoom)
     m_playerRoomMap[p]=r;
-  return r;
+  return;
+}
+
+FWEdge::RoomID 
+Game::playerInRoomCached(unsigned pid)
+{
+  PlayerRoomMap::iterator it(m_playerRoomMap.find(pid));
+  if (it==m_playerRoomMap.end()) {
+    calcPlayerInRoom(pid);
+    it=m_playerRoomMap.find(pid);
+    DOPE_CHECK(it!=m_playerRoomMap.end());
+  }
+  return it->second;
 }
 
 FWEdge::RoomID
 Game::playerInRoom(Player &p)
 {
+  //  return 0; // todo
   WorldPtr w(getWorldPtr());
-  if (!w.get())
+  if (!w.get()) {
+    DOPE_WARN("returned noRoom because I don't have the world yet");
     return FWEdge::noRoom;
-  return w->inRoom(p.m_pos);
+  }
+  FWEdge::RoomID r=w->inRoom(p.m_pos);
+  DOPE_CHECK(r<w->getNumRooms());
+  return r;
 }
 
 bool
-Game::collidePlayer(Player &p, bool test)
+Game::collidePlayer(unsigned pid, bool test)
 {
+  DOPE_CHECK(pid<m_players.size());
+  Player &p=m_players[pid];
   WorldPtr w(getWorldPtr());
   if (w.get()) {
     // find room this player is in
-    FWEdge::RoomID r=playerInRoom(p);
+    FWEdge::RoomID r=playerInRoomCached(pid);
     
     // now collide and rollback on collision
     // 1. collide with other players
@@ -120,6 +136,8 @@ Game::collidePlayer(Player &p, bool test)
       if (w->collide(p,r,cv))
 	{
 	  p.rollback();
+	  calcPlayerInRoom(pid);
+	  r=playerInRoomCached(pid);
 	  DOPE_CHECK(!w->collide(p,r,cv));
 	  V2D imp(cv.project(p.getSpeed()));
 	  p.applyImpuls(imp*-2);
@@ -151,15 +169,13 @@ Game::miniStep(R dt)
     {
       WorldPtr w(getWorldPtr());
       if (w.get()) {
-	// find room this player is in
-	FWEdge::RoomID r=playerInRoom(p);
-	
 	// calculate player step
-	if (roomIsClosed(r))
+	if (playerIsLocked(p))
 	  m_players[p].setControl(0,0);
-	
+	DOPE_CHECK(!collidePlayer(p));
 	m_players[p].step(dt);
-	collidePlayer(m_players[p]);
+	calcPlayerInRoom(p);
+	collidePlayer(p);
       }
       // "collide" collect icons
     }
@@ -207,12 +223,13 @@ Game::addPlayer()
   const std::vector<V2D> &s(w->getStartPoints());
   for (unsigned p=0;p<s.size();++p) {
     Player newp(s[p]);
-    if (!collidePlayer(newp,true))
-      {
-	m_players.push_back(newp);
+    m_players.push_back(newp);
+    if (!collidePlayer(id,true)) {
 	playerAdded.emit(id);
 	return id;
-      }
+    }else{
+      m_players.pop_back();
+    }
   }
   // did not find a start place
   return ~0U;
