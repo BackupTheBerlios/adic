@@ -24,11 +24,24 @@
 
 #include "client.h"
 #include "gui.h"
+#include "sound.h"
 
 void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }
 
+
+void
+Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
+{
+  assert(gPtr.get());
+  std::cerr << "\nGot Greeting from server "<< gPtr->m_adicVersion.asString() << " DOPE++ "<<gPtr->m_dopeVersion.asString()<<"\n";
+  m_playerIDs=gPtr->m_players;
+  std::cerr << "Got "<<m_playerIDs.size()<<" player IDs:";
+  for (unsigned i=0;i<m_playerIDs.size();++i)
+    std::cerr << "\n"<<m_playerIDs[i];
+  std::cerr << "\n";
+}
 
 void 
 Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
@@ -47,8 +60,31 @@ Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
   // todo later we will perhaps need a replace method
   // backup worldPtr - otherwise it would be verry time-consuming (build world from mesh ...)
   Game::WorldPtr w=m_game.getWorldPtr();
+  std::cerr << "\nGot Game with "<<gPtr->getPlayers().size() << " players (was: "<<m_game.getPlayers().size()<<")\n";
   m_game=*gPtr.get();
+  std::cerr << "after copy have "<<m_game.getPlayers().size()<<" players\n";
   m_game.setWorldPtr(w);
+  m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
+}
+
+void 
+Client::handleCollision(V2D pos, R strength)
+{
+  if (!m_soundPtr)
+    return;
+  int c=m_soundPtr->playSample("data/collision.wav");
+  R volume=strength/40;
+  if (volume>1) volume=1;
+  m_soundPtr->modifyChannel(c,volume);
+  std::cerr << "\nPlay sample\n";
+}
+
+void
+Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
+{
+  DOPE_CHECK(iPtr.get());
+  m_game.setInput(*iPtr.get());
+    //    std::cerr << "\nGot Input\n";
 }
 
 int
@@ -70,6 +106,10 @@ Client::main()
   si.connect(SigC::slot(*this,&Client::handleGame));
   si.connect(SigC::slot(*this,&Client::handlePlayerInput));
 
+  ClientGreeting g;
+  g.m_userSetting=m_config.m_users;
+  so.emit(g);
+
   TimeStamp start;
   start.now();
   TimeStamp oldTime;
@@ -83,6 +123,9 @@ Client::main()
 
   GUIFactory guif;
   GUI* guiPtr=guif.create(*this,m_config.m_gui);
+  m_soundPtr=Sound::create(m_config.m_sc);
+  m_soundPtr->playMusic("data/music.mod");
+
   DOPE_CHECK(guiPtr->init());
   guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
   while (!m_quit) {
@@ -104,6 +147,7 @@ Client::main()
     m_game.step(rdt);
     if (!guiPtr->step(rdt))
       m_quit=true;
+    m_soundPtr->step(rdt);
     while (layer0.select(&null))
       si.read();
     // end of main work
@@ -115,7 +159,10 @@ Client::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;
   }
+  delete m_soundPtr;
+  m_soundPtr=NULL;
   delete guiPtr;
+  guiPtr=NULL;
   std::cout << std::endl;
   return 0;
 }

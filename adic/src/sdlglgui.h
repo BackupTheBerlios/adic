@@ -26,13 +26,13 @@
 #define SDLGLGUI_H
 
 #include "gui.h"
+#include "texture.h"
 
 class SDLGLGUI : public GUI
 {
 public:
-  SDLGLGUI(Client &client, const GUIConfig &config) 
-    : GUI(client,config) 
-  {}
+  SDLGLGUI(Client &client, const GUIConfig &config) ;
+
   //! intitialize gui
   bool init();
   //! repaint
@@ -52,14 +52,19 @@ protected:
   void drawWall(const Wall &wall);
   void drawPolygon(const std::vector<V2D> &p);
   
-  Input i;
+  Input i[2];
   int m_width;
   int m_height;
   unsigned m_flags;
-
+  DOPE_SMARTPTR<Texture> m_texturePtr;
+  R m_textureTime;
+  
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);
   typedef void (*uintFunc)(unsigned int);
+  typedef void (*uint2Func)(unsigned int,unsigned int);
+  typedef void (*uintuintPFunc)(unsigned int, unsigned int *);
+  typedef void (*uint2intFunc)(unsigned int,unsigned int,int);
   typedef void (*floatFunc)(float);
   typedef void (*fvec2Func)(float,float);
   typedef void (*fvec3Func)(float,float,float);
@@ -70,12 +75,21 @@ protected:
   typedef void (*ivec4Func)(int,int,int,int);
   typedef void (*uintfloatPFunc)(unsigned int, float *);
 
+
+  typedef void (*glTexImage2DFunc) ( GLenum target, GLint level,
+				     GLint internalFormat,
+				     GLsizei width, GLsizei height,
+				     GLint border, GLenum format, GLenum type,
+				     const GLvoid *pixels );
+
 #define LOOKUP(m,t) t m##P
+public:
 
   LOOKUP(glClear,uintFunc);
   LOOKUP(glMatrixMode,uintFunc);
   LOOKUP(glLoadIdentity,voidFunc);
   LOOKUP(glColor3f,fvec3Func);
+  LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
   LOOKUP(glVertex2f,fvec2Func);
@@ -89,7 +103,15 @@ protected:
   LOOKUP(glLineWidth,floatFunc);
   LOOKUP(glFlush,voidFunc);
   LOOKUP(glFinish,voidFunc);
-
+  LOOKUP(glEnable,uintFunc);
+  LOOKUP(glDisable,uintFunc);
+  LOOKUP(glBlendFunc,uint2Func);
+  LOOKUP(glTexCoord2f,fvec2Func);
+  LOOKUP(glBindTexture,uint2Func);
+  LOOKUP(glGenTextures,uintuintPFunc);
+  LOOKUP(glTexParameteri,uint2intFunc);
+  LOOKUP(glTexImage2D,glTexImage2DFunc);
+  
 #undef LOOKUP
 };
 

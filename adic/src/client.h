@@ -38,21 +38,38 @@
 #include "game.h"
 #include "messages.h"
 #include "guiconfig.h"
+#include "soundconfig.h"
+#include "sound.h"
+#include <stdlib.h>
 
 struct ClientConfig
 {
   ClientConfig() : m_port(40700), m_server("localhost")
-  {}
+  {
+    const char *tmp=getenv("USER");
+    if (tmp)
+      m_users.users.push_back(User(tmp));
+    else
+      m_users.users.push_back(User("Player 1"));
+    tmp=getenv("HOSTNAME");
+    if (tmp)
+      m_users.team=tmp;
+    else
+      m_users.team="Unkown";
+  }
   
   unsigned short int m_port;
   std::string m_server;
   GUIConfig m_gui;
+  SoundConfig m_sc;
+  UserSetting m_users;
 };
 DOPE_CLASS(ClientConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ClientConfig &c)
 {
-  layer2.simple(c.m_port,"port").simple(c.m_server,"server").simple(c.m_gui,"gui");
+  layer2.simple(c.m_port,"port").simple(c.m_server,"server")
+    .simple(c.m_gui,"gui").simple(c.m_sc,"sound").simple(c.m_users,"users");
 }
 
 class Client : public SigC::Object
@@ -61,28 +78,18 @@ protected:
   ClientConfig &m_config;
   Game m_game;
   bool m_quit;
-  uint16_t m_playerID;
-  
+  std::vector<uint16_t> m_playerIDs;
+  Sound* m_soundPtr;
 public:
-  Client(ClientConfig &config) : m_config(config), m_quit(false), m_playerID(~uint16_t(0))
+  Client(ClientConfig &config) 
+    : m_config(config), m_quit(false), m_soundPtr(NULL)
   {}
   ~Client(){}
 
-  void handleGreeting(DOPE_SMARTPTR<Greeting> gPtr)
-  {
-    assert(gPtr.get());
-    std::cerr << "\nGot Greeting from server "<< gPtr->m_adicVersion.asString() << " DOPE++ "<<gPtr->m_dopeVersion.asString()<<"\n";
-    m_playerID=gPtr->m_playerID;
-  }
-  
+  void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
   void handleGame(DOPE_SMARTPTR<Game> gPtr);
-
-  void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
-  {
-    DOPE_CHECK(iPtr.get());
-    m_game.setInput(*iPtr.get());
-    //    std::cerr << "\nGot Input\n";
-  }
+  void handleCollision(V2D pos, R strength);
+  void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr);
 
   int main();
 
@@ -100,10 +107,9 @@ public:
   {
     return m_game.getPlayers();
   }
-
-  uint16_t getPlayerID() const
+  const std::vector<uint16_t> &getMyIDs() const
   {
-    return m_playerID;
+    return m_playerIDs;
   }
 protected:
 };

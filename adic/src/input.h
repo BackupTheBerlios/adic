@@ -30,16 +30,17 @@
 //! input control message
 struct Input
 {
-  Input() : x(0), y(0)
+  Input() : x(0), y(0), devno(0)
   {}
   
   int8_t x;
   int8_t y;
-
+  int8_t devno;
+  
   template <typename Layer2>
   void composite(Layer2 &l2)
   {
-    l2.SIMPLE(x).SIMPLE(y);
+    l2.SIMPLE(x).SIMPLE(y).SIMPLE(devno);
   }
 };
 DOPE_CLASS(Input);

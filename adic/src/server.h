@@ -114,6 +114,7 @@ public:
     emitter.emit(x);
   }
   
+  void handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr);
   void handleInput(DOPE_SMARTPTR<Input> inputPtr);
   
   /*
@@ -137,8 +138,8 @@ protected:
   OutProto outProto;
   //! class to emit objects to the network stream
   SignalOutAdapter<OutProto> emitter;
-  //! my player ID
-  Game::PlayerID playerID;
+  //! client player IDs
+  std::vector<Game::PlayerID> playerIDs;
 };
 
 //! the server application

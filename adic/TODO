@@ -1,9 +1,21 @@
-startplatz aussuchen
+team list
+user list
+standings
 
-skaliert schlecht zumindest der client
-musik
 
-teams fehlen
+
+- mehrere spieler an einem client
+- AI gegner
+
+- a thanks file
+  thanks for the unknown creator of the mod file
+  thanks for the xemacs people for the wav file
+
+- startplatz aussuchen
+
+- skaliert schlecht zumindest der client
+
+- teams fehlen
 
 - profiling (especially the client)
   i think the most time is consumed in the client

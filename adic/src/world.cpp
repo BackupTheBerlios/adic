@@ -48,7 +48,8 @@ World::setFromMesh(const Mesh &mesh)
 
   // copy all vertices
   m_vertices=mesh.vertices;
-
+  m_startPoints=mesh.startPoints;
+  
   // constuct our new edge-list
 
   typedef std::pair<Edge::VID,Edge::VID> Key;

@@ -48,30 +48,115 @@ typedef XMLSAXInStream<std::streambuf> InProto;
 #endif
 
 
-class Greeting
+struct Greeting
 {
-public:
-  Greeting(uint16_t playerID=~0U)
+  Greeting()
     : m_dopeVersion(dope_major_version,dope_minor_version,dope_micro_version),
-      m_adicVersion(PACKAGE_MAJOR_VERSION,PACKAGE_MINOR_VERSION,PACKAGE_MICRO_VERSION),
-      m_playerID(playerID)
+      m_adicVersion(PACKAGE_MAJOR_VERSION,PACKAGE_MINOR_VERSION,PACKAGE_MICRO_VERSION)
   {}
   ~Greeting(){}
   
   Version m_dopeVersion;
   Version m_adicVersion;
-  uint16_t m_playerID;
 
   template <typename Layer2>
   void composite(Layer2 &l2)
   {
-    l2.SIMPLE(m_dopeVersion).SIMPLE(m_adicVersion).SIMPLE(m_playerID);
+    l2.SIMPLE(m_dopeVersion).SIMPLE(m_adicVersion);
   }
-protected:
 };
 DOPE_CLASS(Greeting);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, Greeting &g)
 {
   g.composite(layer2);
+}
+
+struct ServerGreeting : public Greeting
+{
+  //! the player ID's the client got
+  std::vector<uint16_t> m_players;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    Greeting::composite(l2);
+    l2.SIMPLE(m_players);
+  }
+};
+
+DOPE_CLASS(ServerGreeting);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, ServerGreeting &g)
+{
+  g.composite(layer2);
+}
+
+
+struct User
+{
+  User()
+  {}
+  
+  User(const char *name) : m_name(name)
+  {}
+  
+  std::string m_name;
+};
+DOPE_CLASS(User);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, User &c)
+{
+  layer2.simple(c.m_name,"name");
+}
+
+struct UserSetting
+{
+  //! the users (players)
+  std::vector<User> users;
+  //! the requested team
+  std::string team;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    l2.SIMPLE(users).SIMPLE(team);
+  }
+};
+DOPE_CLASS(UserSetting);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, UserSetting &c)
+{
+  c.composite(layer2);
+}
+
+struct ClientGreeting : public Greeting
+{
+  UserSetting m_userSetting;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    Greeting::composite(l2);
+    l2.SIMPLE(m_userSetting);
+  }
+};
+DOPE_CLASS(ClientGreeting);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, ClientGreeting &c)
+{
+  c.composite(layer2);
+}
+
+struct ChatMessage
+{
+  std::string m_message;
+  //! global message or team message ?
+  bool m_global;
+};
+DOPE_CLASS(ChatMessage);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, ChatMessage &c)
+{
+  layer2.simple(c.m_message,"message").simple(c.m_global,"global");
 }

@@ -123,6 +123,12 @@ public:
   typedef DOPE_SMARTPTR<World> WorldPtr;
   typedef std::map<unsigned,FWEdge::RoomID> PlayerRoomMap;
 
+  //! signal emitted if a crash occurs
+  /*!
+    passes the position and strength of the collision
+  */
+  SigC::Signal2<void, V2D, R> collision;
+
   Game() 
   {init();}
   Game(const std::string &meshURI) : m_meshPtr(meshURI)
@@ -161,17 +167,16 @@ public:
     return m_players;
   }
   //! add a new player
-  PlayerID addPlayer()
-  {
-    PlayerID id=m_players.size();
-    Player newp(V2D(50,50));
-    m_players.push_back(newp);
-    playerAdded.emit(id);
-    return id;
-  }
+  PlayerID addPlayer();
 
   void setInput(const PlayerInput &i);
 
+  //! collide player with world (players, walls, doors)
+  /*!
+    \param test is true if you only want to test it - and don't want to emit the collision signal
+  */
+  bool collidePlayer(Player &p, bool test=false);
+  
   //! collide door and player
   /*!
     \param rollbackdoor if true the door is rollbacked if false the player is rollbacked on collision
@@ -192,7 +197,19 @@ public:
   {
     return m_timeStamp;
   }
+  //! in which room is this player ?
+  /*!
+    remembers old results and tests the old room first
+
+    \param p the ID of the player
+  */
   FWEdge::RoomID playerInRoom(unsigned p);
+  //! in which room is this player ?
+  /*!
+    \nore This is slow - use playerInRoom(unsigned p) instead
+    \param p the player
+  */
+  FWEdge::RoomID playerInRoom(Player &p);
 
   const std::vector<FWEdge::RoomID> &getClosedRooms() const
   {

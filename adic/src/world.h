@@ -107,6 +107,8 @@ protected:
   std::vector<FWEdge> m_edges;
   //! room / face list
   std::vector<Room> m_rooms;
+  //! all our start points
+  std::vector<V2D> m_startPoints;
   //! temporary mesh object
   DOPE_SMARTPTR<Mesh> m_meshptr;
   //! stack depth counter for composite
@@ -166,7 +168,11 @@ public:
   {
     return m_rooms.size();
   }
-
+  const std::vector<V2D> &getStartPoints() const
+  {
+    return m_startPoints;
+  }
+  
   //! return lineloop for one room
   /*!
     \room the ID of the room
@@ -210,6 +216,18 @@ public:
     is this true ?
     }
   */
+
+
+  bool getWall(FWEdge::EID eid, Wall &r) const
+  {
+    const FWEdge &e=getEdge(eid);
+    if (e.isDoor())
+      return false;
+    DOPE_CHECK(e.m_sv<m_vertices.size()&&e.m_ev<m_vertices.size());
+    Line l(m_vertices[e.m_sv],m_vertices[e.m_ev]);
+    r=Wall(l);
+    return true;
+  }
   
   //! helper to walk through a room along the walls
   /*!
@@ -288,12 +306,7 @@ public:
     */
     bool getWall(Wall &r) const
     {
-      const FWEdge &e=getEdge();
-      if (e.isDoor())
-	return false;
-      Line l(getStartPoint(),getEndPoint());
-      r=Wall(l);
-      return true;
+      return m_w.getWall(m_c,r);
     }
     FWEdge::EID getID() const
     {

@@ -60,9 +60,14 @@ test_world_LDADD = @DOPE_LIBS@
 	client.h client.cpp \
 	guiconfig.h \
 	gui.h gui.cpp \
-	sdlglgui.h sdlglgui.cpp
+	sdlglgui.h sdlglgui.cpp \
+	texture.h texture.cpp \
+	sound.h sound.cpp \
+	soundsdlmixer.h soundsdlmixer.cpp
 
 # we do not need @GL_LIBS@ since we now dlopen it
-@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ 
+# todo check for SDL_image and SDL_mixer
+@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer
+
 
 

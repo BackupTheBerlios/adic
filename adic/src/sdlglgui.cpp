@@ -17,6 +17,12 @@
 #define LOOKUP(m,t) m##P=&m;DOPE_CHECK(m##P)
 #endif
 
+
+SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config) 
+  : GUI(client,config), m_textureTime(5)
+{}
+
+
 bool
 SDLGLGUI::init()
 {
@@ -29,6 +35,7 @@ SDLGLGUI::init()
   LOOKUP(glMatrixMode,uintFunc);
   LOOKUP(glLoadIdentity,voidFunc);
   LOOKUP(glColor3f,fvec3Func);
+  LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
   LOOKUP(glVertex2f,fvec2Func);
@@ -42,8 +49,17 @@ SDLGLGUI::init()
   LOOKUP(glLineWidth,floatFunc);
   LOOKUP(glFlush,voidFunc);
   LOOKUP(glFinish,voidFunc);
+  LOOKUP(glEnable,uintFunc);
+  LOOKUP(glDisable,uintFunc);
+  LOOKUP(glBlendFunc,uint2Func);
+  LOOKUP(glTexCoord2f,fvec2Func);
+  LOOKUP(glBindTexture,uint2Func);
+  LOOKUP(glGenTextures,uintuintPFunc);
+  LOOKUP(glTexParameteri,uint2intFunc);
+  LOOKUP(glTexImage2D,glTexImage2DFunc);
 
   createWindow();
+  i[1].devno=1;
   return true;
 }
 
@@ -55,6 +71,10 @@ SDLGLGUI::createWindow()
 
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   resize(m_config.width, m_config.height);
+  m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(*this,"data/textures.png"));
+  glDisableP(GL_NORMALIZE);
+  glDisableP(GL_LIGHTING);
+  glDisableP(GL_CULL_FACE);
 }
 
 void
@@ -96,7 +116,7 @@ bool
 SDLGLGUI::step(R dt)
 {
   SDL_Event event;
-  bool ichanged=false;
+  bool ichanged[2]={false,false};
   while ( SDL_PollEvent(&event) ) {
     switch (event.type) {
     case SDL_QUIT:
@@ -109,20 +129,20 @@ SDLGLGUI::step(R dt)
     case SDL_KEYUP:
       switch (event.key.keysym.sym) {
       case SDLK_LEFT:
-	i.x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged=true;
+	i[0].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[0]=true;
 	break;
       case SDLK_RIGHT:
-	i.x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged=true;
+	i[0].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[0]=true;
 	break;
       case SDLK_UP:
-	i.y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged=true;
+	i[0].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[0]=true;
 	break;
       case SDLK_DOWN:
-	i.y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged=true;
+	i[0].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[0]=true;
 	break;
       case SDLK_ESCAPE:
       case SDLK_q:
@@ -136,6 +156,9 @@ SDLGLGUI::step(R dt)
 	    m_flags|=SDL_FULLSCREEN;
 	  resize(m_width,m_height);
 	}
+	break;
+      case SDLK_t:
+	m_textureTime=5;
 	break;
       default:
 	break;
@@ -163,8 +186,9 @@ SDLGLGUI::step(R dt)
       break;
       }*/
   }
-  if (ichanged)
-    input.emit(i);
+  for (unsigned c=0;c<2;++c)
+    if (ichanged[c])
+      input.emit(i[c]);
 
   // Clear The Screen And The Depth Buffer
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,10 +201,22 @@ SDLGLGUI::step(R dt)
   // keep myself in the middle
   const Game::Players &players(m_client.getPlayers());
 
-  uint16_t me=m_client.getPlayerID();
-  if (me<players.size()) {
-    V2D mypos(m_client.getPlayers()[me].m_pos);
-    glTranslatefP(-mypos[0]+m_width/2,-mypos[1]+m_height/2,0);
+  const std::vector<uint16_t> &myIDs(m_client.getMyIDs());
+  if (!myIDs.empty()) {
+    V2D pos;
+    unsigned c=0;
+    for (unsigned i=0;i<myIDs.size();++i)
+      {
+	unsigned id=myIDs[i];
+	if (id<m_client.getPlayers().size()) {
+	  pos+=m_client.getPlayers()[id].m_pos;
+	  ++c;
+	}
+      }
+    if (c) {
+      pos/=R(c);
+      glTranslatefP(-pos[0]+m_width/2,-pos[1]+m_height/2,0);
+    }
   }
 
   // paint world
@@ -196,14 +232,31 @@ SDLGLGUI::step(R dt)
 	else
 	  glColor3fP(0.0,0.5,0.0);
 	drawPolygon(worldPtr->getLineLoop(r));
-
-	// paint walls
-	World::EdgeIterator it(*worldPtr.get(),r);
-	Wall wall;
-	for (;it!=World::EdgeIterator(*worldPtr.get());++it) {
+	
+	/*
+	  // paint walls
+	  World::EdgeIterator it(*worldPtr.get(),r);
+	  Wall wall;
+	  for (;it!=World::EdgeIterator(*worldPtr.get());++it) {
 	  if (!it.getWall(wall))
-	    continue;
+	  continue;
 	  drawWall(wall);
+
+	  }
+	*/
+      }
+    // paint walls
+    unsigned wc=worldPtr->getNumWalls();
+    for (unsigned wid=0;wid<wc;++wid)
+      {
+	Wall w;
+	if (worldPtr->getWall(wid,w)) {
+	  const FWEdge &e=worldPtr->getEdge(wid);
+	  if (m_client.getGame().roomIsClosed(e.m_rcw)||m_client.getGame().roomIsClosed(e.m_rccw))
+	    glColor3fP(0.5,0.0,0.0);
+	  else
+	    glColor3fP(0.0,0.5,0.0);
+	  drawWall(w);
 	}
       }
     // paint doors
@@ -211,7 +264,7 @@ SDLGLGUI::step(R dt)
     Game::Doors &doors(m_client.getGame().getDoors());
     for (unsigned d=0;d<doors.size();++d) {
       if (doors[d].isClosed())
-	  glColor3fP(0.5,0.0,0.0);
+	glColor3fP(0.5,0.0,0.0);
       else
 	glColor3fP(0.0,0.0,1.0);
       RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
@@ -239,6 +292,29 @@ SDLGLGUI::step(R dt)
       glEndP();
       glColor3fP(1.0,1.0,1.0);
     }
+  // paint texture
+  if (m_textureTime>0) {
+    glLoadIdentityP();
+    glColor4fP(1.0,1.0,1.0,1.0-fabs(m_textureTime-2.5)/2.5);
+    m_textureTime-=dt;
+    glEnableP(GL_TEXTURE_2D);
+    glEnableP(GL_BLEND);
+    glBlendFuncP(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTextureP(GL_TEXTURE_2D,m_texturePtr->getTextureID());
+    glBeginP(GL_QUADS);
+    glTexCoord2fP(0,1);
+    glVertex2fP(0,0);
+    glTexCoord2fP(1,1);
+    glVertex2fP(m_width,0);
+    glTexCoord2fP(1,0);
+    glVertex2fP(m_width,m_height);
+    glTexCoord2fP(0,0);
+    glVertex2fP(0,m_height);
+    glEndP();
+    glDisableP(GL_BLEND);
+    glDisableP(GL_TEXTURE_2D);
+
+  }
   glFlushP();
   glFinishP();
   SDL_GL_SwapBuffers();

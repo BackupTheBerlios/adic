@@ -75,11 +75,12 @@ public:
   
   std::vector<V2D> vertices;
   std::vector<Edge> edgelist;
-
+  std::vector<V2D> startPoints;
+  
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(vertices).SIMPLE(edgelist);
+    layer2.SIMPLE(vertices).SIMPLE(edgelist).SIMPLE(startPoints);
   }
 
   uint getNumFaces() const

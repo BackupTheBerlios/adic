@@ -34,16 +34,36 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
 {
   streamPtr->setBlocking(false);
   factory.connect(SigC::slot(*this,&Connection::handleInput));
-  playerID=server.addPlayer();
-  Greeting g(playerID);
+  factory.connect(SigC::slot(*this,&Connection::handleGreeting));
+}
+
+void 
+Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
+{
+  for (unsigned i=0;i<gPtr->m_userSetting.users.size();++i)
+    {
+      uint16_t id=server.addPlayer();
+      if (id==uint16_t(~0U))
+	break;
+      playerIDs.push_back(id);
+    }
+  ServerGreeting g;
+  g.m_players=playerIDs;
   emit(g);
 }
+
 
 void 
 Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
 {
   assert(inputPtr.get());
-  PlayerInput i(*inputPtr.get(),playerID);
+  // we have to remap the device no to the player no
+  uint8_t devno=inputPtr->devno;
+  if (devno>=playerIDs.size()) {
+    DOPE_WARN("devno too big");
+    return;
+  }
+  PlayerInput i(*inputPtr.get(),playerIDs[devno]);
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
