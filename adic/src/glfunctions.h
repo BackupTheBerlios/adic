@@ -10,7 +10,7 @@ FUNC(void, glScalef,(float,float,float) );
 FUNC(void, glBegin,(unsigned int) );
 FUNC(void, glVertex2i,(int,int) );
 FUNC(void, glVertex2f,(float,float) );
-FUNC(void, glVertex3dv,(double *) );
+/* FUNC(void, glVertex3dv,(double *) ); */
 FUNC(void, glEnd,(void) );
 FUNC(void, glViewport,(int,int,int,int) );
 FUNC(void, glOrtho,(double,double,double,double,double,double) );
