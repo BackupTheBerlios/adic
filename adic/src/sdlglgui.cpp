@@ -9,10 +9,36 @@
 #include <GL/glu.h>	// Header File For The GLu32 Library
 #endif
 
+#define USE_DLOPEN
+
+#ifdef USE_DLOPEN
+#define LOOKUP(m,t) m##P=(t)SDL_GL_GetProcAddress(#m);DOPE_CHECK(m##P)
+#else
+#define LOOKUP(m,t) m##P=&m;DOPE_CHECK(m##P)
+#endif
+
 bool
 SDLGLGUI::init()
 {
   initSDL();
+  if (SDL_GL_LoadLibrary(m_config.libGL.c_str())==-1)
+    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+m_config.libGL.c_str()+"\": "+SDL_GetError());
+  LOOKUP(glClear,uintFunc);
+  LOOKUP(glMatrixMode,uintFunc);
+  LOOKUP(glLoadIdentity,voidFunc);
+  LOOKUP(glColor3f,fvec3Func);
+  LOOKUP(glTranslatef,fvec3Func);
+  LOOKUP(glBegin,uintFunc);
+  LOOKUP(glVertex2f,fvec2Func);
+  LOOKUP(glEnd,voidFunc);
+  LOOKUP(glViewport,ivec4Func);
+  LOOKUP(glOrtho,dvec6Func);
+  LOOKUP(glClearColor,fvec4Func);
+  LOOKUP(glPushMatrix,voidFunc);
+  LOOKUP(glPopMatrix,voidFunc);
+  LOOKUP(glGetFloatv,uintfloatPFunc);
+  LOOKUP(glLineWidth,floatFunc);
+
   createWindow(m_config.title.c_str(),m_config.width,m_config.height,m_config.bits,m_config.fullscreen);
   return true;
 }
@@ -80,11 +106,11 @@ SDLGLGUI::step(R dt)
 
   // Clear The Screen And The Depth Buffer
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClearP(GL_COLOR_BUFFER_BIT);
   // Reset The View
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glColor3f(1.0,1.0,1.0);
+  glMatrixModeP(GL_MODELVIEW);
+  glLoadIdentityP();
+  glColor3fP(1.0,1.0,1.0);
 
   // keep myself in the middle
   const Game::Players &players(m_client.getPlayers());
@@ -92,7 +118,7 @@ SDLGLGUI::step(R dt)
   uint16_t me=m_client.getPlayerID();
   if (me<players.size()) {
     V2D mypos(m_client.getPlayers()[me].m_pos);
-    glTranslatef(-mypos[0]+m_width/2,-mypos[1]+m_height/2,0);
+    glTranslatefP(-mypos[0]+m_width/2,-mypos[1]+m_height/2,0);
   }
 
   // paint world
@@ -112,29 +138,29 @@ SDLGLGUI::step(R dt)
     // paint doors
     std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
     Game::Doors &doors(m_client.getGame().getDoors());
-    glColor3f(0.0,0.0,1.0);
+    glColor3fP(0.0,0.0,1.0);
     for (unsigned d=0;d<doors.size();++d) {
       RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
       Wall w(rd.asWall());
       drawWall(w);
     }
-    glColor3f(1.0,1.0,1.0);    
+    glColor3fP(1.0,1.0,1.0);    
   }else{
     DOPE_WARN("Did not receive world yet");
   }
   // paint players
   for (unsigned p=0;p<players.size();++p)
     {
-      glColor3f(0.0,1.0,0.0);
+      glColor3fP(0.0,1.0,0.0);
       drawCircle(players[p].m_pos,players[p].m_r);
       V2D dv(V2D(0,100).rot(players[p].getDirection()));
-      glColor3f(1.0,1.0,0.0);
-      glBegin(GL_LINES);
-      glVertex2f(players[p].m_pos[0],players[p].m_pos[1]);
+      glColor3fP(1.0,1.0,0.0);
+      glBeginP(GL_LINES);
+      glVertex2fP(players[p].m_pos[0],players[p].m_pos[1]);
       dv+=players[p].m_pos;
-      glVertex2f(dv[0],dv[1]);
-      glEnd();
-      glColor3f(1.0,1.0,1.0);
+      glVertex2fP(dv[0],dv[1]);
+      glEndP();
+      glColor3fP(1.0,1.0,1.0);
     }
   
   SDL_GL_SwapBuffers();
@@ -152,11 +178,11 @@ void SDLGLGUI::resize(int width, int height)
   m_height=height;
 
   // Reset The Current Viewport
-  glViewport(0,0,width,height);
+  glViewportP(0,0,width,height);
   // Select The Projection Matrix
-  glMatrixMode(GL_PROJECTION);		
-  glLoadIdentity();
-  glOrtho(0.0f,width,0.0f,height,-100.0f,100.0f);
+  glMatrixModeP(GL_PROJECTION);		
+  glLoadIdentityP();
+  glOrthoP(0.0f,width,0.0f,height,-100.0f,100.0f);
 }
 
 void SDLGLGUI::initSDL() {
@@ -190,7 +216,7 @@ SDLGLGUI::createWindow(const char* title, int width, int height, int bits, bool 
 void
 SDLGLGUI::initGL() 
 {
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClearColorP(0.0f, 0.0f, 0.0f, 0.0f);
   /*
   glShadeModel(GL_SMOOTH);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -211,28 +237,28 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
 {
   double angle;
 
-  glPushMatrix();
-  glTranslatef(p[0], p[1], 0);
-  glBegin(GL_TRIANGLE_FAN);
-  glVertex2f(0, 0);
+  glPushMatrixP();
+  glTranslatefP(p[0], p[1], 0);
+  glBeginP(GL_TRIANGLE_FAN);
+  glVertex2fP(0, 0);
   for (angle = 0.0; angle <= 2 * M_PI; angle += M_PI / 12) {
-    glVertex2f(r * cos(angle), r * sin(angle));
+    glVertex2fP(r * cos(angle), r * sin(angle));
   }
-  glEnd();
-  glPopMatrix();
+  glEndP();
+  glPopMatrixP();
 }
 void
 SDLGLGUI::drawWall(const Wall &w)
 {
   float lw;
-  glGetFloatv(GL_LINE_WIDTH,&lw);
-  glLineWidth(2*w.getWallWidth());
+  glGetFloatvP(GL_LINE_WIDTH,&lw);
+  glLineWidthP(2*w.getWallWidth());
   Line l(w.getLine());
   drawCircle(l.m_a,w.getPillarRadius());
   drawCircle(l.m_b,w.getPillarRadius());
-  glBegin(GL_LINES);
-  glVertex2f(l.m_a[0],l.m_a[1]);
-  glVertex2f(l.m_b[0],l.m_b[1]);
-  glEnd();
-  glLineWidth(lw);
+  glBeginP(GL_LINES);
+  glVertex2fP(l.m_a[0],l.m_a[1]);
+  glVertex2fP(l.m_b[0],l.m_b[1]);
+  glEndP();
+  glLineWidthP(lw);
 }

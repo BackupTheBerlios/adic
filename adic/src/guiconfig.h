@@ -30,11 +30,13 @@
 struct GUIConfig
 {
   GUIConfig() 
-    : implementation("SDLGLGUI"), title(PACKAGE), width(640), height(480), bits(32), fullscreen(false)
+    : implementation("SDLGLGUI"), title(PACKAGE), libGL("/usr/lib/libGL.so"), 
+    width(640), height(480), bits(32), fullscreen(false)
   {}
   
   std::string implementation;
   std::string title;
+  std::string libGL;
   int width;
   int height;
   int bits;
@@ -43,8 +45,8 @@ struct GUIConfig
   template <typename Layer2>
   void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(implementation)
-      .SIMPLE(title).SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen);
+    layer2.SIMPLE(implementation).SIMPLE(title).SIMPLE(libGL)
+      .SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen);
   }
 };
 DOPE_CLASS(GUIConfig);

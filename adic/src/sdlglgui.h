@@ -49,6 +49,38 @@ protected:
   Input i;
   int m_width;
   int m_height;
+
+  typedef void (*voidFunc)(void);
+  typedef void (*intFunc)(int);
+  typedef void (*uintFunc)(unsigned int);
+  typedef void (*floatFunc)(float);
+  typedef void (*fvec2Func)(float,float);
+  typedef void (*fvec3Func)(float,float,float);
+  typedef void (*fvec4Func)(float,float,float,float);
+  typedef void (*fvec5Func)(float,float,float,float,float);
+  typedef void (*fvec6Func)(float,float,float,float,float,float);
+  typedef void (*dvec6Func)(double,double,double,double,double,double);
+  typedef void (*ivec4Func)(int,int,int,int);
+  typedef void (*uintfloatPFunc)(unsigned int, float *);
+#define LOOKUP(m,t) t m##P
+
+  LOOKUP(glClear,uintFunc);
+  LOOKUP(glMatrixMode,uintFunc);
+  LOOKUP(glLoadIdentity,voidFunc);
+  LOOKUP(glColor3f,fvec3Func);
+  LOOKUP(glTranslatef,fvec3Func);
+  LOOKUP(glBegin,uintFunc);
+  LOOKUP(glVertex2f,fvec2Func);
+  LOOKUP(glEnd,voidFunc);
+  LOOKUP(glViewport,ivec4Func);
+  LOOKUP(glOrtho,dvec6Func);
+  LOOKUP(glClearColor,fvec4Func);
+  LOOKUP(glPushMatrix,voidFunc);
+  LOOKUP(glPopMatrix,voidFunc);
+  LOOKUP(glGetFloatv,uintfloatPFunc);
+  LOOKUP(glLineWidth,floatFunc);
+  
+#undef LOOKUP
 };
 
 #endif
