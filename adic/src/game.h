@@ -30,8 +30,53 @@
 #include "door.h"
 #include "icon.h"
 #include "uriloader.h"
+#include "wall.h"
 
 class PlayerInput;
+
+//! door in the world coord system
+class RealDoor
+{
+  Door &d;
+  V2D s;
+  V2D e;
+  R mass;
+public:
+  RealDoor(Door &_d, const V2D &_s, const V2D &_e)
+    : d(_d), s(_s), e(_e), mass(0.01)
+  {}
+  Wall asWall()
+  {
+    Wall r(Line(s,s+(e-s).rot(d.getAngle())));
+    return r;
+  }
+  //! get speed at specific point of door
+  /*!
+    \todo in fact we want to get the momentum - and this should be /dist ?
+  */
+  V2D getImpuls(R dist)
+  {
+    R tSpeed=d.getSpeed()*dist*2*M_PI*mass;
+    // calculate normal
+    V2D dv((e-s).rot(d.getAngle()));
+    dv.rot90();
+    dv.normalize();
+    dv*=tSpeed;
+    return dv;
+  }
+  //! apply impuls at specific point of door
+  void applyImpuls(R dist, V2D impuls)
+  {
+    V2D n((e-s).rot(d.getAngle()));
+    n.rot90();
+    V2D i(n.project(impuls));
+    R m=i.length();
+    if (n.dot(i)<0)
+      m=-m;
+    d.addSpeed(m/(dist*2*M_PI*mass));
+  }
+};
+
 
 class Game
 {
@@ -65,14 +110,12 @@ public:
 
   //! get World Ptr
   /*!
+    if meshptr != NULL but worldPtr==NULL the world and doors will be initialized
+
     \returns worldPtr - may be a NULL pointer
   */
-  WorldPtr getWorldPtr()
-  {
-    if (m_meshPtr.get()&&(!m_worldPtr.get()))
-      m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
-    return m_worldPtr;
-  }
+  WorldPtr getWorldPtr();
+
   const Players &getPlayers() const
   {
     return m_players;
@@ -89,6 +132,21 @@ public:
 
   void setInput(const PlayerInput &i);
 
+  //! collide door and player
+  /*!
+    \param rollbackdoor if true the door is rollbacked if false the player is rollbacked on collision
+
+    \return true on collision otherwise false
+  */
+  bool collideDoorAndPlayer(Door &d, Player &p);
+  
+  //! return corresponding RealDoor to a door
+  RealDoor doorInWorld(Door &d);
+  
+  Doors &getDoors()
+  {
+    return m_doors;
+  }
 protected:
   Players m_players;
   Icons m_icons;
