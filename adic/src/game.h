@@ -121,7 +121,8 @@ public:
   typedef std::vector<Door> Doors;
   typedef GenericPointer<Mesh, std::string, URILoader<URICache<Mesh> > > MeshPtr;
   typedef DOPE_SMARTPTR<World> WorldPtr;
-  
+  typedef std::map<unsigned,FWEdge::RoomID> PlayerRoomMap;
+
   Game() 
   {init();}
   Game(const std::string &meshURI) : m_meshPtr(meshURI)
@@ -191,8 +192,23 @@ public:
   {
     return m_timeStamp;
   }
+  FWEdge::RoomID playerInRoom(unsigned p);
+
+  const std::vector<FWEdge::RoomID> &getClosedRooms() const
+  {
+    return m_closedRooms;
+  }
+  bool roomIsClosed(FWEdge::RoomID r) const
+  {
+    return (find(m_closedRooms.begin(),m_closedRooms.end(),r)!=m_closedRooms.end());
+  }
+  bool playerIsLocked(unsigned p)
+  {
+    return roomIsClosed(playerInRoom(p));
+  }
 protected:
   bool miniStep(R dt);
+  void calcClosedRooms();
 
   Players m_players;
   Icons m_icons;
@@ -204,6 +220,12 @@ protected:
 
   //! accumulator
   R m_stepFault;
+
+  //! players where in this room
+  PlayerRoomMap m_playerRoomMap;
+
+  //! all closed rooms
+  std::vector<FWEdge::RoomID> m_closedRooms;
 };
 DOPE_CLASS(Game);
 
