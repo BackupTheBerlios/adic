@@ -1,3 +1,21 @@
+adic (0.9.4) unstable; urgency=low
+
+  * improved camera scroll 
+    (take speed into account when setting wished camera position)
+  * auto rotation can now be seperately enabled/disabled (Key: "3")
+  * camera setting on level start respects users settings 
+    of auto-rotation/zoom/scroll
+  * fixed bug: scrolling was "wrong" if rotated
+  * all player data is now relative to default.xml
+    (relative means multiplied with the default)
+  * adjusted parameters (faster, faster acceleration)
+  * maxfitness wasn't used - now it is.
+    This means you can run for some time without loosing speed 
+    if you embrassed a team mate or drunk from a fountain. 
+    (the fountain gives you a 20% speed boost for some time)
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Tue, 13 May 2003 21:12:49 +0200
+
 adic (0.9.3) unstable; urgency=low
 
   * added music by Éric Tremblay
