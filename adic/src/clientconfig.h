@@ -89,9 +89,8 @@ inline void composite(Layer2 &layer2, GUIClientConfig &c)
 //! configuration of bot client
 struct BotClientConfig : public ClientConfig
 {
-  BotClientConfig()
-  {
-  }
+  BotClientConfig() : implementation("KarmeBot")
+  {}
 
   void setDefaults() 
   {

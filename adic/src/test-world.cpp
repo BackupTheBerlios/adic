@@ -25,6 +25,10 @@
 #include "world.h"
 
 #include <fstream>
+#include <dope/xmlsaxinstream.h>
+#include <dope/dopestl.h>
+
+typedef XMLSAXInStream<std::streambuf> ConfigInStream;
 
 int main(int argc, char** argv)
 {

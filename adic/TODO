@@ -60,6 +60,7 @@ FEATURES:
 
 
 BUGS/QUESTIONS:
+- on win32 systems textures get corrupted if you switch between windowed and fullscreen mode
 - the wall collide return -cv instead of cv
 - it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO
 - win codition wrong ? teamStat wrong ? i think this is fixed now
@@ -104,4 +105,4 @@ CROSS-COMPILE to WIN with mingw:
   now i could use std::min/max again
 - wrong GL.h is included - i think simply disabling the check should be enough if SDL
   is configured correct - i disabled the check is it fixed now ?
-- adic client still just crashes win
+
