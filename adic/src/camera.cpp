@@ -11,14 +11,20 @@ static V interpolate(V c, V w, R dt)
 Camera::Camera()
   : m_mpSpeed(800),
     m_wZoom(1), m_cZoom(1), m_czSpeed(0), m_mzSpeed(8),
-    m_wRotate(0), m_cRotate(0), m_crSpeed(0), m_mrSpeed(360),
+    m_wRotate(0), m_cRotate(0), 
+    m_crSpeed(0), m_mrSpeed(360), // todo here we assume degrees
     m_age(0)
 {}
 
-Camera::Camera(const V2D &pos, R zoom, R rotate)
-  : m_wPos(pos), m_cPos(pos), m_mpSpeed(800),
-    m_wZoom(1), m_cZoom(zoom), m_czSpeed(0), m_mzSpeed(8),
-    m_wRotate(0), m_cRotate(rotate), m_crSpeed(0), m_mrSpeed(360),
+Camera::Camera(const V2D &cpos, const V2D &wpos,
+	       R czoom, R wzoom, 
+	       R crotate, R wrotate)
+  : m_wPos(wpos), m_cPos(cpos), 
+    m_mpSpeed(800),
+    m_wZoom(wzoom), m_cZoom(czoom), 
+    m_czSpeed(0), m_mzSpeed(8),
+    m_wRotate(wrotate), m_cRotate(crotate),
+    m_crSpeed(0), m_mrSpeed(360), // todo here we assume degrees
     m_age(0)
 {}
 

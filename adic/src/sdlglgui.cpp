@@ -9,6 +9,7 @@ SDLGLGUI::SDLGLGUI(Client &client)
     //    m_textureTime(5), 
     m_autoCenter(true), 
     m_zoomOp(0), m_autoZoom(true),
+    m_rotateOp(0), m_autoRotate(true),
     m_showNames(true),
     m_quit(false), m_frames(0),
     m_chatMode(0), m_lineSmooth(getGUIConfig().quality>1), m_toggles(~0)
@@ -306,6 +307,20 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     }else
       m_zoomOp=0;
     return true;
+  case SDLK_KP_DIVIDE:
+    if (pressed) {
+      m_autoRotate=false;
+      m_rotateOp=1;
+    }else
+      m_rotateOp=0;
+    return true;
+  case SDLK_KP_MULTIPLY:
+    if (pressed) {
+      m_autoRotate=false;
+      m_rotateOp=-1;
+    }else
+      m_rotateOp=0;
+    return true;
   case SDLK_1:
     if (pressed) 
       m_autoZoom=!m_autoZoom;
@@ -313,6 +328,10 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
   case SDLK_2:
     if (pressed) 
       m_autoCenter=!m_autoCenter;
+    return true;
+  case SDLK_3:
+    if (pressed)
+      m_autoRotate=!m_autoRotate;
     return true;
   case SDLK_ESCAPE:
     m_quit=true;
@@ -356,7 +375,6 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     }
     return true;
     break;
-  case SDLK_3:
   case SDLK_4:
   case SDLK_5:
   case SDLK_6:
@@ -456,19 +474,24 @@ SDLGLGUI::step(R dt)
   if (worldPtr.get()) {
     if (!m_haveWorld) {
       // got new world => set up camera
+      // we set the camera into the middle of the level and zoom out (current values)
+      // to make the complete map visible
+      // the first x seconds the camera won't move/zoom/rotate to the wished values
       const V2D& tl(worldPtr->getTopLeft());
       const V2D& br(worldPtr->getBottomRight());
       V2D p(tl+br);
       p*=0.5;
       R xzoom=double(m_width)/(br[0]-tl[0]);
       R yzoom=double(m_height)/(tl[1]-br[1]);
-      m_camera=Camera(p,std::min(std::min(xzoom,yzoom)*R(0.9),R(2.0)),R(360));
+      R zoom=std::min(std::min(xzoom,yzoom)*R(0.9),R(2.0));
+      R wzoom=m_autoZoom ? 1 : zoom;
+      R rotate=m_autoRotate ? R(360) : 0;
+      m_camera=Camera(p,p,zoom,wzoom,rotate,0);
     }
     m_haveWorld=true;
     
     if (m_toggles&(1<<8)) drawPolys();
-    if (m_toggles&(1<<3)) drawWalls();
-    if (m_toggles&(1<<4)) drawDoors();
+    if (m_toggles&(1<<4)) {drawWalls();drawDoors();}
     if (m_toggles&(1<<5)) drawPillars();
     if (m_toggles&(1<<6)) drawPlayers(dt);
     if (m_toggles&(1<<7)) drawTeamStat();
@@ -932,7 +955,7 @@ SDLGLGUI::setupCamera(R dt)
   const Game::Players &players(m_client.getPlayers());
   
   const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
-  if (m_autoCenter||m_autoZoom&&(!myIDs.empty())) {
+  if ((m_autoCenter||m_autoZoom||m_autoRotate)&&(!myIDs.empty())) {
     R big=10000000000.0;
     V2D minp(big,big);
     V2D maxp;
@@ -960,20 +983,20 @@ SDLGLGUI::setupCamera(R dt)
       if (m_autoCenter) {
 	V2D pos(maxp+minp);
 	pos*=0.5;
-	/*
-	  pos[0]=int(pos[0]);
-	  pos[1]=int(pos[1]);
-	  m_camera.setPos(pos+V2D(0.375f,0.375f));
+	/* i think this was to stop player names on beiing on subpixels
+	   pos[0]=int(pos[0]);
+	   pos[1]=int(pos[1]);
+	   m_camera.setPos(pos+V2D(0.375f,0.375f));
 	*/
 	m_camera.setPos(pos);
       }
       if ((c>1)&&m_autoZoom) {
 	maxp-=minp;
-	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+500.0);
-	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+500.0);
+	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+200.0);
+	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+200.0);
 	m_camera.setZoom(std::min(std::min(xzoom,yzoom),R(2.0)));
       }
-      if (c==1) {
+      if ((c==1)&&(m_autoRotate)) {
 	assert(myIDs.size());
 	assert(myIDs[0]<players.size());
 	m_camera.setRotate(-players[myIDs[0]].getDirection()*180/M_PI);
@@ -981,16 +1004,21 @@ SDLGLGUI::setupCamera(R dt)
     }
   }
   if (m_scrollOp[0]||m_scrollOp[1]) {
+    R r=-m_camera.getRotate()*M_PI/180;
     V2D s(m_scrollOp[0],m_scrollOp[1]);
     s*=dt*400/getZoom();
-    m_camera.setPos(m_camera.getWPos()+s);
+    m_camera.setPos(m_camera.getWPos()+s.rot(r));
   }
   if (m_zoomOp) {
     m_camera.setZoom(std::max(R(m_camera.getWZoom()*(1.0+0.4*dt*R(m_zoomOp))),R(0.1)));
   }
-
+  if (m_rotateOp) {
+    m_camera.setRotate(m_camera.getWRotate()+R(180)*R(m_rotateOp)*dt);
+  }
+  
   m_camera.step(dt);
 
+  // read backwards (opengl multiplies matrixes from the left)
   glTranslatef(m_width/2,m_height/2,0);
   glScalef(getZoom(),getZoom(),1);
   glRotatef(-getRotate(),0,0,1);

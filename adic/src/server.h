@@ -50,8 +50,8 @@ struct ServerConfig : public CommonConfig
   ServerConfig() : m_broadcastFreq(90)
   {
     m_meshURIs.push_back("data:adic.xml");
-    m_meshURIs.push_back("data:bigworld.xml");
     m_meshURIs.push_back("data:mesh.xml");
+    m_meshURIs.push_back("data:bigworld.xml");
   }
   
   std::vector<std::string> m_meshURIs;

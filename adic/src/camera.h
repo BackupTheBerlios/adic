@@ -26,12 +26,18 @@
 #define CAMERA_H
 
 #include "vector2d.h"
-
+//! camera
+/*!
+  You can set position, zoom and rotation to a wished position
+  and the camera will smoothly try to reach them
+*/
 class Camera
 {
 public:
   Camera();
-  Camera(const V2D &pos, R zoom, R rotate);
+  Camera(const V2D &cpos, const V2D &wpos,
+	 R czoom, R wzoom, 
+	 R crotate, R wrotate);
 
   ~Camera();
 

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2002 Jens Thiele <karme@berlios.de>
  * 
@@ -163,6 +164,10 @@ protected:
   bool m_texCircle;
   std::vector<DOPE_SMARTPTR<Texture> > m_roomTextures;
 
+  //! our camera
+  /*!
+    \note here we are using degrees and a left hand coordinate system
+  */
   Camera m_camera;
   
   int m_scrollOp[2];
@@ -171,6 +176,8 @@ protected:
   int m_zoomOp;
   bool m_autoZoom;
 
+  int m_rotateOp;
+  bool m_autoRotate;
   
   typedef std::map<std::string, DOPE_SMARTPTR<Texture> > Textures;
   Textures m_textures;
