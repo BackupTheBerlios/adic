@@ -54,13 +54,15 @@ typedef Uint16 uint16_t;
 typedef Sint16 int16_t; 
 typedef Uint32 uint32_t; 
 typedef Sint32 int32_t; 
- 
+typedef Uint64 uint64_t;
+typedef Sint64 int64_t;
 #endif 
 #endif 
 
 typedef float R;
 typedef uint16_t PlayerID;
 typedef uint16_t TeamID;
+typedef int64_t Frame;
 
 #ifndef M_PI
 #define M_PI  3.1415926535f

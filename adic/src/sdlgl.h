@@ -28,6 +28,7 @@
 #include "typedefs.h"
 
 #if defined(WINDOOF)
+// define NOMINMAX - otherwise min and max are defined as macros !
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX

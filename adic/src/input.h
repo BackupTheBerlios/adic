@@ -62,20 +62,26 @@ inline void composite(Layer2 &layer2, Input &g)
 
 struct PlayerInput
 {
-  PlayerInput(const Input &_i, PlayerID _id) 
-    : i(_i), id(_id)
+  PlayerInput(const Input &_i, PlayerID _id, Frame _frame) 
+    : i(_i),
+      id(_id),
+      frame(_frame)
   {}
   PlayerInput()
-    : id(~0U)
+    : id(~0U),
+      frame(0)
   {}
   
   Input i;
   PlayerID id;
+  Frame frame;
 
   template <typename Layer2>
   void composite(Layer2 &l2)
   {
-    l2.SIMPLE(i).SIMPLE(id);
+    l2.SIMPLE(i)
+      .SIMPLE(id)
+      .SIMPLE(frame);
   }
 };
 DOPE_CLASS(PlayerInput);

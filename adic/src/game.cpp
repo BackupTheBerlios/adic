@@ -43,8 +43,10 @@ Game::init()
 {
   m_stepFault=0;
   m_replaceDropped=false;
+  m_frame=0;
 }
 
+/*
 bool
 Game::step(R dt)
 {
@@ -59,7 +61,7 @@ Game::step(R dt)
     }
   m_stepFault=dt;
   return true;
-}
+  }*/
 
 FWEdge::RoomID
 Game::calcPlayerInRoom(unsigned p)
@@ -185,9 +187,11 @@ Game::collidePlayer(unsigned pid, bool test)
 
 
 bool
-Game::miniStep(R dt)
+Game::step(R dt)
+  //Game::miniStep(R dt)
 {
   m_timeStamp+=TimeStamp(dt);
+  ++m_frame;
   for (unsigned p=0;p<m_players.size();++p)
     {
       const WorldPtr &w(getWorldPtr());
@@ -304,13 +308,16 @@ Game::setInput(const PlayerInput &i)
       DOPE_WARN("id out of range: "<<i.id<<">="<<m_players.size());
       return;
     }
+  std::cerr << "\nInput Lag: "<<(m_frame-i.frame)<<" frames\n";
   m_players[i.id].setControl(i.i.x,i.i.y);
 }
 
 void 
-Game::replace(Game &o, int lagCompensation)
+Game::replace(Game &o, bool lagCompensation)
 {
+  std::cerr << "\nLag: "<<(m_frame-o.m_frame)<<" frames\n";
   if (lagCompensation) {
+    /*
     TimeStamp myTime(getTimeStamp());
     TimeStamp serverTime(o.getTimeStamp());
     // lag compensation
@@ -348,7 +355,7 @@ Game::replace(Game &o, int lagCompensation)
       TimeStamp lag(serverTime-myTime);
       R dt=lag.getSec()+R(lag.getUSec())/1000000;
       std::cerr << "\nAnti-Lag: "<<dt<<" sec.";
-    }
+      }*/
   }
   
   // m_players
@@ -386,6 +393,7 @@ Game::replace(Game &o, int lagCompensation)
   calcClosedRooms();
   m_meshPtr=o.m_meshPtr;
   m_timeStamp=o.m_timeStamp;
+  m_frame=o.m_frame;
 }
 
 
@@ -431,6 +439,7 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
 {
   assert(did<m_doors.size());
   Door &d(m_doors[did]);
+
   // check if player and door are in the same room
   const WorldPtr &wp(getWorldPtr());
   DOPE_CHECK(wp.get());

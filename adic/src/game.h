@@ -108,7 +108,12 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(m_players).SIMPLE(m_icons).SIMPLE(m_doors).SIMPLE(m_meshPtr).SIMPLE(m_timeStamp);
+    layer2.SIMPLE(m_players)
+      .SIMPLE(m_icons)
+      .SIMPLE(m_doors)
+      .SIMPLE(m_meshPtr)
+      .SIMPLE(m_timeStamp)
+      .SIMPLE(m_frame);
     // karme 2002-05-30:
     // m_worldPtr is not listed here because I did not solve the "reentrance" problem in DOPE++ yet
     // (s.a. dope TODO and xmlsaxinstream.h) and i pickle m_meshPtr instead to work around the problem
@@ -138,7 +143,7 @@ public:
   
   void setInput(const PlayerInput &i);
 
-  void replace(Game &o, int lagCompensation=0);
+  void replace(Game &o, bool lagCompensation=false);
   
   //! collide player with world (players, walls, doors)
   /*!
@@ -284,11 +289,16 @@ public:
 	    - 2 if it ended in a draw
   */
   int getWinner(TeamID &teamID);
+
+  Frame getFrame() const
+  {
+    return m_frame;
+  }
   
   //! do everything needed for a restart
   void restart();
 protected:
-  bool miniStep(R dt);
+  //  bool miniStep(R dt);
   void calcClosedRooms();
 
   Players m_players;
@@ -298,7 +308,8 @@ protected:
   //! pointer to world
   WorldPtr m_worldPtr;
   TimeStamp m_timeStamp;
-
+  Frame m_frame;
+  
   //! accumulator
   R m_stepFault;
 

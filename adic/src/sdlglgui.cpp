@@ -962,66 +962,101 @@ SDLGLGUI::setupCamera(R dt)
 void
 SDLGLGUI::drawWalls()
 {
-  /* 
-     did not significantly improve performance and does not look good 
-     // backup line width
-     float lw;
-     glGetFloatv(GL_LINE_WIDTH,&lw);
+  // TODO: this is really slow
 
-     // we assume all walls have the same thickness
-     Wall dummy;
-     R wt=dummy.getWallWidth();
-  
-     float nlw=wt*2*getZoom();
-     if (!m_lineSmooth) nlw=ceil(nlw); // todo this is not enough
-     // now set the line width
-     glLineWidth(nlw);
-  
-     // for each wall we paint 2 lines
-     const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
-     Game &game(m_client.getGame());
-
-     int oldtype=0;
-     glColor3f(0.0,0.5,0.0);
-     for (unsigned r=0;r<worldPtr->getNumRooms();++r) {
-     glBegin(GL_LINE_STRIP);
-     World::EdgeIterator it(*worldPtr.get(),r);
-     World::EdgeIterator end(*worldPtr.get());
-     while (it!=end) {
-     const FWEdge &e(it.getEdge());
-     int door=e.isDoor();
-     V2D a(it.getStartPoint());
-     V2D b(it.getEndPoint());
-     V2D n((b-a).normalize().rot90());
-     a+=n*wt;
-     b+=n*wt;
-     int closed=(it.getCW()) ? game.roomIsClosed(e.m_rcw) : game.roomIsClosed(e.m_rccw);
-     int type=closed;
-     type|=(door<<1);
-     if (type!=oldtype) {
-     float s=(door ? 0.3 : 0.6);
-     if (closed) glColor3f(s,0.0,0.0);
-     else glColor3f(0.0,s,0.0);
-     }
-     glVertex2f(a[0],a[1]);
-     glVertex2f(b[0],b[1]);
-     ++it;
-     }
-     glEnd();
-     }*/
-  
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
   unsigned wc=worldPtr->getNumWalls();
+  if (!wc) return;
+  
+  // backup line width
+  float lw;
+  glGetFloatv(GL_LINE_WIDTH,&lw);
+
+  int q=getGUIConfig().quality;
+  float nlw;
+  int numlines=3;
+
+  // TODO: we assume all walls have the same width
+  Wall w;
+  worldPtr->getWall(0,w);
+  float wt=w.getWallWidth();
+
+  nlw=wt*getZoom()/float(numlines);
+  if (m_lineSmooth) {
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+  }
+  // now set the line width
+  glLineWidth(nlw);
+
+
   for (unsigned wid=0;wid<wc;++wid)
     {
-      Wall w;
       if (worldPtr->getWall(wid,w)) {
 	const FWEdge &e=worldPtr->getEdge(wid);
 	bool cwClosed=m_client.getGame().roomIsClosed(e.m_rcw);
 	bool ccwClosed=m_client.getGame().roomIsClosed(e.m_rccw);
-	drawWall(w,cwClosed,ccwClosed);
+
+	//drawWall(w,cwClosed,ccwClosed);
+
+	if (q<=1) {
+	  // TODO: test if this is really faster than
+	  // always drawing two lines without setting a new line width
+	  // especially with mesa - because this is the target for low
+	  // quality mode
+
+	  // in low quality mode we only draw 1 or 2 lines
+	  numlines=(cwClosed==ccwClosed) ? 1 : 2;
+	  nlw=wt*getZoom()/float(numlines);
+	  glLineWidth(nlw);
+	}
+	
+	Line l(w.getLine());
+	const V2D &ln(l.normal());
+	if (numlines>1) {
+	  // draw clockwise side
+	  V2D a(l.m_a);
+	  V2D b(l.m_b);
+	  float o=wt/numlines;
+	  a+=ln*o;
+	  b+=ln*o;
+	  if (cwClosed) glColor3f(0.5,0.0,0.0);
+	  else glColor3f(0.0,0.5,0.0);
+	  glBegin(GL_LINES);
+	  glVertex2f(a[0],a[1]);
+	  glVertex2f(b[0],b[1]);
+	  glEnd();
+	  // draw counter clockwise side
+	  a=l.m_a;
+	  b=l.m_b;
+	  a+=ln*-o;
+	  b+=ln*-o;
+	  if (ccwClosed) glColor3f(0.5,0.0,0.0);
+	  else glColor3f(0.0,0.5,0.0);
+	  glBegin(GL_LINES);
+	  glVertex2f(a[0],a[1]);
+	  glVertex2f(b[0],b[1]);
+	  glEnd();
+	}
+	if (numlines!=2) {
+	  // draw middle    
+	  float hs=(numlines<3) ? 0.5f : 0.7f;
+	  if (cwClosed&&ccwClosed) glColor3f(hs,0.0,0.0);
+	  else if (cwClosed||ccwClosed) glColor3f(hs,0.4,0.0);
+	  else glColor3f(0.0,hs,0.0);
+	  V2D a(l.m_a);
+	  V2D b(l.m_b);
+	  glBegin(GL_LINES);
+	  glVertex2f(a[0],a[1]);
+	  glVertex2f(b[0],b[1]);
+	  glEnd();
+	}
       }
     }
+  
+  // restore linewidth
+  glLineWidth(lw);
+  if (m_lineSmooth) glDisable(GL_BLEND);
 }
 
 void

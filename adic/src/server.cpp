@@ -86,7 +86,7 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
     DOPE_WARN("devno too big");
     return;
   }
-  PlayerInput i(*inputPtr.get(),playerIDs[devno]);
+  PlayerInput i(*inputPtr.get(),playerIDs[devno],server.getFrame());
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
@@ -271,33 +271,47 @@ Server::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less (ca. 50) because of the min sleep problem
+  TimeStamp stepSize(0,12500);
+  TimeStamp frameSize(stepSize);
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;
   oldTime.now();
   unsigned frames=0;
-  R maxLatency=0;
   while (!quit) {
-    // todo - should it be a loop while(dataAvailable?)
-    listener.select(&null); // test for input and emit signals if input is available
+    listener.select(&null); // test for input and emit corresponding signals
     newTime.now();
     dt=newTime-oldTime;
-    while(dt<minStep) {
-      timeOut=(minStep-dt);
+    // consume remaining time (this is the end of one frame)
+    while(dt<frameSize) {
+      timeOut=(frameSize-dt);
       listener.select(&timeOut);
       newTime.now();
       dt=newTime-oldTime;
     }
-    TimeStamp ltStart;
-    ltStart.now();
-    // main work
-    // todo move the loop from game::step here
-    // perhaps it really does not matter
-    // the introduced latency is measured and stored in maxLatency
-    // my max was: 0.000881 - which isn't too much
-    R rdt(R(dt.getSec())+R(dt.getUSec())/1000000);
-    m_game.step(rdt);
+    // last frame size was dt
+    // and it should have been frameSize
+    std::cerr << "\nLast frame took: "
+	      << (R(dt.getSec())+(R(dt.getUSec())/1000000))
+	      << " and should have taken: "
+	      << (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+    frameSize=(dt-frameSize);
+    int eframes=1;
+    while (frameSize>stepSize) {
+      ++eframes;
+      frameSize-=stepSize;
+    }
+    frameSize=stepSize-frameSize;
+    std::cerr << "\nFramesize: "<< (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+    if (eframes>1) {
+      DOPE_WARN("\nmachine too slow: calculate "<<eframes<<" frames at once");
+    }
+
+    // start of one frame
+    R rdt(R(stepSize.getSec())+R(stepSize.getUSec())/1000000);
+    for (int f=0;f<eframes;++f)
+      m_game.step(rdt);
+
     // todo perhaps choose different frames for different clients
     if (!(frames%m_config.m_broadcastFreq))
       broadcast(m_game);
@@ -325,11 +339,6 @@ Server::main()
     std::cout << "\rUp: " << std::fixed << std::setprecision(2) << std::setw(8) << uptime 
 	      << " FPS: " << std::setw(6) << R(frames)/uptime 
 	      << " Frame: " << std::setw(8) << frames;
-    TimeStamp ltEnd;
-    ltEnd.now();
-    ltEnd-=ltStart;
-    R clt(R(ltEnd.getSec())+R(ltEnd.getUSec())/1000000);
-    maxLatency=std::max(maxLatency,clt);
   }
   connections.clear();
 
@@ -347,7 +356,6 @@ Server::main()
       DOPE_WARN("Could not connect to Metaserver\n");
     }
   }
-  std::cerr << "Max (reduceable) latency was: "<<maxLatency<<"\n";
   return 0;
 }
 

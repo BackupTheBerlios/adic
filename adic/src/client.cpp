@@ -79,7 +79,7 @@ void
 Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
 {
   assert(gPtr.get());
-  m_game.replace(*gPtr);
+  m_game.replace(*gPtr,m_config.m_lagCompensation);
   //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
 }
@@ -105,6 +105,7 @@ void
 Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
   DOPE_CHECK(iPtr.get());
+  // todo: implement lag compensation => input queue
   m_game.setInput(*iPtr.get());
     //    std::cerr << "\nGot Input\n";
 }
@@ -291,7 +292,8 @@ Client::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less (ca. 50) because of the min sleep problem
+  TimeStamp stepSize(0,12500);
+  TimeStamp frameSize(stepSize);
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;
@@ -321,8 +323,8 @@ Client::main()
   while (!m_quit) {
     newTime.now();
     dt=newTime-oldTime;
-    while(dt<minStep) {
-      timeOut=(minStep-dt);
+    while(dt<frameSize) {
+      timeOut=(frameSize-dt);
       if (m_streamPtr.get()) {
 	// we check for incoming messages here to reduce latency
 	// for input messages
@@ -338,12 +340,33 @@ Client::main()
       newTime.now();
       dt=newTime-oldTime;
     }
+    // last frame size was dt
+    // and it should have been frameSize
+    std::cerr << "\nLast frame took: "
+	      << (R(dt.getSec())+(R(dt.getUSec())/1000000))
+	      << " and should have taken: "
+	      << (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+    frameSize=(dt-frameSize);
+    // the new framesize should be stepSize-frameSize
+    int eframes=1;
+    // if this would be negative we skip some frames
+    while (frameSize>stepSize) {
+      ++eframes;
+      frameSize-=stepSize;
+    }
+    frameSize=stepSize-frameSize;
+    std::cerr << "\nNext frame size: "<< (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+    if (eframes>1) {
+      DOPE_WARN(" (machine too slow: calculate "<<eframes<<" frames at once)");
+    }
+
+    // start of one frame
     // do main work
-    R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
-    // game
-    m_game.step(rdt);
+    R rdt(R(stepSize.getSec())+R(stepSize.getUSec())/1000000);
+    for (int f=0;f<eframes;++f)
+      m_game.step(rdt);
     // gui
-    if (!m_guiPtr->step(rdt))
+    if (!m_guiPtr->step(rdt*eframes))
       m_quit=true;
     // sound
     if (m_soundPtr.get()) {
@@ -371,7 +394,7 @@ Client::main()
 	  m_soundPtr->stopChannel(c);
       }
       */
-      m_soundPtr->step(rdt);
+      m_soundPtr->step(rdt*eframes);
     }
     if (m_streamPtr.get()) m_streamPtr->readAll();
 

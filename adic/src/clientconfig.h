@@ -36,7 +36,9 @@
 //! configuration all clients have in common (gui client and bot client)
 struct ClientConfig : public CommonConfig
 {
-  ClientConfig() : m_server("localhost")
+  ClientConfig() 
+    : m_server("localhost"),
+      m_lagCompensation(true)
   {}
   
   void setDefaults() 
@@ -59,13 +61,16 @@ struct ClientConfig : public CommonConfig
   
   std::string m_server;
   UserSetting m_users;
+  bool m_lagCompensation;
 };
 DOPE_CLASS(ClientConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ClientConfig &c)
 {
   composite(layer2,static_cast<CommonConfig &>(c));
-  layer2.simple(c.m_server,"server").simple(c.m_users,"users");
+  layer2.simple(c.m_server,"server")
+    .simple(c.m_users,"users")
+    .simple(c.m_lagCompensation,"lagCompensation");
 }
 
 //! configuration of GUI client

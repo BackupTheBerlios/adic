@@ -47,7 +47,7 @@
 //! server configuration
 struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(50)
+  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(40)
   {}
   
   std::string m_meshURI;
@@ -206,6 +206,12 @@ public:
     \return Team or NULL
   */
   Team *getWeakestTeam();
+
+  //! get frame number
+  Frame getFrame() const
+  {
+    return m_game.getFrame();
+  }
   
   void handleNewConnection(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf> streamPtr)
   {
