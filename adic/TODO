@@ -1,3 +1,6 @@
+änderungen reinmachen
+
+
 habe grad nen crash
 und zwar bei xmlsaxinstream
 src/gameserver --file=file:data/world.xml

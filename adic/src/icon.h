@@ -35,6 +35,21 @@
 */
 class Icon : public RoundObject
 {
+public:
+  template <typename Layer2>
+  inline void composite(Layer2 &layer2)
+  {
+  }
+  bool step(R dt)
+  {
+    return true;
+  }
 };
+DOPE_CLASS(Icon);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Icon &x)
+{
+  x.composite(layer2);
+}
 
 #endif

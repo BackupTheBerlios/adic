@@ -49,33 +49,6 @@ public:
   // use default copy constructor - compiler creates it
   // V2D(const V2D &o)
 
-  V2D &add(const V2D &o)
-  {
-    m_v[0]+=o.m_v[0];
-    m_v[1]+=o.m_v[1];
-    return *this;
-  }
-
-  V2D &sub(const V2D &o)
-  {
-    m_v[0]-=o.m_v[0];
-    m_v[1]-=o.m_v[1];
-    return *this;
-  }
-
-  V2D &mul(R s)
-  {
-    m_v[0]*=s;
-    m_v[1]*=s;
-    return *this;
-  }
-
-  V2D &div(R s)
-  {
-    mul(R(1)/s); // todo are 2 multiplies and 1 division really better than 2 div
-    return *this;
-  }
-  
   V2D operator+(const V2D &o) const
   {
     V2D r(*this);
@@ -196,6 +169,16 @@ public:
     return m_v[1];
   }
 
+  //! project v onto this vector
+  /*!
+    \return projected vector
+  */
+  V2D project(const V2D &v) const
+  {
+    V2D r(*this);
+    return r.mul(dot(v)/norm2sqr());
+  }
+  
   //! rotate vector 90 degree clockwise
   /*!
     \returns the modified vector
@@ -235,9 +218,38 @@ public:
     return ist;
   }
 
+
+protected:
   //! the vector
   /*! we keep it public because we allow direct access with the operator[] anyway */
   R m_v[2]; 
+
+  V2D &add(const V2D &o)
+  {
+    m_v[0]+=o.m_v[0];
+    m_v[1]+=o.m_v[1];
+    return *this;
+  }
+
+  V2D &sub(const V2D &o)
+  {
+    m_v[0]-=o.m_v[0];
+    m_v[1]-=o.m_v[1];
+    return *this;
+  }
+
+  V2D &mul(R s)
+  {
+    m_v[0]*=s;
+    m_v[1]*=s;
+    return *this;
+  }
+
+  V2D &div(R s)
+  {
+    mul(R(1)/s); // todo are 2 multiplies and 1 division really better than 2 div
+    return *this;
+  }
 };
 DOPE_CLASS(V2D);
 

@@ -22,11 +22,74 @@
    \author Jens Thiele
 */
 
-#include <iostream>
-#include <exception>
+#include "client.h"
+
+void sigPipeHandler(int x){
+  std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;
+}
+
+int
+Client::main()
+{
+  signal(SIGPIPE,sigPipeHandler);
+  InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
+  NetStreamBuf layer0(adr);
+  layer0.setBlocking(false);
+  OutProto l2out(layer0);
+  InProto l2in(layer0);
+  SignalOutAdapter<OutProto> so(l2out);
+  SignalInAdapter<InProto> si(l2in);
+  si.connect(SigC::slot(*this,&Client::handleGreeting));
+  si.connect(SigC::slot(*this,&Client::handleGame));
+
+  TimeStamp start;
+  start.now();
+  TimeStamp oldTime;
+  TimeStamp newTime;
+  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less because of the min sleep problem
+  TimeStamp dt;
+  TimeStamp null;
+  oldTime.now();
+  unsigned frames=0;
+  while (!m_quit) {
+    // test if data available on layer0
+    if (layer0.select(&null)) {
+      try {
+	do {
+	  si.read();
+	}while (layer0.in_avail());
+      }catch(ReadError error){
+	DOPE_WARN(error.what());
+      }
+    }
+    newTime.now();
+    dt=newTime-oldTime;
+    while(dt<minStep) {
+      (minStep-dt).sleep();
+      newTime.now();
+      dt=newTime-oldTime;
+    }
+    m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
+    oldTime=newTime;
+    ++frames;
+    dt=newTime-start;
+    R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
+    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime << " FPS: " << std::setw(10) << R(frames)/uptime << " Frame: " << std::setw(20) << frames;
+  }
+  return 0;
+}
+
 int main(int argc,char *argv[])
 {
   try{
+    ArgvParser parser(argc,argv);
+    ClientConfig config;
+    parser.simple(config,NULL);
+    // exit if parser printed the help message
+    if (parser.shouldExit()) return 1;
+    Client client(config);
+    return client.main();
+
     return 0;
   }
   catch (const std::exception &error){

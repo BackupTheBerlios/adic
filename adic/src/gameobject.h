@@ -25,6 +25,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include "circle.h"
+
 //! a object in the game world
 class GameObject
 {

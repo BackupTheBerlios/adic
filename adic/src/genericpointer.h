@@ -112,11 +112,24 @@ struct TypeNameTrait<GenericPointer<T1,T2,T3,T4> >
 { 
   static DOPE_INLINE TypeNameType name() DOPE_FCONST 
   { 
+#define LT '<'
+#define GT '>'
+#define SEP ','
+#define PTR '*'
+#define REF '&'
+#define ARRAY "[]"
+
     return TypeNameType("GenericPointer")+LT +TypeNameTrait<T1>::name() 
                               +SEP+TypeNameTrait<T2>::name() 
-                              +SEP+TypeNameTrait<T3>::name() 
-                              +SEP+anyToString(T4)
                               +GT; 
+
+#undef LT
+#undef GT
+#undef SEP
+#undef PTR
+#undef REF
+#undef ARRAY
+
   } 
 };
 

@@ -32,8 +32,15 @@
 /*!
   base class for stuff lying/moving around in the world
 */
-struct RoundObject : public GameObject, Circle
+struct RoundObject : public GameObject, public Circle
 {
+  bool collide(const Circle &c, V2D &cv)
+  {
+    if (!Circle::collide(c))
+      return false;
+    cv=m_pos-c.m_pos;
+    return true;
+  }
 };
 
 #endif

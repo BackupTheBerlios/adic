@@ -25,15 +25,45 @@
 #ifndef DOOR_H
 #define DOOR_H
 
+#include "gameobject.h"
+#include "world.h"
+
 //! a door
 class Door : public GameObject
 {
   //! angle
   R angle;
+  //! angle velocity
   R angleSpeed;
+  //! maximum Angle
   R maxAngle;
+  //! minimum Angle
   R minAngle;
+  //! edge ID - \todo is not inititialized nor pickled
+  FWEdge::EID eid;
   
+  static const R damping;
+public:
+  template <typename Layer2>
+  inline void composite(Layer2 &layer2)
+  {
+    layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle);
+  }
+  bool step(R dt)
+  {
+    angle+=angleSpeed*dt;
+    if (angle>maxAngle) angle=maxAngle-(angle-maxAngle);
+    if (angle<minAngle) angle=minAngle+(minAngle-angle);
+    angleSpeed-=angleSpeed*damping*dt;
+    return true;
+  }
+  bool collide(const Circle &c, V2D &cv);
 };
+DOPE_CLASS(Door);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Door &x)
+{
+  x.composite(layer2);
+}
 
 #endif

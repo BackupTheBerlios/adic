@@ -37,11 +37,12 @@ gamecommon = \
 	$(world) \
 	gameobject.h \
 	roundobject.h \
-	door.h \
+	door.h door.cpp \
 	icon.h \
 	player.h player.cpp \
 	game.h game.cpp \
-	uriloader.h
+	uriloader.h \
+	version.h messages.h
 
 test_line_SOURCES = test-line.cpp $(allcommon)
 test_vector2d_SOURCES = test-vector2d.cpp $(allcommon)
@@ -51,9 +52,13 @@ test_world_SOURCES = \
 
 test_world_LDADD = @DOPE_LIBS@
 
-@PACKAGE@server_SOURCES = $(gamecommon) server.cpp
+@PACKAGE@server_SOURCES = $(gamecommon) server.h server.cpp
 @PACKAGE@server_LDADD = @DOPE_LIBS@
 
-@PACKAGE@client_SOURCES = $(gamecommon) client.cpp
+@PACKAGE@client_SOURCES = $(gamecommon) \
+	client.h client.cpp \
+	gui.h \
+	sdlglgui.h sdlglgui.cpp
+
 @PACKAGE@client_LDADD = @DOPE_LIBS@
 
