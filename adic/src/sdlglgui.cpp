@@ -1099,7 +1099,7 @@ SDLGLGUI::drawPlayers(R dt)
 	      break;
 	    }
 	  }
-	  if ((i>=teams.size())||(tid==~OU)||(tid>=teams[i].textures.size())) {
+	  if ((i>=teams.size())||(tid==~0U)||(tid>=teams[i].textures.size())) {
 	    DOPE_WARN("report this as bug! Include: "<<i<<","<<teams.size()<<","<<tid);
 	    std::vector<std::string> uris;
 	    uris.push_back("data:unknown.png");
