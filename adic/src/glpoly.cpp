@@ -50,7 +50,7 @@ GLPoly::GLPoly(const std::vector<V2D> &poly)
   //  gluTessBeginPolygon(tobj,NULL);
   gluBeginPolygon(tobj);
   for (unsigned i=0;i<poly.size();++i) {
-    gluTessVertex(tobj, v[i], poly[i].m_v);
+    gluTessVertex(tobj, v[i], (GLvoid*)poly[i].m_v);
   }
   l=glGenLists(1);
   glNewList(l,GL_COMPILE);
