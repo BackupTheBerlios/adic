@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <PlayerData
-	maxspeed="80"
+	maxspeed="90"
 	acceleration="30"
 	mass="0.7"
 	type="1"
