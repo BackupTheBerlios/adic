@@ -30,6 +30,8 @@
 #include "sdlsigfactory.h"
 #include "sdlinputdev.h"
 #include "animation.h"
+#include "glterminal.h"
+#include "glfont.h"
 
 class SDLGLGUI : public GUI
 {
@@ -51,6 +53,19 @@ public:
 
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
+
+  SDLGL gl;
+  GLTerminal m_terminal;
+  DOPE_SMARTPTR<GLFont> m_fontPtr;
+
+  std::ostream &getOstream() 
+  {
+    return m_terminal.out;
+  }
+  unsigned numInputDevices() const
+  {
+    return m_inputDevices.size();
+  }
 protected:
   //! create window
   void createWindow();
@@ -63,7 +78,6 @@ protected:
   void drawWall(const Wall &wall);
   void drawPolygon(const std::vector<V2D> &p);
   void drawTexture(const Texture &tex, const V2D &p, R rot=0);
-  void drawText(const std::string &text, bool centered=false);
   
   std::vector<DOPE_SMARTPTR<SDLInputDev> > m_inputDevices;
 
@@ -72,7 +86,7 @@ protected:
   unsigned m_flags;
   DOPE_SMARTPTR<Texture> m_texturePtr;
   R m_textureTime;
-  DOPE_SMARTPTR<Texture> m_fontPtr;
+  DOPE_SMARTPTR<Texture> m_fontTexPtr;
   std::vector<Animation> m_animations;
 
   V2D m_pos;
@@ -91,7 +105,8 @@ protected:
   SDLSigFactory sf;
   bool m_quit;
 
-  SDLGL gl;
+  TimeStamp m_start;
+  unsigned m_frames;
 };
 
 #endif

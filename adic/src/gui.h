@@ -42,6 +42,11 @@ public:
   virtual V2D getPos() const=0;
 
   SigC::Signal1<void, Input &> input;
+  SigC::Signal1<void, char> printed;
+
+  virtual std::ostream &getOstream()=0;
+
+  virtual unsigned numInputDevices() const=0;
 protected:
   Client &m_client;
   GUIConfig m_config;

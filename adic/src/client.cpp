@@ -32,22 +32,43 @@ void sigPipeHandler(int x){
 
 
 Client::Client(ClientConfig &config) 
-  : m_config(config), m_quit(false), m_soundPtr(NULL), m_csong(0), m_guiPtr(NULL)
+  : m_config(config), m_quit(false), m_soundPtr(NULL), m_csong(0), m_guiPtr(NULL),
+    m_cerrbuf(NULL), m_coutbuf(NULL)
 {
   m_songs.push_back("data/music.mod");
   // todo add some songs here - or better put the list into clientconfig
+}
+Client::~Client() 
+{
+  if (m_cerrbuf) {
+    std::cerr.rdbuf(m_cerrbuf);
+    m_cerrbuf=NULL;
+  }
+  if (m_coutbuf) {
+    std::cout.rdbuf(m_coutbuf);
+    m_coutbuf=NULL;
+  }
 }
 
 void
 Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 {
   assert(gPtr.get());
-  std::cerr << "\nGot Greeting from server "<< gPtr->m_adicVersion.asString() << " DOPE++ "<<gPtr->m_dopeVersion.asString()<<"\n";
+  std::cout << "\nGot Greeting from server.\nServer is running ver. "<< gPtr->m_adicVersion.asString() << " (DOPE++ ver. "<<gPtr->m_dopeVersion.asString()<<")\n";
   m_playerIDs=gPtr->m_players;
-  std::cerr << "Got "<<m_playerIDs.size()<<" player IDs:";
-  for (unsigned i=0;i<m_playerIDs.size();++i)
+
+  unsigned got=m_playerIDs.size();
+  unsigned req=m_config.m_users.users.size();
+  unsigned devs=m_guiPtr->numInputDevices();
+  std::cout << "I Got "<< got <<" player IDs (requested "<< req <<" )\n";
+  std::cout << "I found "<<devs<<" input devices\n";
+  if ((req>0)&&(!got))
+    std::cout << "The server is full.\n";
+  /*
+    for (unsigned i=0;i<m_playerIDs.size();++i)
     std::cerr << "\n"<<m_playerIDs[i];
-  std::cerr << "\n";
+    std::cerr << "\n";
+  */
 }
 
 void 
@@ -64,8 +85,8 @@ Client::handleCollision(V2D pos, R strength)
 {
   if (m_soundPtr.get()) {
     // collision sound 
-    R volume=strength/80;
-    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(400);
+    R volume=strength/150;
+    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(1000);
     if (volume>0) {
       if (volume>1) volume=1;
       //  std::cerr << "\nPlay sample\n";
@@ -114,6 +135,18 @@ Client::playNextSong()
   }
 }
 
+void
+Client::printed(char c)
+{
+  if (!m_soundPtr.get())
+    return;
+  if (c!='\n') {
+    int ch=m_soundPtr->playSample("data/printer.wav");
+    R volume=1.0-R(c%6)/10;
+    m_soundPtr->modifyChannel(ch,volume);
+  }
+  else m_soundPtr->playSample("data/newline.wav");
+}
 
 int
 Client::main()
@@ -148,7 +181,7 @@ Client::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less because of the min sleep problem
+  TimeStamp minStep(0,1000000/30); // max. 30 Hz will be less because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;
@@ -157,13 +190,22 @@ Client::main()
 
   GUIFactory guif;
   m_guiPtr=DOPE_SMARTPTR<GUI>(guif.create(*this,m_config.m_gui));
+  /*
+    m_cerrbuf=std::cerr.rdbuf();
+    std::cerr.rdbuf(m_guiPtr->getOstream().rdbuf());
+  */
+  m_coutbuf=std::cout.rdbuf();
+  std::cout.rdbuf(m_guiPtr->getOstream().rdbuf());
   m_soundPtr=DOPE_SMARTPTR<Sound>(Sound::create(m_config.m_sc));
   m_soundPtr->musicFinished.connect(SigC::slot(*this,&Client::playNextSong));
   playNextSong();
+  m_guiPtr->printed.connect(SigC::slot(*this,&Client::printed));
+  
   std::vector<int> soundChannel;
   
   DOPE_CHECK(m_guiPtr->init());
   m_guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
+  std::cout << "Welcome to ADIC !!!\n";
   while (!m_quit) {
     newTime.now();
     dt=newTime-oldTime;

@@ -72,6 +72,8 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	sdlglgui.h sdlglgui.cpp \
 	texture.h texture.cpp \
 	animation.h animation.cpp \
+	glterminal.h glterminal.cpp \
+	glfont.h glfont.cpp \
 	soundconfig.h \
 	sound.h sound.cpp \
 	soundsdlmixer.h soundsdlmixer.cpp \

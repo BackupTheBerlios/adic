@@ -29,6 +29,7 @@ SDLGL::init()
   LOOKUP(PushMatrix,voidFunc);
   LOOKUP(PopMatrix,voidFunc);
   LOOKUP(GetFloatv,uintfloatPFunc);
+  LOOKUP(GetIntegerv,uintintPFunc);
   LOOKUP(LineWidth,floatFunc);
   LOOKUP(Flush,voidFunc);
   LOOKUP(Finish,voidFunc);

@@ -47,6 +47,7 @@ public:
   typedef void (*uintFunc)(unsigned int);
   typedef void (*uint2Func)(unsigned int,unsigned int);
   typedef void (*uintuintPFunc)(unsigned int, unsigned int *);
+  typedef void (*uintintPFunc)(unsigned int, int *);
   typedef void (*uint2intFunc)(unsigned int,unsigned int,int);
   typedef void (*floatFunc)(float);
   typedef void (*fvec2Func)(float,float);
@@ -84,6 +85,7 @@ public:
   LOOKUP(PushMatrix,voidFunc);
   LOOKUP(PopMatrix,voidFunc);
   LOOKUP(GetFloatv,uintfloatPFunc);
+  LOOKUP(GetIntegerv,uintintPFunc);
   LOOKUP(LineWidth,floatFunc);
   LOOKUP(Flush,voidFunc);
   LOOKUP(Finish,voidFunc);

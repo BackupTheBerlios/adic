@@ -94,8 +94,7 @@ protected:
   DOPE_SMARTPTR<GUI> m_guiPtr;
 public:
   Client(ClientConfig &config);
-  ~Client()
-  {}
+  ~Client();
 
   void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
   void handleGame(DOPE_SMARTPTR<Game> gPtr);
@@ -103,6 +102,7 @@ public:
   void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr);
   void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
   void playNextSong();
+  void printed(char c);
   
   int main();
 
@@ -127,6 +127,8 @@ public:
 
   std::string getPlayerName(PlayerID id) const;
 protected:
+  std::streambuf* m_cerrbuf;
+  std::streambuf* m_coutbuf;
 };
 
 #endif

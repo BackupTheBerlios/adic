@@ -2,16 +2,19 @@
 
 
 SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config) 
-  : GUI(client,config), m_textureTime(5), 
-  m_autoCenter(true), 
-  m_zoom(1), m_zoomOp(0), m_autoZoom(true),
-  m_showNames(true),
-  m_quit(false)
+  : GUI(client,config), m_terminal(*this,0,config.height-48),
+    m_textureTime(5), 
+    m_autoCenter(true), 
+    m_zoom(1), m_zoomOp(0), m_autoZoom(true),
+    m_showNames(true),
+    m_quit(false), m_frames(0)
 {
   m_scrollOp[0]=m_scrollOp[1]=0;
   sf.keyEvent.connect(SigC::slot(*this,&SDLGLGUI::handleKey));
   sf.quitSignal.connect(SigC::slot(*this,&SDLGLGUI::handleQuit));
   sf.resize.connect(SigC::slot(*this,&SDLGLGUI::handleResize));
+  m_terminal.printed.connect(printed.slot());
+  m_start.now();
 }
 
 
@@ -64,7 +67,8 @@ SDLGLGUI::createWindow()
   sf.resize.emit(e);
   //  resize(m_config.width, m_config.height);
   m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/textures.png"));
-  m_fontPtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/font.png"));
+  m_fontTexPtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/font.png"));
+  m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
   gl.Disable(GL_NORMALIZE);
   gl.Disable(GL_LIGHTING);
   gl.Disable(GL_CULL_FACE);
@@ -179,6 +183,9 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     break;
   case SDLK_t:
     m_textureTime=5;
+    break;
+  case SDLK_z:
+    std::cout << "Hello\n";
     break;
   default:
     break;
@@ -381,7 +388,7 @@ SDLGLGUI::step(R dt)
 	gl.Translatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
 	float s=1.0f/m_zoom;
 	gl.Scalef(s,s,1);
-	drawText(m_client.getPlayerName(p),true);
+	m_fontPtr->drawText(m_client.getPlayerName(p),true);
 	gl.PopMatrix();
       }
       /*      V2D dv(V2D(0,100).rot(cp.getDirection()));
@@ -409,14 +416,18 @@ SDLGLGUI::step(R dt)
     }
     int dx=m_width/(teams.size()+1);
     gl.PushMatrix();
+    if (teams.size()>m_fontPtr->numColors()) {
+      for (unsigned i=0;i<teams.size();++i)
+	m_fontPtr->setColor(i,teams[i].color);
+    }
     for (unsigned i=0;i<teams.size();++i) {
-      gl.Color3f(teams[i].color[0],teams[i].color[1],teams[i].color[2]);
       gl.LoadIdentity();
       gl.Translatef(dx*(i+1),30,0);
-      drawText(teams[i].name,true);
-      gl.LoadIdentity();
-      gl.Translatef(dx*(i+1),5,0);
-      drawText(anyToString(numPlayers[i]-locked[i])+"/"+anyToString(numPlayers[i]),true);
+      m_fontPtr->drawText(
+	       m_fontPtr->getColor(i)
+	       +teams[i].name+"\n"
+	       +anyToString(numPlayers[i]-locked[i])+"/"+anyToString(numPlayers[i]),
+	       true);
       gl.Flush();
     }
     gl.PopMatrix();
@@ -446,6 +457,24 @@ SDLGLGUI::step(R dt)
     gl.Disable(GL_TEXTURE_2D);
 
   }
+  // paint FPS
+  TimeStamp ct;
+  ct.now();
+  ct-=m_start;
+  R uptime=R(ct.getSec())+(R(ct.getUSec())/1000000);
+  std::ostringstream o;
+  ++m_frames;
+  o << "Up: " << std::fixed << std::setprecision(2) << std::setw(7) << uptime 
+    << "\nFPS: " << std::setw(6) << R(m_frames)/uptime;
+  //	      << " Frame: " << std::setw(10) << m_frames;
+  gl.LoadIdentity();
+  gl.Translatef(0,m_height-m_fontPtr->getHeight(),0);
+  gl.Color3f(1.0,1.0,1.0);
+  m_fontPtr->drawText(o.str());
+
+  // paint terminal
+  m_terminal.step(dt);
+  
   gl.Flush();
   gl.Finish();
   SDL_GL_SwapBuffers();
@@ -532,9 +561,11 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   gl.PopMatrix();
 }
 
+/*
 void 
-SDLGLGUI::drawText(const std::string &text, bool centered)
+SDLGLGUI::drawTextRow(const std::string &text, bool centered)
 {
+  const std::vector<Team> &teams(m_client.getGame().getTeams());
   int xtiles=16,ytiles=16;
   int w=m_fontPtr->getWidth(),h=m_fontPtr->getHeight();
   float fw=w,fh=h;
@@ -543,26 +574,62 @@ SDLGLGUI::drawText(const std::string &text, bool centered)
   float fdx=1.0f/xtiles;
   float fdy=1.0f/ytiles;
   int offset=0;
-  if (centered) offset=-int(text.size())*dx/2;
+
+  if (centered) {
+    unsigned nc=text.size();
+    unsigned ts=0;
+    for (unsigned i=0;i<nc;++i) {
+      if (text[i]>=32) ++ts;
+    }
+    offset=-int(ts)*dx/2;
+  }
+  
   gl.Enable(GL_TEXTURE_2D);
   gl.Enable(GL_BLEND);
   gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   gl.BindTexture(GL_TEXTURE_2D, m_fontPtr->getTextureID());
   gl.Begin(GL_QUADS);
+  unsigned col=0;
   for (unsigned i=0;i<text.size();++i){
-    float cx=float((int(text[i]-32)%xtiles)*dx)/fw;
-    float cy=float((int(text[i]-32)/xtiles)*dy)/fh;
-    int x=i*dx+offset;
-    gl.TexCoord2f(cx,cy);
-    gl.Vertex2i(x,dy);
-    gl.TexCoord2f(cx+fdx,cy);
-    gl.Vertex2i(x+dx,dy);
-    gl.TexCoord2f(cx+fdx,cy+fdy);
-    gl.Vertex2i(x+dx,0);
-    gl.TexCoord2f(cx,cy+fdy);
-    gl.Vertex2i(x,0);
+    if (text[i]>=32) {
+      float cx=float((int(text[i]-32)%xtiles)*dx)/fw;
+      float cy=float((int(text[i]-32)/xtiles)*dy)/fh;
+      int x=col*dx+offset;
+      gl.TexCoord2f(cx,cy);
+      gl.Vertex2i(x,dy);
+      gl.TexCoord2f(cx+fdx,cy);
+      gl.Vertex2i(x+dx,dy);
+      gl.TexCoord2f(cx+fdx,cy+fdy);
+      gl.Vertex2i(x+dx,0);
+      gl.TexCoord2f(cx,cy+fdy);
+      gl.Vertex2i(x,0);
+      ++col;
+    }else if ((text[i]>=11)&&(text[i]<15)) {
+      unsigned t=text[i]-11;
+      t%=teams.size();
+      assert(t<teams.size());
+      gl.Color3f(teams[t].color[0],teams[t].color[1],teams[t].color[2]);
+    }
   }
   gl.End();
   gl.Disable(GL_BLEND);
   gl.Disable(GL_TEXTURE_2D);
 }
+
+void 
+SDLGLGUI::drawText(const std::string &text, bool centered)
+{
+  std::string::size_type pos(text.find_first_of('\n'));
+  if (pos!=std::string::npos) {
+    std::string row(text,0,pos);
+    drawTextRow(row,centered);
+    if (pos+1<text.size()) {
+      int ytiles=16;
+      gl.Translatef(0,-m_fontPtr->getHeight()/ytiles,0);
+      drawText(std::string(text,pos+1),centered);
+    }
+    return;
+  }
+  drawTextRow(text,centered);
+}
+*/

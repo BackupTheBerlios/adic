@@ -37,6 +37,7 @@ FEATURES:
 - maus?
 
 BUGS/QUESTIONS:
+- terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)
 - kollisions-sound geht nicht mehr (nur nicht beim statisch linken)
