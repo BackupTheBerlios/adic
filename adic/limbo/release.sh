@@ -79,8 +79,6 @@ fi
 mkdir -p build
 cd build
 
-if false; then
-
 #build debian packages
 mkdir -p debian
 if test -e $DIR; then
@@ -102,8 +100,6 @@ cp -i $BUILDDIR/adic-data_* $ADIC_DEBREP
 cd $ADIC_DEBREP/..
 ./gen-packages.sh
 ./update.sh
-
-fi
 
 # todo build static (or "semi-static") binary packages for linux/X11
 # this builds a "semi-static" adicclient:

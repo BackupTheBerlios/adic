@@ -1,3 +1,9 @@
+adic (0.9.2-1) unstable; urgency=low
+
+  * minor fixes
+
+ -- Jens Thiele (karme) <karme@berlios.de>  Wed,  7 May 2003 13:42:07 +0200
+
 adic (0.9.1-1) unstable; urgency=low
 
   * use dope network byte order stream
@@ -5,18 +11,18 @@ adic (0.9.1-1) unstable; urgency=low
   * server may now report any address to meta-server
   * lag compensation for input events	
 
- -- Jens Thiele (Karme) <karme@berlios.de>  Fri,  2 May 2003 12:01:56 +0200
+ -- Jens Thiele (karme) <karme@berlios.de>  Fri,  2 May 2003 12:01:56 +0200
 
 adic (0.9.0-1) unstable; urgency=low
 
   * added TCP_NODELAY option
   * Split into architecture dependent and independent packages.
 
- -- Jens Thiele (Karme) <karme@berlios.de>  Sat,  2 Nov 2002 16:41:38 +0100
+ -- Jens Thiele (karme) <karme@berlios.de>  Sat,  2 Nov 2002 16:41:38 +0100
 
 adic (0.1.0-1) unstable; urgency=low
 
   * Initial Release.
 
- -- Jens Thiele (Karme) <karme@berlios.de>  Fri,  4 Oct 2002 00:40:12 +0200
+ -- Jens Thiele (karme) <karme@berlios.de>  Fri,  4 Oct 2002 00:40:12 +0200
 
