@@ -31,7 +31,7 @@ struct GUIConfig
 {
   GUIConfig() 
     : implementation("SDLGLGUI"), title(PACKAGE), libGL("/usr/lib/libGL.so"), 
-    width(640), height(480), bits(32), fullscreen(false)
+    width(640), height(480), bits(32), fullscreen(false), quality(0), flush(true)
   {}
   
   std::string implementation;
@@ -41,12 +41,17 @@ struct GUIConfig
   int height;
   int bits;
   bool fullscreen;
-
+  //! display quality (f.e. texture mapping)
+  int quality;
+  //! should we flush from time to time (default is yes because otherwise i had trouble with mesa)
+  bool flush;
+  
   template <typename Layer2>
   void composite(Layer2 &layer2)
   {
     layer2.SIMPLE(implementation).SIMPLE(title).SIMPLE(libGL)
-      .SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen);
+      .SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen).SIMPLE(quality)
+      .SIMPLE(flush);
   }
 };
 DOPE_CLASS(GUIConfig);

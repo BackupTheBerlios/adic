@@ -89,16 +89,18 @@ SDLGLGUI::createWindow()
   e.h=getGUIConfig().height;
   sf.resize.emit(e);
   //  resize(getGUIConfig().width, getGUIConfig().height);
-  m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/textures.png"));
-  m_fontTexPtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/font.png"));
+  m_texturePtr=getTexture("data/textures.png");
+  m_fontTexPtr=getTexture("data/font.png");
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
-  m_circlePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/pillar.png"));
+  m_circlePtr=getTexture("data/pillar.png");
   m_texCircle=true;
   gl.Disable(GL_NORMALIZE);
   gl.Disable(GL_LIGHTING);
   gl.Disable(GL_CULL_FACE);
   gl.Disable(GL_LINE_SMOOTH);
   gl.ShadeModel(GL_FLAT);
+  if (getGUIConfig().quality<=0)
+    gl.Disable(GL_DITHER);
 }
 
 void
@@ -143,7 +145,7 @@ SDLGLGUI::getTexture(const std::string &uri)
   Textures::iterator it(m_textures.find(uri));
   if (it!=m_textures.end())
     return it->second;
-  DOPE_SMARTPTR<Texture> r(new Texture(gl,uri.c_str()));
+  DOPE_SMARTPTR<Texture> r(new Texture(gl,uri.c_str(),getGUIConfig().quality));
   m_textures[uri]=r;
   return r;
 }
@@ -225,12 +227,14 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     break;
   case SDLK_c:
     if (pressed) m_texCircle=!m_texCircle;
+    break;
   case SDLK_l:
     if (pressed) {
       m_lineSmooth=!m_lineSmooth;
       if (!m_lineSmooth) gl.Disable(GL_LINE_SMOOTH);
       else gl.Enable(GL_LINE_SMOOTH);
     }
+    break;
   }
   return false;
 
@@ -511,7 +515,7 @@ SDLGLGUI::step(R dt)
 	       +anyToString(teamStat[i].numPlayers-teamStat[i].locked)+"/"
 	       +anyToString(teamStat[i].numPlayers),
 	       true);
-      gl.Flush();
+      flush();
     }
     gl.PopMatrix();
   }
@@ -520,7 +524,9 @@ SDLGLGUI::step(R dt)
   // paint texture
   if (m_textureTime>0) {
     gl.LoadIdentity();
-    gl.Color4f(1.0,1.0,1.0,1.0-fabs(m_textureTime-2.5)/2.5);
+    float alpha=1.0-fabs(m_textureTime-2.5)/2.5;
+    if (getGUIConfig().quality<=0) alpha=(alpha > 0.1) ? 1.0 : 0.0;
+    gl.Color4f(1.0,1.0,1.0,alpha);
     m_textureTime-=dt;
     gl.Enable(GL_TEXTURE_2D);
     gl.Enable(GL_BLEND);
@@ -568,7 +574,7 @@ SDLGLGUI::step(R dt)
     if (!m_menuPtr->step(dt))
       m_menuPtr=DOPE_SMARTPTR<SDLMenu>();
 
-  gl.Flush();
+  flush();
   gl.Finish();
   SDL_GL_SwapBuffers();
   return true;
@@ -598,20 +604,63 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
       }
       gl.End();
       gl.PopMatrix();
-      gl.Flush();
+      flush();
     }
   }
   else
     {
-      drawTexture(*m_circlePtr,p);
+      // hand crafted drawTexture
+      // drawTexture(*m_circlePtr,p);
+      const Texture &tex(*m_circlePtr.get());
+      int w=tex.getWidth();
+      int h=tex.getHeight();
+      int w2=w>>1;
+      int h2=h>>1;
+
+      gl.PushMatrix();
+      gl.Translatef(p[0], p[1], 0);
+
+      gl.Enable(GL_TEXTURE_2D);
+      gl.Enable(GL_BLEND);
+      gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
+
+      gl.Begin(GL_QUADS);
+      gl.TexCoord2f(0,1);
+      gl.Vertex2f(-w2,-h2);
+      gl.TexCoord2f(1,1);
+      gl.Vertex2f(w2,-h2);
+      gl.TexCoord2f(1,0);
+      gl.Vertex2f(w2,h2);
+      gl.TexCoord2f(0,0);
+      gl.Vertex2f(-w2,h2);
+      gl.End();
+
+      gl.Disable(GL_BLEND);
+      gl.Disable(GL_TEXTURE_2D);
+      gl.PopMatrix();
     }
 }
 void
 SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
 {
+  // backup line width
   float lw;
   gl.GetFloatv(GL_LINE_WIDTH,&lw);
-  gl.LineWidth(w.getWallWidth()*m_zoom);
+
+  int q=getGUIConfig().quality;
+  float nlw;
+  if (q<=0) {
+    // in low quality mode we only draw 2 lines
+    nlw=w.getWallWidth()*2*m_zoom;
+  }else{
+    nlw=w.getWallWidth()*m_zoom;
+  }
+  // if line smoothing is off we round up to the next int
+  if (!m_lineSmooth) nlw=ceil(nlw);
+  
+  // now set the line width
+  gl.LineWidth(nlw);
 
   Line l(w.getLine());
   const V2D &ln(l.normal());
@@ -637,16 +686,18 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
   gl.Vertex2f(a[0],a[1]);
   gl.Vertex2f(b[0],b[1]);
   gl.End();
-  // draw middle
-  if (cwClosed&&ccwClosed) gl.Color3f(0.8,0.0,0.0);
-  else if (cwClosed||ccwClosed) gl.Color3f(0.8,0.5,0.0);
-  else gl.Color3f(0.0,0.8,0.0);
-  a=l.m_a;
-  b=l.m_b;
-  gl.Begin(GL_LINES);
-  gl.Vertex2f(a[0],a[1]);
-  gl.Vertex2f(b[0],b[1]);
-  gl.End();
+  if (q>0) {
+    // draw middle    
+    if (cwClosed&&ccwClosed) gl.Color3f(0.8,0.0,0.0);
+    else if (cwClosed||ccwClosed) gl.Color3f(0.8,0.5,0.0);
+    else gl.Color3f(0.0,0.8,0.0);
+    a=l.m_a;
+    b=l.m_b;
+    gl.Begin(GL_LINES);
+    gl.Vertex2f(a[0],a[1]);
+    gl.Vertex2f(b[0],b[1]);
+    gl.End();
+  }
 
   // restore linewidth
   gl.LineWidth(lw);
@@ -655,7 +706,7 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
   gl.Color3f(1.0,1.0,1.0);
   drawCircle(l.m_a,w.getPillarRadius());
   drawCircle(l.m_b,w.getPillarRadius());
-  gl.Flush();
+  flush();
 }
 
 void

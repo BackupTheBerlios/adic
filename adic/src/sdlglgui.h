@@ -100,6 +100,13 @@ public:
   const std::vector<Team> &getTeams() const;
   //! get current team statistics
   const std::vector<TeamStat> &getTeamStats();
+
+  //! flush GL command buffers (depending on the configuration)
+  void flush() 
+  {
+    if (!getGUIConfig().flush) return;
+    gl.Flush();
+  }
 protected:
   //! \todo not yet implemented
   void drawPolygon(const std::vector<V2D> &p);
