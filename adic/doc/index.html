@@ -17,6 +17,8 @@
       <a href="#running">[Running]</a>
       <a href="#controls">[Controls]</a>
       <a href="#FAQ">[FAQ]</a>
+      <a href="#contact">[Contact]</a>
+      <a href="#contribute">[Contribute]</a>
       <a href="#links">[Links]</a>
     </p>
     <h1>ADIC</h1>
@@ -36,6 +38,7 @@
       <LI>all player data is now relative to default.xml (relative means multiplied with the default)</LI>
       <LI>adjusted parameters (faster, faster acceleration)</LI>
       <LI>maxfitness wasn't used - now it is. This means you can run for some time without loosing speed if you embrassed a team mate or drunk from a fountain. (the fountain gives you a 20% speed boost for some time)</LI>
+      <LI>experimental static binaries for the linux framebuffer using software rendering. (OSMesa)</LI>
     </UL>
     <h3>2003-05-11: Version 0.9.3</h3>
     <UL>
@@ -97,7 +100,7 @@
     </p>
     <h2><a name="download">Download</a></h2>
     <p>
-    To download adic visit the <a href="http://developer.berlios.de/project/showfiles.php?group_id=404">files section</a> of the <a href="http://developer.berlios.de/projects/adic/">project page</a>.
+    To download adic visit the <a href="http://developer.berlios.de/project/showfiles.php?group_id=404">files section</a> of the <a href="http://developer.berlios.de/projects/adic/">project page</a> or get it directly from <a href="http://developer.berlios.de/cvs/?group_id=404">cvs</a>.
     <p><a href="http://www.debian.org">Debian</a> users may simply add</p>
     <p>
     <code>
@@ -114,12 +117,13 @@
       <LI>Olech Kaczanowski (amuzen) for the music: music1.xm</LI>
       <LI>the <a href="http://www.xemacs.org/">xemacs</a> people for the collision.wav (was called boing.wav) and of course for the editor ;-)</LI>
       <LI>the <a href="http://kpoker.sourceforge.net/">kpoker</a> team for newline.wav (was called win.wav)</LI>
-      <LI>Éric Tremblay for the music: music-eric.s3m</LI>
+      <LI>Éric Tremblay for the music: music-eric.s3m, music-eric2.s3m</LI>
     </UL>
     <h2><a name="running">Running</a></h2>
     <UL>
-      <LI>Take a look at the <a href="http://adic.berlios.de/metaserver/">meta-server</a> to find a running server</LI>
-      <LI>if the list is empty start your own server. Run <code>adicserver</code> (perhaps you want to enable the metaserver: <code>adicserver --useMetaServer=1</code> - see <code>adicserver --help</code> for more info)</LI>
+      <LI>Take a look at the <a href="http://adic.berlios.de/metaserver/">meta-server</a> to find a running server. If the list is empty start your own server. </LI>
+      <LI>if you downloaded binaries there may be included scripts startserver, startclient starting a server/client with the configuration stored in sconfig.xml/cconfig.xml.</LI>
+      <LI>run <code>adicserver</code> (perhaps you want to enable the metaserver: <code>adicserver --useMetaServer=1</code> - see <code>adicserver --help</code> for more info)</LI>
       <LI>run <code>./adicclient</code> (perhaps you need to set <code>--libGL</code> and perhaps you want to set <code>--quality=3</code> if you have hardware accelerated OpenGL, run <code>adicclient --help</code> for more info)</LI>
       <LI>to start a bot team run <code>adicbot --implementation=i</code> (Where i is currently "KarmeBot" or "BlackBot")</LI>
     </UL>
@@ -190,6 +194,10 @@
       <LI>Q: I have another question. What should I do ?</LI>
       <LI>A: Ask on the <a href="http://lists.berlios.de/mailman/listinfo/adic-general">mailing list</a> for help</LI>
     </UL>
+    <h2><a name="contact">Contact</a></h2>
+    Use the <a href="mailto:adic-general@lists.berlios.de">mailing list (adic-general@lists.berlios.de)</a>. Mailing list <a href="http://lists.berlios.de/mailman/listinfo/adic-general">info</a> and <a href="http://lists.berlios.de/pipermail/adic-general/">archive</a>.
+    <h2><a name="contribute">Contribute</a></h2>
+    Any help is welcome. Especially we encourage people to write a bot which should be an interesting task for for AI/robotics interested/students. (<a href="http://cvs.berlios.de/cgi-bin/viewcvs.cgi/adic/adic/src/karmebot.cpp?rev=HEAD&amp;content-type=text/vnd.viewcvs-markup">example bot</a> in cvs)
     <h2><a name="links">Links</a></h2>
     <UL>
       <LI><a href="http://adic.berlios.de">ADIC</a> homepage</LI>
@@ -197,12 +205,15 @@
       <LI><a href="http://adic.berlios.de/doxygen/html/index.html">source documentation</a></LI>
       <LI><a href="doxygen/html/index.html">local source documentation</a> (only available if you generated it)</LI>
       <LI><a href="http://www.happypenguin.org">The Linux Game Tome</a></LI>
+      <LI><a href="http://dmoz.org/Computers/Multimedia/Music_and_Audio/Audio_Formats/MOD/">MOD</a> audio file formats</LI>
+      <a href="http://dmoz.org/Computers/Multimedia/Music_and_Audio/Audio_Formats/MOD/Software/">MOD software</a></LI>
+      <LI><a href="http://www.mikmod.org/">libmikmod</a> a library to play mods</LI>
+      <LI><a href="http://www.soundtracker.org/">soundtracker</a> a mod file editor running on linux</a></LI>
     </UL>
     <hr>
-    <address><a href="mailto:karme@berlios.de">Jens Thiele</a></address>
     <p>
       <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
-<!-- hhmts start --> Last modified: Tue May 13 22:50:57 CEST 2003 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed May 21 13:12:43 CEST 2003 <!-- hhmts end -->
     </p>
     <p>
       <a href="http://validator.w3.org/check/referer">
