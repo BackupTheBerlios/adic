@@ -19,8 +19,11 @@ dnl for automake
 VERSION=$PACKAGE_VERSION
 
 AC_CONFIG_AUX_DIR(config)
+AC_CANONICAL_TARGET
+
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config/config.h)
+
 AC_PROG_MAKE_SET
 AC_PROG_CC
 AC_PROG_CPP
@@ -29,18 +32,20 @@ AC_PROG_CXXCPP
 AM_PROG_LIBTOOL
 
 dnl build options
+AC_ARG_VAR(ADIC_PORT, the default port to use)
 
 dnl checks for libraries
-dnl dope only works if those libraries are installed
-dnl AM_PATH_XML2(2.4.0, , [AC_MSG_ERROR([libxml required])])
-dnl AM_PATH_SIGC(1.0.0, , [AC_MSG_ERROR([libsigc++ required])])
 AM_PATH_DOPE(0.0.3, , [AC_MSG_ERROR([dope++ required])])
 MDL_HAVE_OPENGL
 AM_PATH_SDL(1.2.0)
 AC_CACHE_SAVE
-dnl checks for c++ header files
-AC_LANG([C++])
-dnl AC_CHECK_HEADER(boost/smart_ptr.hpp, AC_DEFINE(USE_BOOST) , [AC_MSG_ERROR([boost::shared_ptr required - either install boost or write a replacement])])
+
+dnl variable substitutions
+if test "x$ADIC_PORT" = "x"; then
+	ADIC_PORT="40700"
+	echo ADIC_PORT is not set. I use default $ADIC_PORT
+fi
+AC_DEFINE_UNQUOTED(ADIC_PORT, $ADIC_PORT, [default port to use])
 
 dnl output files
 AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile src/Makefile data/Makefile])
