@@ -51,3 +51,5 @@ FUNC(void, gluTessBeginPolygon, (GLUtesselator* tess, GLvoid* data ) );
 FUNC(void, gluTessVertex, (GLUtesselator* tess, GLdouble *location, GLvoid* data ) );
 FUNC(void, gluTessEndPolygon, ( GLUtesselator* tess ) );
 FUNC(void, gluDeleteTess, ( GLUtesselator* tess ) );
+FUNC(void, gluBeginPolygon, (GLUtesselator* tess) );
+FUNC(void, gluEndPolygon, (GLUtesselator* tess) );

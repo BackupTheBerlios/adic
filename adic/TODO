@@ -1,10 +1,18 @@
 FOR 1.0.0:
-	check copyright for sounds/music - replace them if neccessary
-	reduce text on startup
-	perhaps print text faster (glterminal)
-	DEBIAN:
-		split server and client into seperate packages (where to put the bot ?)
-	DOPE: add a protocol handling byte order issues
+rewrite lag compensation / main loop
+	(reduce lag problems - m_stepFault is one possible cause)
+	(is not sent via the network)
+	but i think it should be low ?
+	on the other hand it could accumulate up to stepsize
+	=> in the moment ~0.02 sec - which is quite much
+- reduce text on startup (perhaps print text faster (glterminal))
+
+DEBIAN:
+	split server and client into seperate packages (where to put the bot ?)
+DOPE: add a protocol handling byte order issues
+
+
+--------------------------------------------------------------------------------
 
 GAMEPLAY:
 - sichtbarkeit einschränken

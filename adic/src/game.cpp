@@ -42,13 +42,14 @@ void
 Game::init()
 {
   m_stepFault=0;
+  m_replaceDropped=false;
 }
 
 bool
 Game::step(R dt)
 {
   dt+=m_stepFault;
-  R stepSize=0.02;
+  R stepSize=0.01953125; // 1.0/64+1.0/256;
   while (dt>stepSize)
     {
       bool r=miniStep(stepSize);
@@ -165,7 +166,7 @@ Game::collidePlayer(unsigned pid, bool test)
 	  p.applyImpuls(imp*-2);
 	  p.commit();
 	  if (!test) {
-	    collision.emit(p.m_pos,2*imp.length());
+	    collision.emit(p.m_pos,imp.length());
 	    wallCollision.emit(pid,eids,cv);
 	  }
 	  return true;
@@ -307,19 +308,49 @@ Game::setInput(const PlayerInput &i)
 }
 
 void 
-Game::replace(Game &o)
+Game::replace(Game &o, int lagCompensation)
 {
-  /*  
-      TimeStamp myTime(getTimeStamp());
-      TimeStamp serverTime(o.getTimeStamp());
-      // lag compensation
-	 if (serverTime<myTime) {
-	 // packet lag
-	 TimeStamp lag(myTime-serverTime);
-	 R dt=lag.getSec()+R(lag.getUSec())/1000000;
-	 std::cerr << "\nLag: "<<dt<<" sec.\n";
-	 o.step(dt);
-    }*/
+  if (lagCompensation) {
+    TimeStamp myTime(getTimeStamp());
+    TimeStamp serverTime(o.getTimeStamp());
+    // lag compensation
+    if (serverTime<myTime) {
+      // packet lag
+      // this packet was slower than the reference packet
+      // the idea is that this happened due to lag
+      // => we step the world forward
+      TimeStamp lag(myTime-serverTime);
+      R dt=lag.getSec()+R(lag.getUSec())/1000000;
+      std::cerr << "\nLag: "<<dt<<" sec.";
+      // we do not step the complete time forward (dt)
+      // since we do not want to keep an exceptionally fast
+      // packet as reference packet
+      // (we try to keep the default lag small)
+      if (dt>1) {
+	if (m_replaceDropped) {
+	  // the second slow packet ?
+	  // this is strange -> we take this one (time inconsistency)
+	  DOPE_WARN("time inconsistency because last package was already dropped");
+	  dt=0;
+	}else{
+	  // drop this one
+	  DOPE_WARN("dropped packet");
+	  m_replaceDropped=true;
+	  return;
+	}
+      }
+      m_replaceDropped=false;
+      o.step(dt*0.75); 
+    }else{
+      // this packet was faster than the reference packet
+      // => this packet becomes the reference packet
+      // => there will be a time inconsistency on the client side
+      TimeStamp lag(serverTime-myTime);
+      R dt=lag.getSec()+R(lag.getUSec())/1000000;
+      std::cerr << "\nAnti-Lag: "<<dt<<" sec.";
+    }
+  }
+  
   // m_players
   m_players=o.m_players;
   for (unsigned p=0;p<m_players.size();++p) {

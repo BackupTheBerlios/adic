@@ -138,7 +138,7 @@ public:
   
   void setInput(const PlayerInput &i);
 
-  void replace(Game &o);
+  void replace(Game &o, int lagCompensation=1);
   
   //! collide player with world (players, walls, doors)
   /*!
@@ -302,6 +302,9 @@ protected:
   //! accumulator
   R m_stepFault;
 
+  //! did we drop the last Game "packet" in replace ?
+  bool m_replaceDropped;
+  
   //! players where in this room
   PlayerRoomMap m_playerRoomMap;
 

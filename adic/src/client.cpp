@@ -38,7 +38,7 @@ Client::Client(GUIClientConfig &config)
   : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
-  m_songs.push_back("music.mod");
+  m_songs.push_back("music1.xm");
   // todo add some songs here - or better put the list into clientconfig
 }
 Client::~Client() 
@@ -89,8 +89,9 @@ Client::handleCollision(V2D pos, R strength)
 {
   if (m_soundPtr.get()) {
     // collision sound 
-    R volume=strength/150;
-    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(1000);
+    R volume=strength/300;
+    // zoom should be used too
+    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(10000);
     if (volume>0.2) {
       if (volume>0.75) volume=0.75;
       //  std::cerr << "\nPlay sample\n";

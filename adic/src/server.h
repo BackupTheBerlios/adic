@@ -46,10 +46,11 @@
 //! server configuration
 struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_meshURI("data:adic.xml")
+  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(50)
   {}
   
   std::string m_meshURI;
+  unsigned m_broadcastFreq;
 };
 DOPE_CLASS(ServerConfig);
 
@@ -57,7 +58,7 @@ template <typename Layer2>
 inline void composite(Layer2 &layer2, ServerConfig &c)
 {
   composite(layer2,static_cast<CommonConfig &>(c));
-  layer2.simple(c.m_port,"port").simple(c.m_meshURI,"meshURI");
+  layer2.simple(c.m_meshURI,"meshURI").simple(c.m_broadcastFreq,"broadcastFreq");
 }
 
 template <typename INP = InProto>

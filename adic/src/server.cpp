@@ -279,7 +279,8 @@ Server::main()
     // my max was: 0.000881 - which isn't too much
     R rdt(R(dt.getSec())+R(dt.getUSec())/1000000);
     m_game.step(rdt);
-    if (!(frames%60))
+    // todo perhaps choose different frames for different clients
+    if (!(frames%m_config.m_broadcastFreq))
       broadcast(m_game);
     // check for win condition
     TeamID wt;
