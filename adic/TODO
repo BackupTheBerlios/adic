@@ -30,8 +30,7 @@ TUNING:
 - mesa
 - skaliert schlecht zumindest der client
 - profiling (especially the client)
-  i think the most time is consumed in the client
-  for the lag compensation (is disabled now)
+  the most time is consumed in the client (mainly graphics especially with mesa)
 - einfacher blit mit glDrawPixels fürs Menü und evtl sogar für andere sachen die nicht gedreht werden
   (glDrawPixels ist bei mesa schneller als texturen)
 - compilation times (the preprocessor needs already much time => simplify the includes)
@@ -57,7 +56,7 @@ FEATURES:
 - MOTIVATION zum riskanten rumlaufen:
   - evtl. betten/sessel wo man sich hinlegen/hinsetzen kann
 - locked anzeigen
-- AI gegner oder robots (könnte rumlaufen und türen schließen)
+- AI robots / not AI opponents! (walk around close doors ...)
 - i18n (localization)
 - client should use metaserver
 - schlüssel
@@ -70,7 +69,9 @@ FEATURES:
 
 BUGS/QUESTIONS:
 - on win32 systems textures get corrupted if you switch between windowed and fullscreen mode
-- the wall collide return -cv instead of cv
+  this seems to be a general problem with opengl on win32 - you loose your context and must
+  recreate it (upload textures, display lists, ...)
+- the wall collide return -cv instead of cv ?
 - it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO
 - uriloader muss besser werden
   => uriloader sollte immer verwendet werden
@@ -78,7 +79,7 @@ BUGS/QUESTIONS:
 - client crash in fullscreen mode => X schwer brauchbar da maus fehlt und auflösung falsch
 - zu viele sounds auf einmal v.a. bei kollisionen
 - teamID and playerID are now 16bit but I often use unsigned and ~0U
-  check if this is still all correct
+  check if this is still all correct (seems correct)
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)
@@ -96,9 +97,9 @@ MISC:
 	nur nicht bei xmlsaxinstream
 	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
 - der genericpointer ist gut fuer dope - nicht loeschen
-- clean up (split source into multiple directories ?)
+- clean up (split source into multiple directories - unfortunately cvs does not support moving files)
   perhaps make a libadic (but until gcc 3.2 isn't standard this wouldn't help much when distributing
-  binaries)
+  binaries - i tested this but it wouldn't help much in respect of code size)
 - resize bug:
   this is probably a bug in sawfish or libSDL - but not in ADIC
 
@@ -107,5 +108,6 @@ CROSS-COMPILE to WIN with mingw:
   this was because winver.h (or similar) defines min and max (if NOMINMAX is not defined)
   now i could use std::min/max again
 - wrong GL.h is included - i think simply disabling the check should be enough if SDL
-  is configured correct - i disabled the check is it fixed now ?
+  is configured correct - i disabled the check is it fixed now ? seems so
+
 
