@@ -2,9 +2,14 @@
 
 #configuration
 BUILDDIR=/tmp
+#attention it is assumed dope used the same prefix
+PREFIX=/tmp/usr
 export ACLOCAL_FLAGS="-I config/m4"
 export CXX=g++-3.2
+export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os"
 PACKAGE=adic
+CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX"
+export ADIC_DEB_CONFIGURE_OPTIONS=$CONFIGURE_OPTIONS
 #end of configuration
 
 set -e
@@ -25,7 +30,7 @@ cvs -z3 -d:pserver:anonymous:@cvs.$PACKAGE.berlios.de:/cvsroot/$PACKAGE co $PACK
 #build distribution tarball
 cd $PACKAGE
 ./bootstrap.sh
-./configure
+./configure $CONFIGURE_OPTIONS
 make dist
 DISTFILE=`ls -1 $PACKAGE-*.tar.gz`
 DIR=${DISTFILE%.tar.gz}
