@@ -33,26 +33,59 @@ AC_ARG_VAR(ADIC_PORT, the default port to use)
 dnl this option is mainly for building packages for debian/woody
 dnl because woody does not contain gcc 3.2
 AC_ARG_ENABLE([staticcpp],
-	AC_HELP_STRING([--enable-staticcpp],
-		[enable static cpp standard library @<:@default=no@:>@]),
-		[],
-		[enable_staticcpp=no])
+	AC_HELP_STRING(
+		[--enable-staticcpp],
+		[enable static cpp standard library @<:@default=no@:>@]
+	),
+     	[case "${enableval}" in
+	       yes) staticcpp=true ;;
+	       no)  staticcpp=false ;;
+	       *) AC_MSG_ERROR(bad value ${enableval} for --enable-staticcpp) ;;
+	     esac],
+	staticcpp=false;
+)
 
 dnl this option is to build portable linux binaries
-AC_ARG_ENABLE([staticcpp],
-	AC_HELP_STRING([--enable-mostlystatic],
-		[static linkage as far as possible @<:@default=no@:>@]),
-		[],
-		[enable_mostlystatic=no])
+AC_ARG_ENABLE([mostlystatic],
+	AC_HELP_STRING(
+		[--enable-mostlystatic],
+		[static linkage as far as possible @<:@default=no@:>@]
+	),
+     	[case "${enableval}" in
+	       yes) mostlystatic=true ;;
+	       no)  mostlystatic=false ;;
+	       *) AC_MSG_ERROR(bad value ${enableval} for --enable-mostlystatic) ;;
+	     esac],
+	mostlystatic=false;
+)
+
+dnl this option is to build static binaries
+AC_ARG_ENABLE([allstatic],
+	AC_HELP_STRING(
+		[--enable-allstatic],
+		[static linkage @<:@default=no@:>@]
+	),
+     	[case "${enableval}" in
+	       yes) allstatic=true ;;
+	       no)  allstatic=false ;;
+	       *) AC_MSG_ERROR(bad value ${enableval} for --enable-allstatic) ;;
+	     esac],
+	allstatic=false;
+)
 
 AC_ARG_ENABLE([fastcompile],
-     [  --enable-fastcompile    Use fast compilation hack],
-     [case "${enableval}" in
-       yes) fastcompile=true ;;
-       no)  fastcompile=false ;;
-       *) AC_MSG_ERROR(bad value ${enableval} for --enable-fastcompile) ;;
-     esac],[fastcompile=false])
-     AM_CONDITIONAL(FASTCOMPILE, test x$fastcompile = xtrue)
+	AC_HELP_STRING(
+		[--enable-fastcompile],
+		[use fast compilation hack @<:@default=no@:>@]
+	),
+     	[case "${enableval}" in
+	       yes) fastcompile=true ;;
+	       no)  fastcompile=false ;;
+	       *) AC_MSG_ERROR(bad value ${enableval} for --enable-fastcompile) ;;
+	     esac]
+	,
+	[fastcompile=false])
+AM_CONDITIONAL(FASTCOMPILE, test x$fastcompile = xtrue)
 
 dnl checks for libraries
 AM_PATH_DOPE(0.1.0, , [AC_MSG_ERROR([dope++ required])])
@@ -66,7 +99,7 @@ if test "x$ADIC_PORT" = "x"; then
 fi
 AC_DEFINE_UNQUOTED(ADIC_PORT, $ADIC_PORT, [default port to use])
 
-if test -z "$enable_staticcpp" -o -z "$enable_mostlystatic"; then
+if $staticcpp||$mostlystatic; then
 	dnl hack to get static linkage with libtool and g++-3.2 of stdc++ library
 	dnl it seems we have to use the dynamic gcc_s - otherwise exception handling does
 	dnl not work - but are different gcc_s libraries compatible ?
@@ -75,17 +108,30 @@ if test -z "$enable_staticcpp" -o -z "$enable_mostlystatic"; then
 	SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_s -lc"
 fi
 
-if test -z "$enable_staticcpp"; then
+if $staticcpp; then
+	echo "linking stdc++ library statically"
 	SERVER_LDADD="$SPECIAL_LDADD"
 	GUICLIENT_LDADD="$SPECIAL_LDADD"
 	BOTCLIENT_LDADD="$SPECIAL_LDADD"
 fi
 
-if test -z "$enable_mostlystatic"; then
+if $mostlystatic; then
+	echo "linking as much as possible statically"
 	SERVER_LDADD="-all-static"
 	GUICLIENT_LDADD="$SPECIAL_LDADD"
 	BOTCLIENT_LDADD="-all-static"
 fi
+
+if $allstatic; then
+	echo "linking statically"
+	SERVER_LDADD="-all-static"
+	GUICLIENT_LDADD="-all-static"
+	BOTCLIENT_LDADD="-all-static"
+fi
+
+dnl echo SERVER_LDADD=$SERVER_LDADD
+dnl echo GUICLIENT_LDADD=$GUICLIENT_LDADD
+dnl echo BOTCLIENT_LDADD=$BOTCLIENT_LDADD
 
 AC_SUBST(SERVER_LDADD)
 AC_SUBST(GUICLIENT_LDADD)
