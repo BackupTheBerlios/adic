@@ -41,6 +41,25 @@ public:
   ~SDLGLGUI(){killWindow();}
 protected:
 
+  struct Player
+  {
+    Player(SDLGLGUI &gui);
+    
+    Texture &getTexture() const
+    {
+      unsigned id=time;
+      DOPE_CHECK(id<textures.size());
+      DOPE_CHECK(textures[id].get());
+      return *textures[id].get();
+    }
+
+    void step(const ::Player &p,R dt);
+    
+    std::vector<DOPE_SMARTPTR<Texture> > textures;
+    R time;
+  };
+  
+
   //! create window
   void createWindow();
   //! resize gui
@@ -51,6 +70,7 @@ protected:
   void drawCircle(const V2D &p, float r);
   void drawWall(const Wall &wall);
   void drawPolygon(const std::vector<V2D> &p);
+  void drawTexture(const Texture &tex, const V2D &p, R rot=0);
   
   Input i[2];
   int m_width;
@@ -58,6 +78,7 @@ protected:
   unsigned m_flags;
   DOPE_SMARTPTR<Texture> m_texturePtr;
   R m_textureTime;
+  std::vector<Player> m_players;
   
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);
@@ -111,7 +132,7 @@ public:
   LOOKUP(glGenTextures,uintuintPFunc);
   LOOKUP(glTexParameteri,uint2intFunc);
   LOOKUP(glTexImage2D,glTexImage2DFunc);
-  
+  LOOKUP(glRotatef,fvec4Func);
 #undef LOOKUP
 };
 

@@ -17,6 +17,29 @@
 #define LOOKUP(m,t) m##P=&m;DOPE_CHECK(m##P)
 #endif
 
+SDLGLGUI::Player::Player(SDLGLGUI &gui)
+  : time(0)
+{
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0001.png")));
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0002.png")));
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0003.png")));
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0004.png")));
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0005.png")));
+  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0006.png")));
+}
+
+void 
+SDLGLGUI::Player::step(const ::Player &p,R dt)
+{
+  time+=p.getY()*dt*p.getSpeed().length()*0.1;
+  while (time>=textures.size())
+	time-=textures.size();
+  while (time<0)
+    time+=textures.size();
+  DOPE_CHECK(time>=0);
+  DOPE_CHECK(time<textures.size());
+}
+
 
 SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config) 
   : GUI(client,config), m_textureTime(5)
@@ -57,6 +80,7 @@ SDLGLGUI::init()
   LOOKUP(glGenTextures,uintuintPFunc);
   LOOKUP(glTexParameteri,uint2intFunc);
   LOOKUP(glTexImage2D,glTexImage2DFunc);
+  LOOKUP(glRotatef,fvec4Func);
 
   createWindow();
   i[1].devno=1;
@@ -276,21 +300,29 @@ SDLGLGUI::step(R dt)
     DOPE_WARN("Did not receive world yet");
   }
   // paint players
+  if (m_players.size()!=players.size()) {
+    while (players.size()<m_players.size())
+      m_players.pop_back();
+    while (m_players.size()<players.size())
+      m_players.push_back(Player(*this));
+  }
   for (unsigned p=0;p<players.size();++p)
     {
       if (m_client.getGame().playerIsLocked(p))
 	glColor3fP(1.0,0.0,0.0);
       else
 	glColor3fP(0.0,1.0,0.0);
-      drawCircle(players[p].m_pos,players[p].m_r);
-      V2D dv(V2D(0,100).rot(players[p].getDirection()));
+      //      drawCircle(players[p].m_pos,players[p].m_r);
+      m_players[p].step(players[p],dt);
+      drawTexture(m_players[p].getTexture(),players[p].m_pos,players[p].getDirection());
+      /*      V2D dv(V2D(0,100).rot(players[p].getDirection()));
       glColor3fP(1.0,1.0,0.0);
       glBeginP(GL_LINES);
       glVertex2fP(players[p].m_pos[0],players[p].m_pos[1]);
       dv+=players[p].m_pos;
       glVertex2fP(dv[0],dv[1]);
-      glEndP();
-      glColor3fP(1.0,1.0,1.0);
+      glEndP(); 
+      glColor3fP(1.0,1.0,1.0); */
     }
   // paint texture
   if (m_textureTime>0) {
@@ -362,5 +394,37 @@ SDLGLGUI::drawPolygon(const std::vector<V2D> &p)
 {
   // todo - OpenGL only draws convex polygons => we have to do it ourselves
   // this is a job for Jens Schwarz ;-)
+}
+void
+SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
+{
+  int w=tex.getWidth();
+  int h=tex.getHeight();
+  int w2=w>>1;
+  int h2=h>>1;
+  glPushMatrixP();
+  glTranslatefP(p[0], p[1], 0);
+  if (rot!=0) {
+    rot=-rot*180/M_PI;
+    glRotatefP(rot+90,0,0,1);
+  }
+  glColor3fP(1.0,1.0,1.0);
+  glEnableP(GL_TEXTURE_2D);
+  glEnableP(GL_BLEND);
+  glBlendFuncP(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTextureP(GL_TEXTURE_2D,tex.getTextureID());
+  glBeginP(GL_QUADS);
+  glTexCoord2fP(0,1);
+  glVertex2fP(-w2,-h2);
+  glTexCoord2fP(1,1);
+  glVertex2fP(w2,-h2);
+  glTexCoord2fP(1,0);
+  glVertex2fP(w2,h2);
+  glTexCoord2fP(0,0);
+  glVertex2fP(-w2,h2);
+  glEndP();
+  glDisableP(GL_BLEND);
+  glDisableP(GL_TEXTURE_2D);
+  glPopMatrixP();
 }
 
