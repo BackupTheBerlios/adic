@@ -942,11 +942,11 @@ SDLGLGUI::setupCamera(R dt)
   }
   if (m_scrollOp[0]||m_scrollOp[1]) {
     V2D s(m_scrollOp[0],m_scrollOp[1]);
-    s*=dt*200/getZoom();
+    s*=dt*400/getZoom();
     m_camera.setPos(m_camera.getWPos()+s);
   }
   if (m_zoomOp) {
-    m_camera.setZoom(std::max(R(m_camera.getWZoom()*(1.0+0.2*dt*R(m_zoomOp))),R(0.1)));
+    m_camera.setZoom(std::max(R(m_camera.getWZoom()*(1.0+0.4*dt*R(m_zoomOp))),R(0.1)));
   }
   m_camera.step(dt);
   
