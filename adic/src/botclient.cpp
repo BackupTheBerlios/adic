@@ -55,11 +55,6 @@ BotClient::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
   std::cout << "I Got "<< got <<" player IDs (requested "<< req <<" )\n";
   if ((req>0)&&(!got))
     std::cout << "The server is full.\n";
-  /*
-    for (unsigned i=0;i<m_playerIDs.size();++i)
-    std::cerr << "\n"<<m_playerIDs[i];
-    std::cerr << "\n";
-  */
 
   BotFactory factory;
   m_bots.clear();
@@ -89,17 +84,22 @@ void
 BotClient::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
   assert(iPtr.get());
-  m_game.setInput(*iPtr.get());
-    //    std::cerr << "\nGot Input\n";
+  if (m_config.m_lagCompensation) {
+    //    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
+    if (m_game.getFrame()-iPtr->frame>=0)
+      m_game.setInput(*iPtr.get());
+    else{
+      //      std::cerr << "Stored input in queue\n";
+      m_inputQueue.push_back(iPtr);
+    }
+  }else{
+    m_game.setInput(*iPtr.get());
+  }
 }
 
 void
 BotClient::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 {
-  /*
-  std::cerr << "\ngot player names:\n";
-  for (unsigned i=0;i<mPtr->playerNames.size();++i)
-  std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
 }
@@ -248,17 +248,30 @@ BotClient::main()
       frameSize-=stepSize;
     }
     frameSize=stepSize-frameSize;
-    if (eframes>1) {
-      DOPE_WARN("machine too slow: calculate "<<eframes<<" frames at once");
-    }
 
     // start of one frame
     // do main work
-    // game
+
     R rdt(R(stepSize.getSec())+R(stepSize.getUSec())/1000000);
-    m_game.step(rdt);
+    for (int f=0;f<eframes;++f) {
+      m_game.step(rdt);
+      // work on input queue
+      InputQueue::iterator it(m_inputQueue.begin());
+      while (it!=m_inputQueue.end()){
+	if (m_game.getFrame()-(*it)->frame>=0) {
+	  m_game.setInput(*(it->get()));
+	  InputQueue::iterator del(it);
+	  ++it;
+	  m_inputQueue.erase(del);
+	  continue;
+	}
+	++it;
+      }
+    }
+
     if (!step(rdt))
       m_quit=true;
+
     if (m_streamPtr.get()) m_streamPtr->readAll();
 
     // end of main work

@@ -108,6 +108,10 @@ protected:
   unsigned getPlayerBotID(PlayerID pid);
 
   std::vector<DOPE_SMARTPTR<Bot> > m_bots;
+
+  typedef std::list<DOPE_SMARTPTR<PlayerInput > > InputQueue;
+  //! stores input events if they happen in the future
+  InputQueue m_inputQueue;
 };
 
 #endif
