@@ -43,7 +43,7 @@ SDLMenu::SDLMenu(SDLGLGUI &_gui)
 void
 SDLMenu::handleInput(Input &i)
 {
-  if (int(i.devno)==2) return;
+  //  if (int(i.devno)==2) return;
   if ((i.x==0) && (i.y==0)) return;
 
   switch (m_screen)

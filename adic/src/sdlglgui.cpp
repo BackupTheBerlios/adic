@@ -71,7 +71,9 @@ SDLGLGUI::init()
   assert(m_inputDevices.size());
   assert(m_menuPtr.get());
   for (unsigned i=0;i<m_inputDevices.size();++i)
-    m_inputDevices[i]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
+    // we do not want the mouse as input device for the menu
+    if (!m_inputDevices[i]->getDevName().isMouse())
+      m_inputDevices[i]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
   m_menuPtr->serverSelected.connect(SigC::slot(m_client,&Client::connect));
   m_menuPtr->configured.connect(SigC::slot(m_client,&Client::sendGreeting));
   m_menuPtr->printed.connect(printed.slot());
