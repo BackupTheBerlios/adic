@@ -21,7 +21,10 @@ TUNING:
 	also eigentlich ein dope problem
 
 FEATURES:
-- bewegbare nicht-spieler objekte kisten/fässer (rechtecke)
+- improve the physics
+- MOTIVATION zum riskanten rumlaufen:
+  - essen holen - so ähnlich wie unten sessel
+- mehrere lieder
 - schreibe opengl terminal
 - game over and restart
 - locked anzeigen
@@ -39,7 +42,6 @@ FEATURES:
 BUGS/QUESTIONS:
 - kollisions-sound geht nicht mehr (nur nicht beim statisch linken)
 - server closes connection, client doesn't detect it
-- man kann an türen kleben bleiben
 
 MISC:
 - compile with -O9 and check the warnings about uninitialized usage
