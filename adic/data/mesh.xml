@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <Mesh>
 <stdvectorOfV2D this.name="vertices">
-<V2D x="10" y="20" />
-<V2D x="630" y="20" />
-<V2D x="630" y="470" />
-<V2D x="70" y="120" />
-<V2D x="50" y="100" />
-<V2D x="10" y="470" />
-<V2D x="480" y="260" />
-<V2D x="250" y="260" />
-<V2D x="250" y="290" />
-<V2D x="250" y="320" />
-<V2D x="250" y="470" />
-<V2D x="500" y="280" />
+<V2D x="20" y="20" />
+<V2D x="1260" y="20" />
+<V2D x="1260" y="940" />
+<V2D x="140" y="240" />
+<V2D x="100" y="200" />
+<V2D x="20" y="940" />
+<V2D x="960" y="520" />
+<V2D x="500" y="520" />
+<V2D x="500" y="580" />
+<V2D x="500" y="640" />
+<V2D x="500" y="940" />
+<V2D x="1000" y="560" />
 </stdvectorOfV2D>
 <stdvectorOfEdge this.name="edgelist">
 <Edge vid="0" type="0" />
@@ -43,8 +43,8 @@
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
 <stdvectorOfV2D this.name="startPoints">
-<V2D x="50" y="50" />
-<V2D x="80" y="80" />
-<V2D x="400" y="420" />
+<V2D x="100" y="100" />
+<V2D x="160" y="160" />
+<V2D x="800" y="840" />
 </stdvectorOfV2D>
 </Mesh>
