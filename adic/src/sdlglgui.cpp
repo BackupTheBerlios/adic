@@ -933,7 +933,6 @@ SDLGLGUI::setupCamera(R dt)
   
   const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
   if (m_autoCenter||m_autoZoom&&(!myIDs.empty())) {
-    V2D pos;
     R big=10000000000.0;
     V2D minp(big,big);
     V2D maxp;
@@ -944,30 +943,29 @@ SDLGLGUI::setupCamera(R dt)
 	unsigned id=myIDs[i];
 	// perhaps we did not receive all our players yet
 	if (id<players.size()) {
-	  pos+=players[id].m_pos;
-	  /* did not compile on mingw gcc 3.1.?
-	    minp[0]=std::min(minp[0],players[id].m_pos[0]);
-	    minp[1]=std::min(minp[1],players[id].m_pos[1]);
-	  */
-#define min(a,b) (a<=b) ? a : b
-	  minp[0]=min(minp[0],players[id].m_pos[0]);
-	  minp[1]=min(minp[1],players[id].m_pos[1]);
-#undef min
-
-#define max(a,b) (a>=b) ? a : b
-	  maxp[0]=max(maxp[0],players[id].m_pos[0]);
-	  maxp[1]=max(maxp[1],players[id].m_pos[1]);
-#undef max
+	  V2D sp(players[id].getSpeed()*R(4));
+	  minp[0]=std::min(minp[0],players[id].m_pos[0]);
+	  maxp[0]=std::max(maxp[0],players[id].m_pos[0]);
+	  minp[1]=std::min(minp[1],players[id].m_pos[1]);
+	  maxp[1]=std::max(maxp[1],players[id].m_pos[1]);
+	  minp[0]=std::min(minp[0],players[id].m_pos[0]+sp[0]);
+	  maxp[0]=std::max(maxp[0],players[id].m_pos[0]+sp[0]);
+	  minp[1]=std::min(minp[1],players[id].m_pos[1]+sp[1]);
+	  maxp[1]=std::max(maxp[1],players[id].m_pos[1]+sp[1]);
 	  maxr=std::max(maxr,players[id].m_r);
 	  ++c;
 	}
       }
     if (c) {
       if (m_autoCenter) {
-	pos=(maxp+minp)/2;
-	pos[0]=int(pos[0]);
-	pos[1]=int(pos[1]);
-	m_camera.setPos(pos+V2D(0.375f,0.375f));
+	V2D pos(maxp+minp);
+	pos*=0.5;
+	/*
+	  pos[0]=int(pos[0]);
+	  pos[1]=int(pos[1]);
+	  m_camera.setPos(pos+V2D(0.375f,0.375f));
+	*/
+	m_camera.setPos(pos);
       }
       if ((c>1)&&m_autoZoom) {
 	maxp-=minp;
