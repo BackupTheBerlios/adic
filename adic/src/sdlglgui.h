@@ -137,6 +137,9 @@ protected:
   //! resize gui
   void resize(int width, int height);
   //! close window
+  /*!
+    \note after you called this you must not use any GL/GLU calls
+  */
   void killWindow();
   
   std::vector<DOPE_SMARTPTR<SDLInputDev> > m_inputDevices;

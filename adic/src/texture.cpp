@@ -108,7 +108,7 @@ Texture::Texture(const char* name, int quality)
   
   glGenTextures(1,&textureID);
   glBindTexture(GL_TEXTURE_2D,textureID);
-  int q=(quality>0) ? GL_LINEAR : GL_NEAREST;
+  int q=(quality>1) ? GL_LINEAR : GL_NEAREST;
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,q); 
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,q);
   // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image,

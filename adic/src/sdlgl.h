@@ -71,5 +71,12 @@ loadGLU(const std::string &libGLU);
 void
 lookupGLSymbols();
 #endif
+//! deinit GL and GLU symbols
+/*
+  sets all function pointers to zero
+  for easier debugging
+*/
+void
+deinitGLSymbols();
 
 #endif

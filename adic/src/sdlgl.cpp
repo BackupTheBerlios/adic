@@ -95,5 +95,18 @@ lookupGLSymbols()
 #undef FUNC
 #undef STRINGIFY
 }
-#endif
+
+void
+deinitGLSymbols()
+{
+#define STRINGIFY(m) #m
+  DEBUG_GL("deinit GL and GLU symbols");
+#define FUNC(ret,name,parm) do{typedef ret (*T##name) parm ;name=(T##name)NULL;}while(0)
+#include "glfunctions.h"
+#undef FUNC
+#undef STRINGIFY
+}
+
+
+#endif /* DLOPEN_OPENGL */
 

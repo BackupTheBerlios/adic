@@ -11,7 +11,7 @@ SDLGLGUI::SDLGLGUI(Client &client)
     m_zoomOp(0), m_autoZoom(true),
     m_showNames(true),
     m_quit(false), m_frames(0),
-    m_chatMode(0), m_lineSmooth(getGUIConfig().quality>0), m_toggles(~0)
+    m_chatMode(0), m_lineSmooth(getGUIConfig().quality>1), m_toggles(~0)
 {
   m_scrollOp[0]=m_scrollOp[1]=0;
   sf.quitSignal.connect(SigC::slot(*this,&SDLGLGUI::handleQuit));
@@ -22,7 +22,11 @@ SDLGLGUI::SDLGLGUI(Client &client)
 
 SDLGLGUI::~SDLGLGUI()
 {
+  // no gl/glu commands are allowed after killWindow
+  // because if we use dlopen the libraries are unloaded
+  // => we have to deinit all GL related stuff here
   m_textures.clear();
+  m_polys.clear();
   killWindow();
 }
 
@@ -108,7 +112,7 @@ SDLGLGUI::createWindow()
   e.w=getGUIConfig().width;
   e.h=getGUIConfig().height;
 
-  DEBUG_GL("creating window by resize evvent");
+  DEBUG_GL("creating window by resize event");
 
   sf.resize.emit(e);
   //  resize(getGUIConfig().width, getGUIConfig().height);
@@ -147,7 +151,7 @@ SDLGLGUI::createWindow()
   }
   glShadeModel(GL_FLAT);
   GL_ERRORS();
-  if (getGUIConfig().quality<=0) {
+  if (getGUIConfig().quality<=1) {
     glDisable(GL_DITHER);
     GL_ERRORS();
   }
@@ -196,6 +200,8 @@ void
 SDLGLGUI::killWindow()
 {
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  // set all function pointers zero
+  deinitGLSymbols();
 }
 
 DOPE_SMARTPTR<Texture> 
@@ -602,7 +608,7 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
   int q=getGUIConfig().quality;
   float nlw;
   int numlines;
-  if (q<=0)
+  if (q<=1)
     // in low quality mode we only draw 1 or 2 lines
     numlines=(cwClosed==ccwClosed) ? 1 : 2;
   else numlines=3;
@@ -695,6 +701,7 @@ SDLGLGUI::drawDoor(const Wall &w, bool closed)
 void
 SDLGLGUI::drawPolys()
 {
+  if (getGUIConfig().quality<1) return;
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
   unsigned nr=worldPtr->getNumRooms();
   if (nr!=m_polys.size()) {
@@ -711,7 +718,7 @@ SDLGLGUI::drawPolys()
   };
 
   float* colors[2]={cschemes[2],cschemes[3]};
-  if (getGUIConfig().quality>0) {
+  if (getGUIConfig().quality>1) {
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -724,7 +731,7 @@ SDLGLGUI::drawPolys()
     glBindTexture(GL_TEXTURE_2D,m_roomTextures[i%m_roomTextures.size()]->getTextureID());
     m_polys[i]->draw();
   }
-  if (getGUIConfig().quality>0) {
+  if (getGUIConfig().quality>1) {
     glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
   }
