@@ -2,6 +2,7 @@
 <Mesh>
 <stdvectorOfV2D this.name="vertices">
 
+<!-- 0-11 -->
 <V2D x="800" y="900" />
 <V2D x="800" y="950" />
 <V2D x="800" y="1050" />
@@ -15,32 +16,35 @@
 <V2D x="1100" y="800" />
 <V2D x="900" y="800" />
 
-<V2D x="600" y="800" />
-<V2D x="600" y="1200" />
+<!-- 12-23 -->
+<V2D x="400" y="800" />
+<V2D x="400" y="1200" />
 <V2D x="800" y="1400" />
 <V2D x="950" y="1400" />
 <V2D x="1050" y="1400" />
 <V2D x="1200" y="1400" />
-<V2D x="1400" y="1200" />
-<V2D x="1400" y="800" />
+<V2D x="1600" y="1200" />
+<V2D x="1600" y="800" />
 <V2D x="1200" y="600" />
-<V2D x="1050" y="600" />
-<V2D x="950" y="600" />
+<V2D x="1050" y="400" />
+<V2D x="950" y="400" />
 <V2D x="800" y="600" />
 
+<!-- 14-29 -->
 <V2D x="600" y="900" />
-<V2D x="650" y="900" />
-<V2D x="750" y="900" />
+<V2D x="650" y="800" />
+<V2D x="750" y="800" />
 <V2D x="600" y="1100" />
-<V2D x="650" y="1100" />
-<V2D x="750" y="1100" />
+<V2D x="750" y="1200" />
+<V2D x="650" y="1200" />
 
+<!-- 30-35 -->
 <V2D x="1400" y="1100" />
-<V2D x="1350" y="1100" />
-<V2D x="1250" y="1100" />
+<V2D x="1350" y="1200" />
+<V2D x="1250" y="1200" />
 <V2D x="1400" y="900" />
-<V2D x="1350" y="900" />
-<V2D x="1250" y="900" />
+<V2D x="1350" y="800" />
+<V2D x="1250" y="800" />
 
 <V2D x="200" y="600" />
 <V2D x="200" y="950" />
@@ -57,10 +61,10 @@
 
 <V2D x="800" y="1550" />
 <V2D x="800" y="1650" />
-<V2D x="800" y="1800" />
+<V2D x="900" y="1900" />
 <V2D x="1200" y="1550" />
 <V2D x="1200" y="1650" />
-<V2D x="1200" y="1800" />
+<V2D x="1100" y="1900" />
 
 <V2D x="50" y="600" />
 <V2D x="150" y="600" />
@@ -75,10 +79,10 @@
 <V2D y="150" x="600" />
 <V2D y="50" x="1400" />
 <V2D y="150" x="1400" />
-<V2D y="1950" x="600" />
-<V2D y="1850" x="600" />
-<V2D y="1950" x="1400" />
-<V2D y="1850" x="1400" />
+<V2D y="1950" x="400" />
+<V2D y="1850" x="400" />
+<V2D y="1950" x="1600" />
+<V2D y="1850" x="1600" />
 
 <V2D x="0" y="0" />
 <V2D x="600" y="0" />
@@ -113,8 +117,8 @@
 <Edge vid="25" type="0" />
 <Edge vid="24" type="0" />
 <Edge vid="27" type="0" />
-<Edge vid="28" type="1" />
-<Edge vid="29" type="0" />
+<Edge vid="29" type="1" />
+<Edge vid="28" type="0" />
 <Edge vid="3" type="0" />
 <Edge vid="2" type="1" />
 <Edge vid="1" type="0" />
@@ -146,8 +150,8 @@
 <Edge vid="5" type="0" />
 <Edge vid="4" type="0" />
 <Edge vid="3" type="0" />
-<Edge vid="29" type="1" />
-<Edge vid="28" type="0" />
+<Edge vid="28" type="1" />
+<Edge vid="29" type="0" />
 <Edge vid="-1" type="0" />
 
 <Edge vid="24" type="0" />
@@ -170,12 +174,16 @@
 
 <Edge vid="14" type="0" />
 <Edge vid="13" type="0" />
+<Edge vid="27" type="0" />
+<Edge vid="24" type="0" />
 <Edge vid="12" type="0" />
 <Edge vid="23" type="0" />
 <Edge vid="22" type="1" />
 <Edge vid="21" type="0" />
 <Edge vid="20" type="0" />
 <Edge vid="19" type="0" />
+<Edge vid="33" type="0" />
+<Edge vid="30" type="0" />
 <Edge vid="18" type="0" />
 <Edge vid="17" type="0" />
 <Edge vid="51" type="1" />
@@ -296,23 +304,49 @@
 <Edge vid="40" type="0" />
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
+<!-- hier kommen die startpositionen fuer spieler -->
+<!-- second ist richtung -->
+<!-- der vector ist die startposition -->
 <stdvectorOfstdpairOfV2DAndfloat this.name="startPoints">
-<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="100" y="100" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="90"><V2D this.name="first" x="160" y="160" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="800" y="840" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="180"><V2D this.name="first" x="1000" y="500" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="180"><V2D this.name="first" x="700" y="550" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="180"><V2D this.name="first" x="1300" y="550" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="45"><V2D this.name="first" x="100" y="1900"
+/></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="135"><V2D this.name="first" x="100" y="100"
+/></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="225"><V2D this.name="first" x="1900" y="1900"
+/></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="315"><V2D this.name="first" x="1900" y="100"
+/></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="900"
+y="900" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="180"><V2D this.name="first" x="1100"
+y="900" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="180"><V2D this.name="first" x="1100"
+y="1100" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="900" y="1100"
+/></stdpairOfV2DAndfloat>
 </stdvectorOfstdpairOfV2DAndfloat>
+<!-- hier kommen objekte die am anfang vorhanden sind -->
+<!-- URI bestimmt den typ des objekts -->
+<!-- dir ist richtung -->
+<!-- vector ist position -->
 <stdvectorOfObject this.name="startObjects">
   <Object dir="0" URI="file:data/barrel.xml">
-    <V2D this.name="pos" x="300" y="100" />
+    <V2D this.name="pos" x="830" y="70" />
+  </Object>
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="900" y="550" />
+  </Object>
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="1200" y="700" />
   </Object>
   <Object dir="45" URI="file:data/fountain.xml">
-    <V2D this.name="pos" x="750" y="800" />
+    <V2D this.name="pos" x="1200" y="120" />
   </Object>
   <Object dir="45" URI="file:data/fountain.xml">
-    <V2D this.name="pos" x="1000" y="1000" />
+    <V2D this.name="pos" x="80" y="1000" />
+  </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="1820" y="1000" />
   </Object>
 </stdvectorOfObject>
 </Mesh>
