@@ -20,7 +20,7 @@ std::string findDataFile(const std::string &fname, const char *dataPath)
     int s=first.size();
     if (s&&(first[s-1]!='/')) first+='/';
     std::string n(first+fname);
-#if defined(__WIN32__) || defined(WIN32)
+#if defined(WINDOOF)
     for (unsigned i=0;i<n.size();++i) if (n[i]=='/') n[i]='\\';
 #endif
     std::ifstream ist(n.c_str());

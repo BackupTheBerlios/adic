@@ -216,7 +216,7 @@ Server::getWeakestTeam()
 int 
 Server::main()
 {
-#ifndef WIN32
+#ifndef WINDOOF
   signal(SIGPIPE,sigPipeHandler);
 #endif
   signal(SIGTERM,sigTermHandler);

@@ -199,7 +199,7 @@ BotClient::main()
   DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
   URILoader<URICache<PlayerData> >::cache=pdc.get();
   
-#ifndef WIN32
+#ifndef WINDOOF
   signal(SIGPIPE,sigPipeHandler);
 #endif
 

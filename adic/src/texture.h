@@ -34,7 +34,7 @@
 class Texture
 {
 public:
-  Texture(SDLGL &gl, const char* name, int quality);
+  Texture(const char* name, int quality);
 
   bool isTransparent() const {return haveAlphaChannel;}
   int getWidth() const {return width;}

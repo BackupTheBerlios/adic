@@ -37,18 +37,10 @@ SDLGLGUI::init()
   DEBUG_GL("sdl init success");
   
 #ifdef DLOPEN_OPENGL
-  DEBUG_GL("dlopening opengl");
-  // load the lib before we call setvidmode
-  const char *lib=NULL;
-  if (!getGUIConfig().libGL.empty()) lib=getGUIConfig().libGL.c_str();
-  if (SDL_GL_LoadLibrary(lib)==-1) {
-    DEBUG_GL("failed to load gl library");
-    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+getGUIConfig().libGL.c_str()+"\": "+SDL_GetError());
-  }
-#endif
-  DEBUG_GL("run gl.init");  
-  gl.init();
-  DEBUG_GL("returned from gl.init");
+  loadGL(getGUIConfig().libGL);
+  loadGLU(getGUIConfig().libGLU);
+  lookupGLSymbols();
+#endif  
 
   int major=2;
   int minor=0;
@@ -122,7 +114,7 @@ SDLGLGUI::createWindow()
   //  resize(getGUIConfig().width, getGUIConfig().height);
   //  m_texturePtr=getTexture("data:gui_0001.png");
   m_fontTexPtr=getTexture("data:font.png");
-  m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
+  m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(m_fontTexPtr));
   m_circlePtr=getTexture("data:pillar.png");
   m_texCircle=true;
 
@@ -219,7 +211,7 @@ SDLGLGUI::getTexture(const std::string &uri)
       std::string fname(findDataFile(dataFile));
       if (fname.empty())
 	throw ResourceNotFound(uri,std::string("Data file \"")+dataFile+"\" does not exist in path");
-      DOPE_SMARTPTR<Texture> r(new Texture(gl,fname.c_str(),getGUIConfig().quality));
+      DOPE_SMARTPTR<Texture> r(new Texture(fname.c_str(),getGUIConfig().quality));
       m_textures[uri]=r;
       return r;
     }

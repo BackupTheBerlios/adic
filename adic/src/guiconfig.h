@@ -31,15 +31,25 @@
 
 struct GUIConfig
 {
-  // todo - default for libGL should be different on win
   GUIConfig() 
-    : implementation("SDLGLGUI"), title(PACKAGE), libGL(""), 
-    width(640), height(480), bits(32), fullscreen(true), quality(0), flush(true)
+    : implementation("SDLGLGUI"), title(PACKAGE), 
+#ifdef DLOPEN_OPENGL
+      libGL(""), 
+#ifndef WINDOOF
+      libGLU("/usr/lib/libGLU.so"),
+#else
+error - which is the default path for libGLU on windows ?
+#endif
+#endif
+      width(640), height(480), bits(32), fullscreen(true), quality(0), flush(true)
   {}
   
   std::string implementation;
   std::string title;
+#ifdef DLOPEN_OPENGL
   std::string libGL;
+  std::string libGLU;
+#endif
   int width;
   int height;
   int bits;
@@ -52,7 +62,10 @@ struct GUIConfig
   template <typename Layer2>
   void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(implementation).SIMPLE(title).SIMPLE(libGL)
+    layer2.SIMPLE(implementation).SIMPLE(title) 
+#ifdef DLOPEN_OPENGL
+      .SIMPLE(libGL).SIMPLE(libGLU) 
+#endif
       .SIMPLE(width).SIMPLE(height).SIMPLE(bits).SIMPLE(fullscreen).SIMPLE(quality)
       .SIMPLE(flush);
   }

@@ -110,7 +110,6 @@ protected:
   }
   
   SDLGLGUI &gui;
-  SDLGL &gl;
   //! the whole job of SDLMenu is to fill this struct
   GUIClientConfig &config;
   

@@ -57,7 +57,6 @@ public:
   
 protected:
   SDLGLGUI &gui;
-  SDLGL &gl;
   int x,y;
   bool centered;
   std::list<std::string> rows;

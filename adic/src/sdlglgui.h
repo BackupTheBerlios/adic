@@ -72,8 +72,6 @@ public:
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
 
-  //! the opengl wrapper
-  SDLGL gl;
   //! simple terminal
   GLTerminal m_terminal;
   //! our font

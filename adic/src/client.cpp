@@ -91,8 +91,8 @@ Client::handleCollision(V2D pos, R strength)
     // collision sound 
     R volume=strength/150;
     if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(1000);
-    if (volume>0) {
-      if (volume>1) volume=1;
+    if (volume>0.2) {
+      if (volume>0.75) volume=0.75;
       //  std::cerr << "\nPlay sample\n";
       int c=m_soundPtr->playSample("collision.wav");
       m_soundPtr->modifyChannel(c,volume);
@@ -135,7 +135,7 @@ Client::playNextSong()
   if (!m_soundPtr.get())
     return;
   if (m_csong<m_songs.size()) {
-    m_soundPtr->playMusic(m_songs[m_csong].c_str());
+    m_soundPtr->playMusic(m_songs[m_csong].c_str(),0.8);
     ++m_csong;
     if (m_csong>=m_songs.size())
       m_csong=0;
@@ -149,12 +149,11 @@ Client::printed(char c)
     return;
   switch (c) {
   case '\n':
-  case ' ':
-    m_soundPtr->playSample("newline.wav");
+    m_soundPtr->modifyChannel(m_soundPtr->playSample("newline.wav"),0.5);
     break;
   default:
     int ch=m_soundPtr->playSample("printer.wav");
-    R volume=1.0-R(c%6)/7;
+    R volume=0.8-R(c%6)/(5*2);
     m_soundPtr->modifyChannel(ch,volume);
     break;
   }
@@ -265,7 +264,7 @@ Client::main()
   DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
   URILoader<URICache<PlayerData> >::cache=pdc.get();
   
-#ifndef WIN32
+#ifndef WINDOOF
   signal(SIGPIPE,sigPipeHandler);
 #endif
 

@@ -81,5 +81,21 @@ typedef uint16_t TeamID;
 
 //#include "genericpointer.h"
 
+// all win conditional code should use WINDOOF
+#if defined(__WIN32__) || defined(WIN32)
+#define WINDOOF 1
+#endif
+
+
+// default is to dlopen opengl
+#define DLOPEN_OPENGL
+#ifdef WINDOOF
+// do not dynamically load opengl on win
+// this is because I only cross-compile for windows and then i have to link
+// against the mingw opengl version which is a wrapper around the real opengl
+// i think
+#undef DLOPEN_OPENGL
+#endif
+
 #endif
 

@@ -32,7 +32,7 @@
 struct SoundConfig
 {
   SoundConfig()
-    : sdriver("sdlmixer"), srate(22050), sbits(16), sbuffers(512), stereo(true)
+    : sdriver("sdlmixer"), srate(44100), sbits(16), sbuffers(512), stereo(true)
   {}
   
   std::string sdriver;

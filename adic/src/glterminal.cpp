@@ -5,7 +5,7 @@
 
 GLTerminal::GLTerminal
 (SDLGLGUI &_gui, int _x, int _y, bool _centered, R _scrollspeed, R _writespeed)
-  : gui(_gui), gl(_gui.gl), x(_x), y(_y), centered(_centered),
+  : gui(_gui), x(_x), y(_y), centered(_centered),
     stimer(_scrollspeed), wtimer(0), 
     scrollspeed(_scrollspeed),
     writespeed(_writespeed)

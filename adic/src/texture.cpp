@@ -25,7 +25,7 @@
 #include "typedefs.h"
 #include "texture.h"
 
-Texture::Texture(SDLGL &gl, const char* name, int quality)
+Texture::Texture(const char* name, int quality)
 {
   SDL_PixelFormat RGB_PixelFormat = {
     NULL,

@@ -35,8 +35,8 @@ class SDLGL;
 class GLFont
 {
 public:
-  GLFont(SDLGL &_gl, const DOPE_SMARTPTR<Texture> &_texPtr, int _tilex=16, int _tiley=16)
-    : gl(_gl), texPtr(_texPtr), tilex(_tilex), tiley(_tiley)
+  GLFont(const DOPE_SMARTPTR<Texture> &_texPtr, int _tilex=16, int _tiley=16)
+    : texPtr(_texPtr), tilex(_tilex), tiley(_tiley)
   {}
   ~GLFont(){}
 
@@ -61,7 +61,6 @@ public:
     return std::string()+char(11+num);
   }
 protected:
-  SDLGL &gl;
   DOPE_SMARTPTR<Texture> texPtr;
   int tilex;
   int tiley;

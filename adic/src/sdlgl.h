@@ -18,21 +18,19 @@
 
 /*!
    \file sdlgl.h
-   \brief class SDLGL
+   \brief all files using OpenGL should include this file and never the OpenGL headers
    \author Jens Thiele
 */
 
 #ifndef SDLGL_H
 #define SDLGL_H
 
-#define DLOPEN_OPENGL
+#include "typedefs.h"
 
-#if defined(__WIN32__) || defined(WIN32)
+#if defined(WINDOOF)
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX
-#undef DLOPEN_OPENGL
-#define WINDOOF 1
 #endif
 
 #ifdef DLOPEN_OPENGL
@@ -44,6 +42,7 @@
 
 #else
 #include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 
 #include <dope/dope.h>
@@ -51,33 +50,26 @@
 #define DEBUG_GL(msg)
 //#define DEBUG_GL(msg) DOPE_MSG("DEBUG: OpenGL: ", msg)
 
-#define GL_ERRORS() do{if (gl.printErrors()) DOPE_MSG("gl error at", "^^^^^");}while(0)
+#define GL_ERRORS() do{if (printGLErrors()) DOPE_MSG("gl error at", "^^^^^");}while(0)
 
-//! wrapper around OpenGL functions to allow dlopening OpenGL
-/*!
-  this class uses SDL to look up the symbols
-  \example take a look at sdlglgui.cpp on how to use it
-  \todo when cross-compiling with mingw we can't dlopen the native opengl libs
-  i assume the opengl library included in the mingw dist is just a wrapper around
-  the native opengl library - but I did not yet look at it
-  for now i disable dlopening opengl for win platforms
+//! print OpenGL errors
+/*
+  \return the number of errors occured
 */
-struct SDLGL
-{
-public:
-  SDLGL();
+int
+printGLErrors();
 
-  //! lookup symbols
-  /*!
-    \note SDL must be initialized
-  */
-  void init();
-  
-  //! print out current opengl errors
-  /*!
-    \return the number of errors
-  */
-  int printErrors();
-};
+
+#ifdef DLOPEN_OPENGL
+//! load OpenGL library at runtime
+void
+loadGL(const std::string &libGL);
+//! load GLU library at runtime
+void
+loadGLU(const std::string &libGLU);
+//! lookup GL and GLU symbols
+void
+lookupGLSymbols();
+#endif
 
 #endif

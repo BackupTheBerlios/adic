@@ -7,7 +7,6 @@ const std::string file_names[] = {"data:gui_0001.png", "data:gui_0002.png", "dat
 
 SDLMenu::SDLMenu(SDLGLGUI &_gui)
   : gui(_gui),
-    gl(_gui.gl),
     config(gui.getConfig()),
     serverName(config.m_server), 
     serverPort(anyToString(config.m_port)),

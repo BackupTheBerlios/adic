@@ -1,3 +1,11 @@
+FOR 1.0.0:
+	check copyright for sounds/music - replace them if neccessary
+	reduce text on startup
+	perhaps print text faster (glterminal)
+	DEBIAN:
+		split server and client into seperate packages (where to put the bot ?)
+	DOPE: add a protocol handling byte order issues
+
 GAMEPLAY:
 - sichtbarkeit einschränken
 
@@ -91,9 +99,6 @@ MISC:
 - generic_pointer funktioniert ?
 	nur nicht bei xmlsaxinstream
 	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
-- a thanks file
-  thanks to the unknown creator of the mod file
-  thanks to the xemacs people for the wav file
 - der genericpointer ist gut fuer dope - nicht loeschen
 - clean up (split source into multiple directories ?)
   perhaps make a libadic (but until gcc 3.2 isn't standard this wouldn't help much when distributing
