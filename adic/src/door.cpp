@@ -5,7 +5,7 @@
 const R Door::damping=RAD(3);
 
 Door::Door(FWEdge::EID _eid)
-  : angle(0), angleSpeed(RAD(20)), maxAngle(RAD(90)), minAngle(RAD(-90)), 
+  : angle(RAD(45)), angleSpeed(RAD(0)), maxAngle(RAD(90)), minAngle(RAD(-90)), 
   eid(_eid), oldAngle(0), oldAngleSpeed(angleSpeed),
   locked(false)
 {}
@@ -15,12 +15,19 @@ Door::step(R dt)
 {
   if (angleSpeed==0)
     return true;
+  int sig1=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
   angle+=angleSpeed*dt;
+  int sig2=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
+  if ((sig1!=sig2)&&(fabs(angleSpeed)<RAD(30))) {
+    angle=0;
+    angleSpeed=0;
+    return true;
+  }
   if (angle>maxAngle) {angle=maxAngle-(angle-maxAngle);angleSpeed*=-1;}
   if (angle<minAngle) {angle=minAngle+(minAngle-angle);angleSpeed*=-1;}
-  int sig1=(angleSpeed>0) ? 1 : ((angleSpeed<0) ? -1 : 0);
+  sig1=(angleSpeed>0) ? 1 : ((angleSpeed<0) ? -1 : 0);
   angleSpeed-=angleSpeed*damping*dt+R(sig1)*damping*dt;
-  int sig2=(angleSpeed>0) ? 1 : ((angleSpeed<0) ? -1 : 0);
+  sig2=(angleSpeed>0) ? 1 : ((angleSpeed<0) ? -1 : 0);
   if (sig1!=sig2) angleSpeed=0;
   else if (angleSpeed>RAD(90)) angleSpeed=RAD(90);
   else if (angleSpeed<RAD(-90)) angleSpeed=RAD(-90);
