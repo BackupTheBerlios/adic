@@ -87,3 +87,5 @@ MISC:
   thanks to the xemacs people for the wav file
 - der genericpointer ist gut fuer dope - nicht loeschen
 - clean up
+- resize bug:
+  this is probably a bug in sawfish or libSDL - but not in ADIC
