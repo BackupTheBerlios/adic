@@ -3,7 +3,8 @@ gamefiles_DATA = \
 	mesh.xml miniworld.xml bigworld.xml adic.xml \
 	barrel.xml fountain.xml \
 	default.xml boy.xml girl.xml muetze.xml cowboy.xml \
-	music1.xm music-eric.s3m music-eric2.s3m adic-3.s3m \
+	music1.xm music-eric.s3m music-eric2.s3m \
+	adic-3.s3m adic-4.s3m adic-5.s3m \
 	collision.wav \
 	printer.wav newline.wav \
 	font.png \
