@@ -25,11 +25,11 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config/config.h)
 
 AC_PROG_MAKE_SET
+AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_CXXCPP
-AM_PROG_LIBTOOL
 
 dnl build options
 AC_ARG_VAR(ADIC_PORT, the default port to use)
@@ -37,7 +37,7 @@ AC_ARG_VAR(ADIC_PORT, the default port to use)
 dnl checks for libraries
 AM_PATH_DOPE(0.0.3, , [AC_MSG_ERROR([dope++ required])])
 MDL_HAVE_OPENGL
-AM_PATH_SDL(1.2.0)
+AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR([SDL required])])
 AC_CACHE_SAVE
 
 dnl variable substitutions

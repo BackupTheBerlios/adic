@@ -105,9 +105,12 @@ do
 	echo "Making $dr/aclocal.m4 writable ..."
 	test -r $dr/aclocal.m4 && chmod u+w $dr/aclocal.m4
       fi
-      if grep "^AM_PROG_LIBTOOL" configure.ac >/dev/null; then
+      if grep "^AC_PROG_LIBTOOL" configure.ac >/dev/null; then
 	echo "Running libtoolize..."
+	# the problem is libtoolize only checks in configure.in for AC_PROG_LIBTOOL
+	# and not in configure.ac
 	libtoolize --force --copy
+	mv ltmain.sh config
       fi
       echo "Running aclocal $aclocalinclude ..."
       aclocal $aclocalinclude
