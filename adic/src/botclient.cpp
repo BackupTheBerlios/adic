@@ -56,8 +56,15 @@ BotClient::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
     std::cerr << "\n"<<m_playerIDs[i];
     std::cerr << "\n";
   */
-  assert(m_botPtr.get());
-  m_botPtr->startGame();
+
+  BotFactory factory;
+  m_bots.clear();
+  const std::vector<PlayerID> &pids(getMyIDs());
+  for (unsigned p=0;p<pids.size();++p){
+    m_bots.push_back(DOPE_SMARTPTR<Bot>(factory.create(*this,pids[p],p)));
+    m_bots[p]->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
+    m_bots[p]->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
+  }
 }
 
 void 
@@ -91,8 +98,6 @@ BotClient::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
   std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
-  DOPE_CHECK(m_botPtr.get());
-  m_botPtr->handleNewClient(mPtr);
 }
 
 std::string
@@ -143,8 +148,6 @@ BotClient::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   g.m_userSetting=m_config.m_users;
   DOPE_CHECK(m_streamPtr.get());
   m_streamPtr->so.emit(g);
-  assert(m_botPtr.get());
-  m_botPtr->endGame();
 }
 
 bool
@@ -169,12 +172,9 @@ BotClient::connect()
   m_streamPtr->si.connect(SigC::slot(*this,&BotClient::handleNewClient));
   m_streamPtr->si.connect(SigC::slot(*this,&BotClient::handleChatMessage));
   m_streamPtr->si.connect(SigC::slot(*this,&BotClient::handleEndGame));
-  DOPE_CHECK(m_botPtr.get());
-  m_botPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
-  m_botPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
-  m_game.playerCollision.connect(SigC::slot(*m_botPtr,&Bot::handlePlayerCollision));
-  m_game.wallCollision.connect(SigC::slot(*m_botPtr,&Bot::handleWallCollision));
-  m_game.doorCollision.connect(SigC::slot(*m_botPtr,&Bot::handleDoorCollision));
+  m_game.playerCollision.connect(SigC::slot(*this,&BotClient::handlePlayerCollision));
+  m_game.wallCollision.connect(SigC::slot(*this,&BotClient::handleWallCollision));
+  m_game.doorCollision.connect(SigC::slot(*this,&BotClient::handleDoorCollision));
   
   return true;
 }
@@ -210,9 +210,6 @@ BotClient::main()
   oldTime.now();
   unsigned frames=0;
 
-  BotFactory factory;
-  m_botPtr=DOPE_SMARTPTR<Bot>(factory.create(*this));
-
   std::cout << "Welcome to ADIC !!!\n";
   if (!connect()) {
     std::cerr << "Could not connect to server\n";
@@ -243,7 +240,7 @@ BotClient::main()
     R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
     // game
     m_game.step(rdt);
-    if (!m_botPtr->step(rdt))
+    if (!step(rdt))
       m_quit=true;
     if (m_streamPtr.get()) m_streamPtr->readAll();
 
@@ -257,9 +254,65 @@ BotClient::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;*/
   }
-  m_botPtr=DOPE_SMARTPTR<Bot>();
   return 0;
 }
+
+
+bool
+BotClient::step(R dt)
+{
+  for (unsigned i=0;i<m_bots.size();++i)
+    m_bots[i]->step(dt);
+  return true;
+}
+
+// dispatch events to correct PlayerBot
+
+unsigned
+BotClient::getPlayerBotID(PlayerID pid)
+{
+  const std::vector<PlayerID> &myids(getMyIDs());
+  assert(myids.size()==m_bots.size());
+  for (unsigned i=0;i<myids.size();++i) {
+    if (myids[i]==pid) return i;
+  }
+  return ~0U;
+}
+
+
+void
+BotClient::handlePlayerCollision(PlayerID p1, PlayerID p2, const V2D &cv)
+{
+  unsigned botid=getPlayerBotID(p1);
+  if (botid!=~0U) {
+    m_bots[botid]->playerCollision(p2,cv);
+    return;
+  }
+  //  else
+  botid=getPlayerBotID(p2);
+  if (botid!=~0U) {
+    m_bots[botid]->playerCollision(p1,cv);
+    return;
+  }
+}
+
+void
+BotClient::handleWallCollision(PlayerID p, const std::vector<FWEdge::EID> &eids, const V2D &cv)
+{
+  unsigned botid=getPlayerBotID(p);
+  if (botid==~0U) return;
+  m_bots[botid]->wallCollision(eids,cv);
+}
+
+void
+BotClient::handleDoorCollision(PlayerID p, unsigned did, const V2D &cv)
+{
+  unsigned botid=getPlayerBotID(p);
+  if (botid==~0U) return;
+  m_bots[botid]->doorCollision(did,cv);
+}
+
+
 
 int main(int argc,char *argv[])
 {

@@ -79,6 +79,9 @@ BUGS/QUESTIONS:
   ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
   können verändert werden)
 
+BOTS:
+- write docu - bot HOWTO
+
 MISC:
 - compile with -O9 and check the warnings about uninitialized usage
 - generic_pointer funktioniert ?
@@ -88,13 +91,15 @@ MISC:
   thanks to the unknown creator of the mod file
   thanks to the xemacs people for the wav file
 - der genericpointer ist gut fuer dope - nicht loeschen
-- clean up
+- clean up (split source into multiple directories ?)
+  perhaps make a libadic (but until gcc 3.2 isn't standard this wouldn't help much when distributing
+  binaries)
 - resize bug:
   this is probably a bug in sawfish or libSDL - but not in ADIC
 
 CROSS-COMPILE to WIN with mingw:
 - solve the min max problem (std::min did not work on mingw 3.1.?)
-  this was because winver.h (or similar) did define min and max
+  this was because winver.h (or similar) defines min and max (if NOMINMAX is not defined)
   now i could use std::min/max again
 - wrong GL.h is included - i think simply disabling the check should be enough if SDL
   is configured correct - i disabled the check is it fixed now ?

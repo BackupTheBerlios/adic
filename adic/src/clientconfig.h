@@ -93,6 +93,17 @@ struct BotClientConfig : public ClientConfig
   {
   }
 
+  void setDefaults() 
+  {
+    if (m_users.users.empty()) {
+      // by default create 4 bots in one team
+      m_users.users.push_back(User("Rob",implementation.c_str()));
+      m_users.users.push_back(User("Tinky",implementation.c_str()));
+      m_users.users.push_back(User("Bob",implementation.c_str()));
+      m_users.users.push_back(User("Lobster",implementation.c_str()));
+    }
+  }
+
   std::string implementation;
 };
 DOPE_CLASS(BotClientConfig);

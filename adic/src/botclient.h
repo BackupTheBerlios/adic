@@ -105,7 +105,16 @@ public:
   }
 protected:
   DOPE_SMARTPTR<NetStream> m_streamPtr;
-  DOPE_SMARTPTR<Bot> m_botPtr;
+
+  bool step(R dt);
+
+  void handlePlayerCollision(PlayerID p1, PlayerID p2, const V2D &cv);
+  void handleWallCollision(PlayerID p, const std::vector<FWEdge::EID> &eids, const V2D &cv);
+  void handleDoorCollision(PlayerID p, unsigned did, const V2D &cv);
+  //! map player id to bot id return ~0 if not found / not my player
+  unsigned getPlayerBotID(PlayerID pid);
+
+  std::vector<DOPE_SMARTPTR<Bot> > m_bots;
 };
 
 #endif

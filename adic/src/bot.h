@@ -27,43 +27,60 @@
 
 #include "botclient.h"
 
-//! interface to bot clients - implement it if you write a bot client
+//! Bot interface - implement it if you write a bot
 /*
   for an example implementation take a look at KarmeBot (karmebot.h)
 */
 class Bot : public SigC::Object
 {
 public:
-  Bot(BotClient &_client) : client(_client)
+  Bot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
+    : client(_client), pid(_pid), inputID(_inputID)
   {}
-  ~Bot(){}
+  
+  virtual ~Bot(){}
 
   SigC::Signal1<void, Input &> input;
   SigC::Signal1<void, ChatMessage &> chatMessage;
 
-  virtual void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr){}
-  virtual void handlePlayerCollision(PlayerID p1, PlayerID p2, const V2D &cv){}
-  virtual void handleWallCollision(PlayerID p, const std::vector<FWEdge::EID> &eids, const V2D &cv){}
-  virtual void handleDoorCollision(PlayerID p, unsigned did, const V2D &cv){}
-  //! called at the beginning of a new game
-  virtual void startGame(){}
-  //! called at the end of a game
-  virtual void endGame(){}
-  
-  virtual bool step(R dt)=0;
-
-  BotClientConfig &getConfig() 
-  {
-    return client.getConfig();
-  }
+  //! is called if the bot collided with another player or player-like object
+  virtual void playerCollision(PlayerID cp, const V2D &cv){}
+  //! is called if the bot collided with one or more walls
+  virtual void wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv){}
+  //! is called if the bot collided with a door
+  virtual void doorCollision(unsigned did, const V2D &cv){}
+  //! do your work here
+  /*!
+    \param dt the time elapsed
+  */
+  virtual bool step(R dt){}
 protected:
-  BotClient &client;
+  //! send input state to server (if changed)
+  void sendInput();
+
+  BotClient& client;
+  //! the player id of the bot
+  PlayerID pid;
+  //! the input id
+  unsigned inputID;
+  //! current input state
+  Input cinput;
+  //! input state send to the server
+  Input oinput;
+
+  //! calculates direction of given vector
+  static R vdir(const V2D &v)
+  {
+    // our coord sys is a little bit wired (we have clockwise angles and start from 0/1)
+    return M_PI/2-atan2(v[1],v[0]);
+  }
 };
 
+//! create a new bot
 class BotFactory
 {
 public:  
-  Bot* create(BotClient &client);
+  Bot* create(BotClient &client,PlayerID _pid, unsigned _inputID);
 };
 
 #endif

@@ -27,20 +27,31 @@
 
 #include "bot.h"
 
+//! karme bot implementing Bot interface
+/*!
+  simple stupid implementation of a bot
+  mainly to demonstrate how it works
+  I (karme) will work on it if somebody writes a bot which really works
+  IMHO this is a challenging task
+*/
 class KarmeBot : public Bot
 {
 public:
-  KarmeBot(BotClient &_client);
-  ~KarmeBot(){}
-  bool step(R dt);
-  void startGame();
+  KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
+    : Bot(_client,_pid,_inputID)
+  {}
 
-  void handlePlayerCollision(PlayerID p1, PlayerID p2, const V2D &cv);
-  void handleWallCollision(PlayerID p, const std::vector<FWEdge::EID> &eids, const V2D &cv);
-  void handleDoorCollision(PlayerID p, unsigned did, const V2D &cv);
-protected:
-  // map player id to bot id return ~0 if not found / not my player
-  unsigned getPlayerBotID(PlayerID pid);
+  bool step(R dt);
+  void playerCollision(PlayerID cp, const V2D &cv);
+  void wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv);
+  void doorCollision(unsigned did, const V2D &cv);
+
+protected:  
+  //! try to rotate to wished direction - by setting cinput as needed
+  void reachDir();
+
+  //! wished direction
+  R dir;
 };
 
 #endif
