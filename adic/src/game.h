@@ -252,7 +252,10 @@ public:
   /*!    
     \note is not const because playerIsLocked isn't
   */
-  std::vector<TeamStat> getTeamStat();
+  const std::vector<TeamStat> &getTeamStat();
+
+  //! calculate team statistics
+  std::vector<TeamStat> calcTeamStat();
 
   //! get the winning team
   /*!
@@ -294,6 +297,9 @@ protected:
   std::vector<std::string> m_playerNames;
   //! teams
   std::vector<Team> m_teams;
+
+  //! team statistics
+  std::vector<TeamStat> m_teamStat;
 };
 DOPE_CLASS(Game);
 

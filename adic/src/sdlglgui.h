@@ -54,6 +54,7 @@ public:
   void handleResize(SDL_ResizeEvent e);
   void handleQuit();
   void handleChatInput(const std::string &msg);
+  void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
   
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
@@ -75,7 +76,7 @@ public:
   }
 
   void drawCircle(const V2D &p, float r);
-  void drawWall(const Wall &wall);
+  void drawWall(const Wall &wall, bool cwClosed=false, bool ccwClosed=false);
   void drawTexture(const Texture &tex, const V2D &p, R rot=0);
 
   //! return width - Attention: may change during the game
@@ -94,6 +95,11 @@ public:
   {
     return sf;
   }
+
+  //! get current teams
+  const std::vector<Team> &getTeams() const;
+  //! get current team statistics
+  const std::vector<TeamStat> &getTeamStats();
 protected:
   //! \todo not yet implemented
   void drawPolygon(const std::vector<V2D> &p);
@@ -142,6 +148,9 @@ protected:
 
   //! the menu
   DOPE_SMARTPTR<SDLMenu> m_menuPtr;
+
+  //! line smoothing ?
+  bool m_lineSmooth;
 };
 
 #endif

@@ -99,6 +99,7 @@ public:
   LOOKUP(TexParameteri,uint2intFunc);
   LOOKUP(TexImage2D,glTexImage2DFunc);
   LOOKUP(Rotatef,fvec4Func);
+  LOOKUP(ShadeModel, uintFunc);
 #undef LOOKUP
 };
 

@@ -48,6 +48,9 @@ public:
   virtual std::ostream &getOstream()=0;
 
   virtual unsigned numInputDevices() const=0;
+
+  virtual void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)=0;
+
   GUIConfig &getGUIConfig()
   {
     return m_client.getConfig().m_gui;

@@ -71,9 +71,9 @@ public:
   }
 
   //! return "surface" normal
-  V2D normal() const
+  const V2D& normal() const
   {
-    return (m_b-m_a).rot90();
+    return m_n;
   }
 };
 

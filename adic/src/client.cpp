@@ -124,6 +124,7 @@ Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
     std::cerr << mPtr->playerNames[i] << std::endl;
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
+  m_guiPtr->handleNewClient(mPtr);
 }
 
 std::string

@@ -473,8 +473,15 @@ Game::setPlayerName(PlayerID id,const std::string &name)
   m_playerNames[id]=rname;
 }
 
-std::vector<TeamStat>
+const std::vector<TeamStat> &
 Game::getTeamStat()
+{
+  m_teamStat=calcTeamStat();
+  return m_teamStat;
+}
+
+std::vector<TeamStat>
+Game::calcTeamStat()
 {
   std::vector<TeamStat> res(m_teams.size());
   for (unsigned i=0;i<m_teams.size();++i) {
