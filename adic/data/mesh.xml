@@ -7,11 +7,19 @@
 <V2D x="70" y="120" />
 <V2D x="50" y="100" />
 <V2D x="10" y="470" />
+<V2D x="480" y="260" />
+<V2D x="250" y="260" />
+<V2D x="250" y="290" />
+<V2D x="250" y="320" />
+<V2D x="250" y="470" />
+<V2D x="500" y="280" />
 </stdvectorOfV2D>
 <stdvectorOfEdge this.name="edgelist">
 <Edge vid="0" type="0" />
 <Edge vid="1" type="0" />
 <Edge vid="2" type="0" />
+<Edge vid="11" type="1" />
+<Edge vid="6" type="0" />
 <Edge vid="3" type="1" />
 <Edge vid="4" type="0" />
 <Edge vid="-1" type="0" />
@@ -19,7 +27,19 @@
 <Edge vid="0" type="0" />
 <Edge vid="4" type="1" />
 <Edge vid="3" type="0" />
+<Edge vid="6" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="8" type="0" />
+<Edge vid="9" type="0" />
+<Edge vid="10" type="0" />
+<Edge vid="-1" type="0" />
 <Edge vid="2" type="0" />
+<Edge vid="10" type="0" />
+<Edge vid="9" type="1" />
+<Edge vid="8" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="6" type="1" />
+<Edge vid="11" type="0" />
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
 </Mesh>
