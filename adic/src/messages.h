@@ -217,4 +217,5 @@ inline void composite(Layer2 &layer2, EndGame &o)
   o.composite(layer2);
 }
 
+
 #endif

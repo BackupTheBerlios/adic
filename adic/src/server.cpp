@@ -23,6 +23,7 @@
 */
 
 #include "server.h"
+#include "metaserver.h"
 
 void sigPipeHandler(int x){
   std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;
@@ -188,6 +189,20 @@ Server::main()
   listener.newConnection.connect(SigC::slot(*this,&Server::handleNewConnection));
   listener.dataAvailable.connect(SigC::slot(*this,&Server::handleDataAvailable));
   listener.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
+
+  try {
+    MetaServer metaServer("http://adic.berlios.de/metaserver/index.php");
+    RegisterServer reg;
+    reg.host.adr="foo";
+    reg.host.port=m_config.m_port;
+    ServerRegistered answer;
+    
+    metaServer.rpc(reg,answer);
+    std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
+  }catch(...){
+    std::cerr << "Could not connect to Metaserver\n";
+  }
+  
   TimeStamp start;
   start.now();
   TimeStamp oldTime;

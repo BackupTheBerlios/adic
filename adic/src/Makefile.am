@@ -49,7 +49,8 @@ gamecommon = \
 	uriloader.h \
 	version.h messages.h \
 	input.h \
-	team.h team.cpp
+	team.h team.cpp \
+	metaserver.h
 
 test_line_SOURCES = test-line.cpp $(allcommon)
 test_vector2d_SOURCES = test-vector2d.cpp $(allcommon)
