@@ -225,11 +225,11 @@ public:
   }
 
 
-protected:
   //! the vector
   /*! we keep it public because we allow direct access with the operator[] anyway */
   R m_v[2]; 
 
+protected:
   V2D &add(const V2D &o)
   {
     m_v[0]+=o.m_v[0];
