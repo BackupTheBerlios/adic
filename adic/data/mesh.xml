@@ -47,10 +47,21 @@
 <stdpairOfV2DAndfloat second="90"><V2D this.name="first" x="160" y="160" /></stdpairOfV2DAndfloat>
 <stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="800" y="840" /></stdpairOfV2DAndfloat>
 </stdvectorOfstdpairOfV2DAndfloat>
-<stdvectorOfstdpairOfV2DAndfloat this.name="startObjects">
-<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="300" y="100" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="30"><V2D this.name="first" x="300" y="800" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="45"><V2D this.name="first" x="350" y="150" /></stdpairOfV2DAndfloat>
-<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="900" y="760" /></stdpairOfV2DAndfloat>
-</stdvectorOfstdpairOfV2DAndfloat>
+<stdvectorOfObject this.name="startObjects">
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="300" y="100" />
+  </Object>
+  <Object dir="20" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="350" y="150" />
+  </Object>
+  <Object dir="40" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="400" y="800" />
+  </Object>
+  <Object dir="90" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="750" y="700" />
+  </Object>
+  <Object dir="45" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="700" y="650" />
+  </Object>
+</stdvectorOfObject>
 </Mesh>
