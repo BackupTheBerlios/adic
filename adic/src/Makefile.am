@@ -22,13 +22,13 @@ allcommon = \
 	line.h line.cpp \
 	typedefs.h \
 	vector2d.h \
-	genericpointer.h
+	genericpointer.h \
+	wall.h wall.cpp
 
 # needed for the world
 world = \
 	$(allcommon) \
 	mesh.h \
-	wall.h wall.cpp \
 	polygon.h polygon.cpp \
 	world.h world.cpp
 
