@@ -32,7 +32,7 @@ struct GUIConfig
   // todo - default for libGL should be different on win
   GUIConfig() 
     : implementation("SDLGLGUI"), title(PACKAGE), libGL(""), 
-    width(640), height(480), bits(32), fullscreen(false), quality(0), flush(true)
+    width(640), height(480), bits(32), fullscreen(true), quality(0), flush(true)
   {}
   
   std::string implementation;

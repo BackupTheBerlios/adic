@@ -47,7 +47,7 @@
 
 #include <dope/dope.h>
 
-#define DEBUG_GL
+#define DEBUG_GL(msg)
 //#define DEBUG_GL(msg) DOPE_MSG("DEBUG: OpenGL: ", msg)
 
 #define GL_ERRORS() do{if (gl.printErrors()) DOPE_MSG("gl error at", "^^^^^");}while(0)

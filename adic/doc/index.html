@@ -8,7 +8,16 @@
     <h1>ADIC</h1>
     Any door is closed.
     <h2>Description</h2>
-    ADIC (Any door is closed) is a cooperative multi-player game. The goal is to lock all the players of the other teams.
+    ADIC (Any door is closed) is a cooperative multi-player game. The goal is to lock all the players of the other teams. Main development platform is GNU/Linux - but now there are cross-compiled binaries for win32.
+    <h2>News/Changelog:</h2>
+    <h3>Version 0.0.9 (Experimental win32 port)</h3>
+    Attention the win32 binaries are experimental !! Following problems remain:
+    <UL>
+      <LI>music does not work yet (just did not cross-compile libmikmod yet)</LI>
+      <LI>you should not run the server and client on the same machine (win32 (win98) multi-tasking sucks ?)</LI>
+      <LI>sound has some problems</LI>
+      <LI>motion estimation problems but I think this is because I did run the client on the same host as the server - and win multi-tasking ....</LI>
+    </UL>
     <h2>Requirements (build dependencies)</h2>
     <UL>
       <LI><a href="http://dope.berlios.de">DOPE++</a> (and of course its <a href="http://cvs.berlios.de/cgi-bin/viewcvs.cgi/*checkout*/dope/dope/doc/index.html?rev=HEAD&amp;content-type=text/html#requirements">requirements</a>)</LI>
@@ -74,6 +83,11 @@
       <tr><td></td><td>left button</td><td>turn left</td></tr>
       <tr><td></td><td>right button</td><td>turn right</td></tr>
     </table>
+    <h3>FAQ</h3>
+    <UL>
+      <LI>Q: It does look ugly !</LI>
+      <LI>A: Try the --quality=1 switch or enable line smoothing with the "l" key. And change the resolution</LI>
+    </UL>
     <h2>Links</h2>
     <UL>
       <LI><a href="http://adic.berlios.de/doxygen/html/index.html">source documentation</a></LI>
@@ -83,7 +97,7 @@
     <address><a href="mailto:jens.thiele@student.uni-tuebingen.de">Jens Thiele</a></address>
 <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
 <!-- hhmts start -->
-Last modified: Thu Aug 15 21:35:14 CEST 2002
+Last modified: Tue Aug 20 23:05:36 CEST 2002
 <!-- hhmts end -->
   </body>
 </html>
