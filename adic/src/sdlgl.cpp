@@ -47,7 +47,7 @@ loadGL(const std::string &libGL)
   if (!libGL.empty()) lib=libGL.c_str();
   if (SDL_GL_LoadLibrary(lib)==-1) {
     DEBUG_GL("failed to load gl library");
-    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+libGL.c_str()+"\": "+SDL_GetError());
+    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+libGL+"\": "+SDL_GetError()+". Try the --libGL switch");
   }
 }
 
