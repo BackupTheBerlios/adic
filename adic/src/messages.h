@@ -25,6 +25,29 @@
 #include "typedefs.h"
 #include "version.h"
 
+#define USE_RAW_PROTOCOL 1
+
+#if USE_RAW_PROTOCOL == 1
+
+// layer 2 to 1 adapter
+#include <dope/adapter2to1.h>
+// layer 1 raw stream
+#include <dope/raw.h>
+typedef RawOutStream<std::streambuf> OutProto;
+typedef RawInStream<std::streambuf> InProto;
+
+#elif USE_XML_PROTOCOL == 1
+
+// layer 2 mini xml output stream
+#include <dope/minixml.h>
+// layer 2 xml sax input
+#include <dope/xmlsaxinstream.h>
+typedef XMLOutStream<std::streambuf> OutProto;
+typedef XMLSAXInStream<std::streambuf> InProto;
+
+#endif
+
+
 class Greeting
 {
 public:
@@ -52,4 +75,3 @@ inline void composite(Layer2 &layer2, Greeting &g)
 {
   g.composite(layer2);
 }
-  
