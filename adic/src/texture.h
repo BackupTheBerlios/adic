@@ -31,6 +31,7 @@
 #include <SDL_image.h>
 #include "sdlgl.h"
 
+//! class representing a OpenGL texture
 class Texture
 {
 public:

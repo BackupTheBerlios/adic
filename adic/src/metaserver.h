@@ -16,6 +16,7 @@ o.composite(layer2); \
 template <typename Layer2> \
 void composite(Layer2 &l2) 
 
+//! class describing an internet host/port
 struct Host
 {
   std::string adr;
@@ -98,6 +99,7 @@ struct ServerExit
 };
 IO_CLASS(ServerExit)
 
+//! generic result message we get from metaserver
 struct Result
 {
   int status;
@@ -118,6 +120,7 @@ IO_CLASS(Result)
 //! server list that may be requested from the meta-server
 typedef std::list<ServerStatus> ServerList;
 
+//! class handling communication with the meta-server
 struct MetaServer
 {
   typedef URLEncodeStream<HTTPStreamBuf> OutProto;

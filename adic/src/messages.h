@@ -50,7 +50,10 @@ typedef XMLSAXInStream<std::streambuf> InProto;
 
 #endif
 
-
+//! base class for greeting messages
+/*!
+  \todo incompatible protocol versions are still not handled
+*/
 struct Greeting
 {
   Greeting()
@@ -75,6 +78,7 @@ inline void composite(Layer2 &layer2, Greeting &g)
   g.composite(layer2);
 }
 
+//! server to client greeting
 struct ServerGreeting : public Greeting
 {
   //! the player ID's the client got
@@ -135,6 +139,7 @@ inline void composite(Layer2 &layer2, UserSetting &c)
   c.composite(layer2);
 }
 
+//! client to server greeting
 struct ClientGreeting : public Greeting
 {
   UserSetting m_userSetting;

@@ -29,6 +29,7 @@
 #include <string>
 #include <dope/typenames.h>
 
+//! class holding statistics of one team
 struct TeamStat
 {
   unsigned locked;
@@ -40,6 +41,7 @@ struct TeamStat
   }
 };
 
+//! class holding information about one team
 struct Team
 {
   Team() {}

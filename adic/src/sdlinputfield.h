@@ -30,7 +30,7 @@
 #include <string>
 #include <sigc++/signal_system.h>
 
-//! input field modell
+//! input field model
 /*!
   this class represents an input field
   you must display the text yourself

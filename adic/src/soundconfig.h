@@ -29,6 +29,7 @@
 #include <string>
 #include <dope/typenames.h>
 
+//! class holding sound configuration settings
 struct SoundConfig
 {
   SoundConfig()

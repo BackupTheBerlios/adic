@@ -39,6 +39,7 @@
 
 class SDLMenu;
 
+//! currently the only GUI implementation. It uses SDL with OpenGL/Mesa
 class SDLGLGUI : public GUI
 {
 public:

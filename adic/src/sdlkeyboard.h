@@ -27,6 +27,7 @@
 
 #include "sdlinputdev.h"
 
+//! keyboard implementation of generic SDLInputDev
 class SDLKeyboard : public SDLInputDev
 {
 public:

@@ -28,6 +28,7 @@
 #include "input.h"
 #include "sdlsigfactory.h"
 
+//! SDL input device abstraction
 class SDLInputDev : public SigC::Object
 {
 public:

@@ -27,6 +27,7 @@
 
 #include "sdlinputdev.h"
 
+//! joystick implementation of generic SDLInputDev
 class SDLJoystick : public SDLInputDev
 {
 public:

@@ -42,7 +42,7 @@ struct StopOnTrue
   StopOnTrue() : return_value_(false) {}
 };
 
-
+//! class translating sdl events into sigc++ signals
 class SDLSigFactory {
 public:
   typedef SigC::Signal0<void> QuitSignal;

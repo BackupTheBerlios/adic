@@ -60,6 +60,7 @@ inline void composite(Layer2 &layer2, Input &g)
   g.composite(layer2);
 }
 
+//! input message for a player object
 struct PlayerInput
 {
   PlayerInput(const Input &_i, PlayerID _id, Frame _frame) 

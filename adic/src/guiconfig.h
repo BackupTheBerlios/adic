@@ -29,6 +29,7 @@
 #include <string>
 #include <dope/typenames.h>
 
+//! class holding the gui configuration
 struct GUIConfig
 {
   GUIConfig() 

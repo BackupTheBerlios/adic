@@ -29,6 +29,12 @@
 #include "client.h"
 #include "input.h"
 
+//! interface for different client guis
+/*!
+  \todo this is in a really bad shape. A lot of code currently is in the SDLGLGUI
+  class which is the only implementation of this interface for now. This will improve
+  with an alternate implementation that will need a lot of code from SDLGLGUI.
+*/
 class GUI : public SigC::Object
 {
 public:
@@ -65,6 +71,10 @@ protected:
   Client &m_client;
 };
 
+//! gui factory class
+/*!
+  creates a gui depending on the client configuration
+*/
 class GUIFactory
 {
 public:

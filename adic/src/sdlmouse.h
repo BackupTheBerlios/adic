@@ -27,6 +27,7 @@
 
 #include "sdlinputdev.h"
 
+//! mouse implementation of generic SDLInputDev
 class SDLMouse : public SDLInputDev
 {
 public:
