@@ -38,7 +38,7 @@ public:
   /*!
     \param _gl the GL Functions
   */    
-  GLTerminal(SDLGLGUI &_gui, int _x, int _y, bool _centered=false, R _scrollspeed=3, R _writespeed=10);
+  GLTerminal(SDLGLGUI &_gui, int _x, int _y, bool _centered=false, R _scrollspeed=4, R _writespeed=15);
   
   ~GLTerminal(){}
   void step(R dt);
