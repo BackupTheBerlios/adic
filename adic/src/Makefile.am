@@ -106,7 +106,8 @@ adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer @SPECIAL_LDADD
 adicbot_SOURCES = $(clientcommon) \
 	botclient.h botclient.cpp \
 	bot.h bot.cpp \
-	karmebot.h karmebot.cpp
+	karmebot.h karmebot.cpp \
+	blackbot.h blackbot.cpp
 
 adicbot_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
 

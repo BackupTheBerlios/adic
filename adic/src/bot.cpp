@@ -1,6 +1,6 @@
 #include "bot.h"
 #include "karmebot.h"
-
+#include "blackbot.h"
 
 void
 Bot::sendInput()
@@ -19,7 +19,7 @@ Bot *
 BotFactory::create(BotClient &client,PlayerID _pid, unsigned _inputID)
 {
   const std::string &i(client.getConfig().implementation);
-  if (i=="KarmeBot")
-    return new KarmeBot(client,_pid,_inputID);
+  if (i=="KarmeBot") return new KarmeBot(client,_pid,_inputID);
+  if (i=="BlackBot") return new BlackBot(client,_pid,_inputID);
   DOPE_FATAL("Unkown implementation: \""<<i<<"\"");
 }

@@ -1,16 +1,16 @@
-#include "karmebot.h"
+#include "blackbot.h"
 
 
 static R threshold=5;
 
-KarmeBot::KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
+BlackBot::BlackBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
   : Bot(_client,_pid,_inputID), followMode(false)
 {
 }
 
 
 bool
-KarmeBot::step(R dt)
+BlackBot::step(R dt)
 {
   const Player &me(client.getPlayers()[pid]);
   // walk forward
@@ -24,7 +24,7 @@ KarmeBot::step(R dt)
 }
 
 void
-KarmeBot::playerCollision(PlayerID cp, const V2D &cv)
+BlackBot::playerCollision(PlayerID cp, const V2D &cv)
 {
   //  std::cerr << "I am "<<pid<<" and collided with "<<cp<<"\n";
   const Player &me(client.getPlayers()[pid]);
@@ -43,7 +43,7 @@ KarmeBot::playerCollision(PlayerID cp, const V2D &cv)
 }
 
 void 
-KarmeBot::wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv)
+BlackBot::wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv)
 {
   /*  std::cerr << "I am "<<pid<<" and collided with wall(s):";
       for (unsigned w=0;w<eids.size();++w){
@@ -56,7 +56,7 @@ KarmeBot::wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv)
 }
 
 void
-KarmeBot::doorCollision(unsigned did, const V2D &cv)
+BlackBot::doorCollision(unsigned did, const V2D &cv)
 {
   //  std::cerr << "I am "<<pid<<" and collided with door: "<<did<<"\n";
   dir=vdir(-cv);
@@ -65,7 +65,7 @@ KarmeBot::doorCollision(unsigned did, const V2D &cv)
   
 
 void
-KarmeBot::reachDir()
+BlackBot::reachDir()
 {
   const Player &me(client.getPlayers()[pid]);
   // get current direction
@@ -81,7 +81,7 @@ KarmeBot::reachDir()
 }
 
 void
-KarmeBot::follow()
+BlackBot::follow()
 {
   const Player &me(client.getPlayers()[pid]);
   const Player &other(client.getPlayers()[rabbit]);
