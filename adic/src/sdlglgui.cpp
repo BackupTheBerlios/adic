@@ -105,6 +105,14 @@ SDLGLGUI::step(R dt)
   for (unsigned p=0;p<players.size();++p)
     {
       drawCircle(players[p].m_pos,players[p].m_r);
+      V2D dv(V2D(0,100).rot(players[p].getDirection()));
+      glColor3f(1.0,1.0,0.0);
+      glBegin(GL_LINES);
+      glVertex2f(players[p].m_pos[0],players[p].m_pos[1]);
+      dv+=players[p].m_pos;
+      glVertex2f(dv[0],dv[1]);
+      glEnd();
+      glColor3f(1.0,1.0,1.0);
     }
   SDL_GL_SwapBuffers();
   return true;

@@ -46,6 +46,7 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   PlayerInput i(*inputPtr.get(),playerID);
   server.setInput(i);
   server.broadcast(i);
+  std::cerr << "\nGot input signal\n";
 }
 
 int 
@@ -99,7 +100,7 @@ int main(int argc,char *argv[])
     return server.main();
   }
   catch (std::exception &error){
-    std::cerr << "Uncaught std::exception: "<<error.what()<<std::endl;
+    std::cerr << "\nUncaught std::exception: "<<error.what()<<std::endl;
   }/*catch(...){
      std::cerr << "Uncaught unkown exception\n";
      }*/

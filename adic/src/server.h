@@ -66,7 +66,7 @@ template <typename INP = InProto>
 class StreamFactory
 {
 public:
-  StreamFactory(std::streambuf &_l0) : inp(_l0,TimeStamp(0,100000),10) , sigFactory(inp)
+  StreamFactory(std::streambuf &_l0) : inp(_l0,TimeStamp(0,300),5) , sigFactory(inp)
   {
   }
 

@@ -26,7 +26,7 @@
 #include "gui.h"
 
 void sigPipeHandler(int x){
-  std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;
+  std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }
 
 int
@@ -37,7 +37,7 @@ Client::main()
   NetStreamBuf layer0(adr);
   layer0.setBlocking(false);
   OutProto l2out(layer0);
-  InProto l2in(layer0,TimeStamp(0,100000),10);
+  InProto l2in(layer0,TimeStamp(0,300),5);
   SignalOutAdapter<OutProto> so(l2out);
   SignalInAdapter<InProto> si(l2in);
   si.connect(SigC::slot(*this,&Client::handleGreeting));
@@ -77,8 +77,11 @@ Client::main()
     ++frames;
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
-    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime << " FPS: " << std::setw(10) << R(frames)/uptime << " Frame: " << std::setw(20) << frames;
+    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime 
+	      << " FPS: " << std::setw(10) << R(frames)/uptime 
+	      << " Frame: " << std::setw(20) << frames;
   }
+  std::cout << std::endl;
   return 0;
 }
 
@@ -96,7 +99,7 @@ int main(int argc,char *argv[])
     return 0;
   }
   catch (const std::exception &error){
-    std::cerr << "Uncaught std::exception: "<<error.what()<<std::endl;
+    std::cerr << "\nUncaught std::exception: "<<error.what()<<std::endl;
   }
   return 1;
 }

@@ -1,3 +1,15 @@
+xml parser haengt ewig
+problem ist timeout
+warum wird der parser nicht rechtzeitig angehalten ?
+libxml scheint in diesem punkt aber auch schlecht zu sein
+wie mache ich das nochmal mit dem parser anhalten und neu starten ?
+kann es daran liegen ?
+
+
+server closes connection
+client doesn't detect it
+
+
 input message enthaelt muell
 
 

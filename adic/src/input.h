@@ -33,8 +33,8 @@ struct Input
   Input() : x(0), y(0)
   {}
   
-  uint8_t x;
-  uint8_t y;
+  int8_t x;
+  int8_t y;
 
   template <typename Layer2>
   void composite(Layer2 &l2)

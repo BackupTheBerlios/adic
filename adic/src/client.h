@@ -87,6 +87,7 @@ public:
   {
     DOPE_CHECK(iPtr.get());
     m_game.setInput(*iPtr.get());
+    std::cerr << "\nGot Input\n";
   }
 
   int main();

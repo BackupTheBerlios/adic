@@ -46,7 +46,11 @@ public:
     m_ix=x;
     m_iy=y;
   }
-  
+
+  R getDirection() const
+  {
+    return m_direction;
+  }
 protected:
   int8_t getX() const
   {
