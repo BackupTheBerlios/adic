@@ -14,7 +14,7 @@ Sound::create(SoundConfig &sc)
       delete n;
       n=NULL;
     }
-    return new n;
+    return n;
   }
   return NULL;
 }
