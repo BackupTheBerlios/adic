@@ -42,6 +42,7 @@ protected:
   typedef std::map<std::string, Mix_Chunk *> Samples;
   Samples samples;
 public:
+  
   SoundSDLMixer(SoundConfig &sc);
   
   ~SoundSDLMixer();
@@ -52,9 +53,8 @@ public:
   void step(R dt);
   
   void loadSample(const char *uri);
-  int playSample(const char *uri);
-  void modifySample(const char *uri, R volume, R balance=R(0), unsigned repeat=0, R pitch=R(1));
-  void modifyChannel(int, R volume, R balance=R(0), unsigned repeat=0, R pitch=R(1));
+  int playSample(const char *uri, int repeat=0);
+  void modifyChannel(int, R volume, R balance=R(0), R pitch=R(1));
   void stopChannel(int);
   void unloadSample(const char *uri);
 };

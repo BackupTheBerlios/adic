@@ -23,9 +23,22 @@
 */
 
 #include "soundsdlmixer.h"
+
+// hack needed for c callback
+SoundSDLMixer *thisptr=NULL;
+
+static void music_finished()
+{
+  assert(thisptr);
+  thisptr->musicFinished.emit();
+}
+
 SoundSDLMixer::SoundSDLMixer(SoundConfig &sc)
   : Sound(sc), audio_open(0), music(NULL), oldPlaying(false)
 {
+  assert(!thisptr);
+  thisptr=this;
+  
   if ( SDL_InitSubSystem(SDL_INIT_AUDIO) < 0 ) 
     throw std::runtime_error(std::string("Couldn't initialize SDL: ")+SDL_GetError());
     
@@ -51,12 +64,14 @@ SoundSDLMixer::SoundSDLMixer(SoundConfig &sc)
   
   /* Set the external music player, if any */
   Mix_SetMusicCMD(getenv("MUSIC_CMD"));
-  
+
+  Mix_HookMusicFinished(music_finished);
 }
 
 SoundSDLMixer::~SoundSDLMixer()
 {
   deinit();
+  thisptr=NULL;
 }
 
 void SoundSDLMixer::deinit()
@@ -75,7 +90,7 @@ void SoundSDLMixer::deinit()
 void
 SoundSDLMixer::playMusic(const char *uri, R volume, unsigned repeat) 
 {
-  /* Load the requested music file */
+  if (music) Mix_FreeMusic(music);
   music = Mix_LoadMUS(uri);
   if ( music == NULL )
     throw std::runtime_error(std::string("Couldn't load ")+uri+" "+SDL_GetError());
@@ -87,7 +102,7 @@ SoundSDLMixer::stopMusic(const char *uri)
 {
   if( Mix_PlayingMusic() ) {
     Mix_FadeOutMusic(1500);
-    SDL_Delay(1500); // todo - this is impossible !!
+    SDL_Delay(1500);
   }
   if ( music ) {
     Mix_FreeMusic(music);
@@ -112,17 +127,14 @@ SoundSDLMixer::loadSample(const char *uri)
 }
   
 int
-SoundSDLMixer::playSample(const char * uri)
+SoundSDLMixer::playSample(const char * uri,int repeat)
 {
   loadSample(uri);
-  return Mix_PlayChannel(-1,samples[uri],0);
+  return Mix_PlayChannel(-1,samples[uri],repeat);
 }
 
-void 
-SoundSDLMixer::modifySample(const char * sampleID, R volume, R balance, unsigned repeat, R pitch) {}
-
 void
-SoundSDLMixer::modifyChannel(int channel, R volume, R balance, unsigned repeat, R pitch)
+SoundSDLMixer::modifyChannel(int channel, R volume, R balance, R pitch)
 {
   Mix_Volume(channel, int(volume*128));
 }

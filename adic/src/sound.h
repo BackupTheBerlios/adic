@@ -79,17 +79,15 @@ public:
   /*!
     \return the channel number the sample is played on
   */
-  virtual int playSample(const char *uri)=0;
+  virtual int playSample(const char *uri, int repeat=0)=0;
 
-  //! modify default sample settings
+  //! modify channel settings
   /*!
     \param volume the volume setting (0<=volume<=1 with 0=silent 1=maximum)
     \param balance left right balance setting (-1<=balance<=1 with -1=left +1=right)
-    \param repeat how often we should play the sample
     \param pitch pitch factor - a simple implementation will only modify the speed
   */
-  virtual void modifySample(const char *uri, R volume, R balance=R(0), unsigned repeat=0, R pitch=R(1))=0;
-  virtual void modifyChannel(int channel, R volume, R balance=R(0), unsigned repeat=0, R pitch=R(1))=0;
+  virtual void modifyChannel(int channel, R volume, R balance=R(0), R pitch=R(1))=0;
   
   //! stop playing of sample
   virtual void stopChannel(int channel)=0;
