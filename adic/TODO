@@ -1,4 +1,5 @@
 TUNING:
+- ministep wegmachen bzw. step mit kleinen werten aufrufen um die latenz zu vermindern
 - stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
 - tueren uebertragen viel zu viel (angle und anglespeed sollte genuegen)
 - uebertrage nur tueren/spieler die sich bewegt haben
@@ -21,6 +22,8 @@ TUNING:
   think about the right point for a commit (the best would be before a step now?)
 
 FEATURES:
+- wände 2 linien (pro raum die innere malen)
+- wände dicker
 - sound:
   - (walking, breath, ...)
 - improve the physics
@@ -34,6 +37,7 @@ FEATURES:
 - Türen kaputtbar
 
 BUGS/QUESTIONS:
+- zu viele sounds auf einmal v.a. beim crash
 - win codition wrong ? teamStat wrong ? 
   (spieler die noch garnicht bewegt wurden sind anscheinend nie gelockt - aber die räume
   werden als closed erkannt => müßte eigentlich daran liegen, daß die spieler nicht im richtigen
@@ -43,7 +47,7 @@ BUGS/QUESTIONS:
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)
-- server closes connection, client doesn't detect it (fixed?)
+- server closes connection, client "dies" -> print message and exit
 - dope todo: darüber nachdenken
   ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
   können verändert werden)
