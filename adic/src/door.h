@@ -62,7 +62,8 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle).SIMPLE(eid);
+    layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle).SIMPLE(eid)
+      .SIMPLE(oldAngle).SIMPLE(oldAngleSpeed);
   }
   bool step(R dt)
   {

@@ -39,7 +39,8 @@ public:
   inline void composite(Layer2 &layer2)
   {
     RoundObject::composite(layer2);
-    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy);
+    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy)
+      .SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
   }
 
   void setControl(int8_t x, int8_t y)
