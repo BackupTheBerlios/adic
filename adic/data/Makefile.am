@@ -104,6 +104,19 @@ gamefiles_DATA = \
 	muetze_yellow_0003.png \
 	muetze_yellow_0004.png \
 	muetze_yellow_0005.png \
-	muetze_yellow_0006.png
+	muetze_yellow_0006.png \
+	erfrischung_0001.png \
+	erfrischung_0002.png \
+	erfrischung_0003.png \
+	erfrischung_0004.png \
+	erfrischung_0005.png \
+	erfrischung_0006.png \
+	erfrischung_0007.png \
+	erfrischung_0008.png \
+	erfrischung_0009.png \
+	erfrischung_0010.png \
+	erfrischung_0011.png \
+	erfrischung_0012.png \
+	erfrischung_0013.png
 
 EXTRA_DIST = $(gamefiles_DATA)

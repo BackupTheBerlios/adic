@@ -63,5 +63,8 @@
   <Object dir="45" URI="file:data/barrel.xml">
     <V2D this.name="pos" x="700" y="650" />
   </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="650" y="600" />
+  </Object>
 </stdvectorOfObject>
 </Mesh>

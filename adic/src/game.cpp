@@ -132,6 +132,15 @@ Game::collidePlayer(unsigned pid, bool test)
 	    m_players[pid].setFitness();
 	    m_players[o].setFitness();
 	  }
+	  if ((m_players[pid].isPlayer()||m_players[o].isPlayer())&&
+	      (m_players[pid].getType()==11)||(m_players[o].getType()==11)) {
+	    
+	    // increase fitness if it is a fountain (todo: either make a const or method and not 11)
+	    if (m_players[o].getType()==11)
+	      m_players[pid].setFitness();
+	    else
+	      m_players[o].setFitness();
+	  }
 	  
 	  // now calculate impuls
 	  V2D oimp(cv.project(p.getImpuls()));

@@ -468,6 +468,13 @@ SDLGLGUI::step(R dt)
 	  case 10:
 	    uris.push_back("data/barrel.png");
 	    break;
+	  case 11:
+	    for (unsigned i=1;i<=13;++i) {
+	      std::ostringstream o;
+	      o << std::setw(2) << std::setfill('0') << i;
+	      uris.push_back(std::string("data/erfrischung_00")+o.str()+".png");
+	    }
+	    break;
 	  default:
 	    DOPE_WARN("Unknown type => no texture");
 	  }
@@ -483,7 +490,10 @@ SDLGLGUI::step(R dt)
       else
 	glColor3fP(0.0,1.0,0.0);
       //      drawCircle(cp.m_pos,cp.m_r);
-      m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
+      if (players[p].isPlayer())
+	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
+      else
+	m_animations[p].step(dt*20);
       drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
       if (cp.isPlayer()&&m_showNames) {
 	glPushMatrixP();
