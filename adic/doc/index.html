@@ -11,23 +11,28 @@
 
   <body>
     <p>
-    <a href="#news">[News]</a>
-    <a href="#requirements">[Requirements]</a>
-    <a href="#license">[License]</a>
-    <a href="#running">[Running]</a>
-    <a href="#controls">[Controls]</a>
-    <a href="#FAQ">[FAQ]</a>
-    <a href="#links">[Links]</a>
-</p>
+      <a href="#news">[News]</a>
+      <a href="#requirements">[Requirements]</a>
+      <a href="#license">[License]</a>
+      <a href="#running">[Running]</a>
+      <a href="#controls">[Controls]</a>
+      <a href="#FAQ">[FAQ]</a>
+      <a href="#links">[Links]</a>
+    </p>
     <h1>ADIC</h1>
     <p>Any door is closed.</p>
     <h2>Description</h2>
-    <p>ADIC (Any door is closed) is a cooperative multi-player game. The goal is to lock all the players of the other teams. Main development platform is GNU/Linux - but now there are cross-compiled binaries for win32.
-Beside of playing the game you can write a bot and use the game as testbed for AI/robotics algorithms.</p>
     <p>
+      ADIC (Any door is closed) is a cooperative multi-player game. The goal is to lock all the players of the other teams. Main development platform is GNU/Linux - but now there are cross-compiled binaries for win32.
+      Beside of playing the game you can write a bot and use the game as testbed for AI/robotics algorithms.
+    </p>
     <h2><a name="news">News/Changelog:</a></h2>
     <h3>Experimental debian package</h3>
-    <a href="http://www.debian.org">Debian</a> users now can simply add <pre>deb http://adic.berlios.de/debian woody main</pre> to the apt sources.list. (NOTE: there are only i386 binaries at the moment)
+    <p>
+      <a href="http://www.debian.org">Debian</a>
+      users now can simply add 
+    <pre>deb http://adic.berlios.de/debian woody main</pre> to the apt sources.list. (NOTE: there are only i386 binaries at the moment)
+  </p>
     <h3>Released beta with debug info(0.1.0)</h3>
     <UL>
       <LI>Please test it, report bugs and give us some <a href="mailto:adic-general@lists.berlios.de">feedback</a>!</LI>
@@ -38,15 +43,13 @@ Beside of playing the game you can write a bot and use the game as testbed for A
       <LI>music now works</LI>
     </UL>
     <h3>Version 0.0.9 (Experimental win32 port)</h3>
-    Attention the win32 binaries are experimental !! Following problems remain:
+    <p>Attention the win32 binaries are experimental !! Following problems remain:</p>
     <UL>
       <LI>music does not work yet (just did not cross-compile libmikmod yet)</LI>
       <LI>you should not run the server and client on the same machine (win32 (win98) multi-tasking sucks ?)</LI>
       <LI>sound has some problems</LI>
       <LI>motion estimation problems but I think this is because I did run the client on the same host as the server - and win multi-tasking ....</LI>
     </UL>
-    </p>
-    <p>
     <h2><a name="requirements">Requirements (build dependencies)</a></h2>
     <UL>
       <LI><a href="http://dope.berlios.de">DOPE++</a> (and of course its <a href="http://cvs.berlios.de/cgi-bin/viewcvs.cgi/*checkout*/dope/dope/doc/index.html?rev=HEAD&amp;content-type=text/html#requirements">requirements</a>)</LI>
@@ -55,11 +58,13 @@ Beside of playing the game you can write a bot and use the game as testbed for A
       <LI><a href="http://www.libsdl.org/projects/SDL_image/">SDL_image >=1.2</a></LI>
       <LI><a href="http://www.opengl.org">OpenGL</a> or <a href="http://mesa3d.sourceforge.net/">Mesa</a></LI>
     </UL>
-    I suggest you <a href="http://developer.berlios.de/project/filelist.php?group_id=404">download</a> the semi-static binaries.
+    <p>
+      I suggest you <a href="http://developer.berlios.de/project/filelist.php?group_id=404">download</a> the semi-static binaries.
     </p>
     <p>
     <h2><a name="license">License/Copyright</a></h2>
-    <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;, Jens Schwarz
+    <p>
+      <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;, Jens Schwarz
     </p>
     <h2><a name="running">Running</a></h2>
     <UL>
@@ -69,51 +74,57 @@ Beside of playing the game you can write a bot and use the game as testbed for A
     </UL>
     <h2>Gameplay</h2>
     <h3>Goal</h3>
-    ADIC is a cooperative multiplayer game. The goal is to lock all players of the other teams. A player is locked if all doors of the room he is in are closed. A locked player can't move.
+    <p>
+      ADIC is a cooperative multiplayer game. The goal is to lock all players of the other teams. A player is locked if all doors of the room he is in are closed. A locked player can't move.
+    </p>
     <h3>The characters</h3>
-    The characters differ in speed, mass, endurance, ...
+    <p>
+      The characters differ in speed, mass, endurance, ...
+    </p>
     <h3>Fitness</h3>
-    Either embrace your team mates, drink some water from the springs or just take a rest to recover.
+    <p>
+      Either embrace your team mates, drink some water from the springs or just take a rest to recover.
+    </p>
     <h2><a name="controls">Controls:</a></h2>
     <table border="1">
-      <tr><td>Context</td><td>Key</td><td>Action</td></tr>
-      <tr><td colspan="3">Global</td></tr>
-      <tr><td></td><td>Escape, q</td><td>quit</td></tr>
-      <tr><td></td><td>f</td><td>toggle fullscreen</td></tr>
-      <tr><td></td><td>space</td><td>toggle player names</td></tr>
-      <tr><td></td><td>+,-</td><td>zoom</td></tr>
-      <tr><td></td><td>t</td><td>message to all</td></tr>
-      <tr><td></td><td>g</td><td>message to team</td></tr>
-      <tr><td></td><td>Return (Enter)</td><td>submit message</td></tr>
-      <tr><td></td><td>1</td><td>auto-zoom toggle</td></tr>
-      <tr><td></td><td>2</td><td>auto-center toggle</td></tr>
-      <tr><td></td><td>up</td><td>scroll up</td></tr>
-      <tr><td></td><td>down</td><td>scroll down</td></tr>
-      <tr><td></td><td>left</td><td>scroll left</td></tr>
-      <tr><td></td><td>right</td><td>scroll right</td></tr>
-      <tr><td></td><td>c</td><td>toggle textured pillars</td></tr>
-      <tr><td></td><td>l</td><td>toggle line smoothing</td></tr>
-      <tr><td></td><td>0,1,2,...,9</td><td>different toggles (mainly for debugging)</td></tr>
-      <tr><td colspan="3">Joysticks</td></tr>
-      <tr><td></td><td>up</td><td>walk forward</td></tr>
-      <tr><td></td><td>down</td><td>walk backward</td></tr>
-      <tr><td></td><td>left</td><td>turn left</td></tr>
-      <tr><td></td><td>right</td><td>turn right</td></tr>
-      <tr><td colspan="3">Keyboard 1 (Number block)</td></tr>
-      <tr><td></td><td>up</td><td>walk forward</td></tr>
-      <tr><td></td><td>down</td><td>walk backward</td></tr>
-      <tr><td></td><td>left</td><td>turn left</td></tr>
-      <tr><td></td><td>right</td><td>turn right</td></tr>
-      <tr><td colspan="3">Keyboard 2</td></tr>
-      <tr><td></td><td>w</td><td>walk forward</td></tr>
-      <tr><td></td><td>s</td><td>walk backward</td></tr>
-      <tr><td></td><td>a</td><td>turn left</td></tr>
-      <tr><td></td><td>d</td><td>turn right</td></tr>
-      <tr><td colspan="3">Mouse</td></tr>
-      <tr><td></td><td>up</td><td>walk forward</td></tr>
-      <tr><td></td><td>down</td><td>walk backward</td></tr>
-      <tr><td></td><td>left button</td><td>turn left</td></tr>
-      <tr><td></td><td>right button</td><td>turn right</td></tr>
+	<tr><td>Context</td><td>Key</td><td>Action</td></tr>
+	<tr><td colspan="3">Global</td></tr>
+	<tr><td></td><td>Escape, q</td><td>quit</td></tr>
+	<tr><td></td><td>f</td><td>toggle fullscreen</td></tr>
+	<tr><td></td><td>space</td><td>toggle player names</td></tr>
+	<tr><td></td><td>+,-</td><td>zoom</td></tr>
+	<tr><td></td><td>t</td><td>message to all</td></tr>
+	<tr><td></td><td>g</td><td>message to team</td></tr>
+	<tr><td></td><td>Return (Enter)</td><td>submit message</td></tr>
+	<tr><td></td><td>1</td><td>auto-zoom toggle</td></tr>
+	<tr><td></td><td>2</td><td>auto-center toggle</td></tr>
+	<tr><td></td><td>up</td><td>scroll up</td></tr>
+	<tr><td></td><td>down</td><td>scroll down</td></tr>
+	<tr><td></td><td>left</td><td>scroll left</td></tr>
+	<tr><td></td><td>right</td><td>scroll right</td></tr>
+	<tr><td></td><td>c</td><td>toggle textured pillars</td></tr>
+	<tr><td></td><td>l</td><td>toggle line smoothing</td></tr>
+	<tr><td></td><td>0,1,2,...,9</td><td>different toggles (mainly for debugging)</td></tr>
+	<tr><td colspan="3">Joysticks</td></tr>
+	<tr><td></td><td>up</td><td>walk forward</td></tr>
+	<tr><td></td><td>down</td><td>walk backward</td></tr>
+	<tr><td></td><td>left</td><td>turn left</td></tr>
+	<tr><td></td><td>right</td><td>turn right</td></tr>
+	<tr><td colspan="3">Keyboard 1 (Number block)</td></tr>
+	<tr><td></td><td>up</td><td>walk forward</td></tr>
+	<tr><td></td><td>down</td><td>walk backward</td></tr>
+	<tr><td></td><td>left</td><td>turn left</td></tr>
+	<tr><td></td><td>right</td><td>turn right</td></tr>
+	<tr><td colspan="3">Keyboard 2</td></tr>
+	<tr><td></td><td>w</td><td>walk forward</td></tr>
+	<tr><td></td><td>s</td><td>walk backward</td></tr>
+	<tr><td></td><td>a</td><td>turn left</td></tr>
+	<tr><td></td><td>d</td><td>turn right</td></tr>
+	<tr><td colspan="3">Mouse</td></tr>
+	<tr><td></td><td>up</td><td>walk forward</td></tr>
+	<tr><td></td><td>down</td><td>walk backward</td></tr>
+	<tr><td></td><td>left button</td><td>turn left</td></tr>
+	<tr><td></td><td>right button</td><td>turn right</td></tr>
     </table>
     <h2><a name="FAQ">FAQ</a></h2>
     <UL>
@@ -130,9 +141,9 @@ Beside of playing the game you can write a bot and use the game as testbed for A
     </UL>
     <hr>
     <address><a href="mailto:jens.thiele@student.uni-tuebingen.de">Jens Thiele</a></address>
-<!-- Created: Sun May 26 11:16:13 CEST 2002 -->
-<!-- hhmts start -->
-Last modified: Thu Oct 17 13:23:52 CEST 2002
+    <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
+    <!-- hhmts start -->
+Last modified: Thu Oct 17 13:29:36 CEST 2002
 <!-- hhmts end -->
     <p>
       <a href="http://validator.w3.org/check/referer"><img border="0"
