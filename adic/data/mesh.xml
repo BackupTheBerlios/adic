@@ -42,9 +42,15 @@
 <Edge vid="11" type="0" />
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
-<stdvectorOfV2D this.name="startPoints">
-<V2D x="100" y="100" />
-<V2D x="160" y="160" />
-<V2D x="800" y="840" />
-</stdvectorOfV2D>
+<stdvectorOfstdpairOfV2DAndfloat this.name="startPoints">
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="100" y="100" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="90"><V2D this.name="first" x="160" y="160" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="800" y="840" /></stdpairOfV2DAndfloat>
+</stdvectorOfstdpairOfV2DAndfloat>
+<stdvectorOfstdpairOfV2DAndfloat this.name="startObjects">
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="300" y="100" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="30"><V2D this.name="first" x="300" y="800" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="45"><V2D this.name="first" x="350" y="150" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="900" y="760" /></stdpairOfV2DAndfloat>
+</stdvectorOfstdpairOfV2DAndfloat>
 </Mesh>
