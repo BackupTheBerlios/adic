@@ -1,3 +1,11 @@
+adic (1.0.0-1) unstable; urgency=low
+
+  * first stable "upstream" release, minor fixes
+  * added TCP_NODELAY option
+  * Split into architecture dependent and independent packages.
+
+ -- Jens Thiele <jens@quark.karme-net.hirschau>  Sat,  2 Nov 2002 16:41:38 +0100
+
 adic (0.1.0-1) unstable; urgency=low
 
   * Initial Release.

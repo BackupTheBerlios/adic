@@ -24,8 +24,7 @@ endif
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-staticcpp
-
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --enable-staticcpp --bindir=/usr/games --datadir=/usr/share/games
 
 build: build-stamp
 
@@ -59,9 +58,10 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/adic.
-	$(MAKE) install prefix=$(CURDIR)/debian/adic/usr
-
+	# package adic
+	$(MAKE) DESTDIR=$(CURDIR)/debian/adic install-exec
+	# package adic-data
+	$(MAKE) -C data DESTDIR=$(CURDIR)/debian/adic-data install-data
 
 # Build architecture-independent files here.
 binary-indep: build install
