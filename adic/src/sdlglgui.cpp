@@ -51,6 +51,14 @@ SDLGLGUI::init()
   // important to connect this after the input devices have been connected
   sf.keyEvent.connect(SigC::slot(*this,&SDLGLGUI::handleKey));
 
+  // chat input field
+  // 1. connect key source to input field
+  sf.keyEvent.connect(SigC::slot(m_chatLine,&SDLInputField::handleKey));
+  // forward printed signal (sound)
+  m_chatLine.printed.connect(printed.slot());
+  // handle input
+  m_chatLine.input.connect(SigC::slot(*this,&SDLGLGUI::handleChatInput));
+
   createWindow();
   return true;
 }
@@ -129,123 +137,126 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
 {
   bool pressed=e.state==SDL_PRESSED;
   SDLKey k(e.keysym.sym);
-  if (!m_chatMode) {
-    switch (k) {
-    case SDLK_LEFT:
-      m_scrollOp[0]=(pressed ? -1 : 0);
-      m_autoCenter=false;
-      return true;
-    case SDLK_RIGHT:
-      m_scrollOp[0]=(pressed ? 1 : 0);
-      m_autoCenter=false;
-      return true;
-    case SDLK_UP:
-      m_scrollOp[1]=(pressed ? 1 : 0);
-      m_autoCenter=false;
-      return true;
-    case SDLK_DOWN:
-      m_scrollOp[1]=(pressed ? -1 : 0);
-      m_autoCenter=false;
-      return true;
-    case SDLK_SPACE:
-      if (pressed)
-	m_showNames=!m_showNames;
-      return true;
-    case SDLK_KP_PLUS:
-      if (pressed) {
-	m_autoZoom=false;
-	m_zoomOp=1;
-      } else
-	m_zoomOp=0;
-      return true;
-    case SDLK_KP_MINUS:
-      if (pressed) {
-	m_autoZoom=false;
-	m_zoomOp=-1;
-      }else
-	m_zoomOp=0;
-      return true;
-    case SDLK_1:
-      if (pressed) 
-	m_autoZoom=!m_autoZoom;
-      return true;
-    case SDLK_2:
-      if (pressed) 
-	m_autoCenter=!m_autoCenter;
-      return true;
-    case SDLK_ESCAPE:
-    case SDLK_q:
-      m_quit=true;
-      return true;
-    case SDLK_f:
-      if (pressed) {
-	if (m_flags&SDL_FULLSCREEN)
-	  m_flags&=~SDL_FULLSCREEN;
-	else
-	  m_flags|=SDL_FULLSCREEN;
-	resize(m_width,m_height);
-      }
-      return true;
-    case SDLK_t:
-      m_chatMode=1;
-      SDL_EnableUNICODE(1);
-      return true;
-    case SDLK_g:
-      m_chatMode=2;
-      SDL_EnableUNICODE(1);
-      return true;
-    case SDLK_RETURN:
-      if (!pressed)
-	return true;
-      break;
-    case SDLK_c:
-      if (pressed) m_texCircle=!m_texCircle;
-    }
+  if (m_chatLine.isActive())
     return false;
-  }
-  // else chatMode
-  if (!pressed) return true;
-
-  // check for special keys
   switch (k) {
+  case SDLK_LEFT:
+    m_scrollOp[0]=(pressed ? -1 : 0);
+    m_autoCenter=false;
+    return true;
+  case SDLK_RIGHT:
+    m_scrollOp[0]=(pressed ? 1 : 0);
+    m_autoCenter=false;
+    return true;
+  case SDLK_UP:
+    m_scrollOp[1]=(pressed ? 1 : 0);
+    m_autoCenter=false;
+    return true;
+  case SDLK_DOWN:
+    m_scrollOp[1]=(pressed ? -1 : 0);
+    m_autoCenter=false;
+    return true;
+  case SDLK_SPACE:
+    if (pressed)
+      m_showNames=!m_showNames;
+    return true;
+  case SDLK_KP_PLUS:
+    if (pressed) {
+      m_autoZoom=false;
+      m_zoomOp=1;
+    } else
+      m_zoomOp=0;
+    return true;
+  case SDLK_KP_MINUS:
+    if (pressed) {
+      m_autoZoom=false;
+      m_zoomOp=-1;
+    }else
+      m_zoomOp=0;
+    return true;
+  case SDLK_1:
+    if (pressed) 
+      m_autoZoom=!m_autoZoom;
+    return true;
+  case SDLK_2:
+    if (pressed) 
+      m_autoCenter=!m_autoCenter;
+    return true;
+  case SDLK_ESCAPE:
+  case SDLK_q:
+    m_quit=true;
+    return true;
+  case SDLK_f:
+    if (pressed) {
+      if (m_flags&SDL_FULLSCREEN)
+	m_flags&=~SDL_FULLSCREEN;
+      else
+	m_flags|=SDL_FULLSCREEN;
+      resize(m_width,m_height);
+    }
+    return true;
+  case SDLK_t:
+    m_chatLine.setActive(true);
+    m_chatMode=1;
+    return true;
+  case SDLK_g:
+    m_chatLine.setActive(true);
+    m_chatMode=2;
+    return true;
   case SDLK_RETURN:
-    {
-      SDL_EnableUNICODE(0);
-      // we only fill the message and public field 
-      // the server fills the other fields
-      ChatMessage m;
-      m.message=m_chatLine;
-      m.global=(m_chatMode==1);
-      chatMessage.emit(m);
-      m_chatMode=0;
-      m_chatLine.clear();
-      printed.emit('\n');
+    if (!pressed)
       return true;
+    break;
+  case SDLK_c:
+    if (pressed) m_texCircle=!m_texCircle;
+  }
+  return false;
+
+  /*
+    // else chatMode
+    if (!pressed) return true;
+    
+    // check for special keys
+    switch (k) {
+    case SDLK_RETURN:
+    {
+    SDL_EnableUNICODE(0);
+    // we only fill the message and public field 
+    // the server fills the other fields
+    ChatMessage m;
+    m.message=m_chatLine;
+    m.global=(m_chatMode==1);
+    chatMessage.emit(m);
+    m_chatMode=0;
+    m_chatLine.clear();
+    printed.emit('\n');
+    return true;
     }
     break;
-  case SDLK_DELETE:
-  case SDLK_BACKSPACE:
-  case SDLK_LEFT:
+    case SDLK_DELETE:
+    case SDLK_BACKSPACE:
+    case SDLK_LEFT:
     unsigned s=m_chatLine.size();
     if (s)
-      m_chatLine.resize(s-1);
+    m_chatLine.resize(s-1);
     printed.emit(k);
     return true;
-  }
+    }
 
-  Uint16 unicode(e.keysym.unicode);
-  char ch;
-  if ( (unicode & 0xFF80) == 0 ) {
+    Uint16 unicode(e.keysym.unicode);
+    char ch;
+    if ( (unicode & 0xFF80) == 0 ) {
     ch = unicode & 0x7F;
     if (ch>=32) {
-      m_chatLine+=ch;
-      printed.emit(ch);
+    m_chatLine+=ch;
+    printed.emit(ch);
     }
-  }
-  else {
+    }
+    else {
     std::cerr << "An International Character.\n";
-  }
-  return true;
+    }
+    return true;
+  */
 }
 
 void
@@ -260,6 +271,16 @@ SDLGLGUI::handleQuit()
   m_quit=true;
 }
 
+void
+SDLGLGUI::handleChatInput(const std::string &msg)
+{
+  ChatMessage m;
+  m.message=msg;
+  m.global=(m_chatMode==1);
+  chatMessage.emit(m);
+  m_chatMode=0;
+  m_chatLine.clear();
+}
 
 bool
 SDLGLGUI::step(R dt)
@@ -525,7 +546,7 @@ SDLGLGUI::step(R dt)
   gl.LoadIdentity();
   gl.Translatef(0,0,0);
   gl.Color3f(1.0,1.0,1.0);
-  m_fontPtr->drawText(m_chatLine);
+  m_fontPtr->drawText(m_chatLine.getContent());
   
   gl.Flush();
   gl.Finish();

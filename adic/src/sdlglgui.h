@@ -32,6 +32,7 @@
 #include "animation.h"
 #include "glterminal.h"
 #include "glfont.h"
+#include "sdlinputfield.h"
 
 class SDLGLGUI : public GUI
 {
@@ -50,7 +51,8 @@ public:
   bool handleKey(SDL_KeyboardEvent e);
   void handleResize(SDL_ResizeEvent e);
   void handleQuit();
-
+  void handleChatInput(const std::string &msg);
+  
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
 
@@ -110,8 +112,9 @@ protected:
   TimeStamp m_start;
   unsigned m_frames;
 
+  //! global or group chat ?
   int m_chatMode;
-  std::string m_chatLine;
+  SDLInputField m_chatLine;
 };
 
 #endif
