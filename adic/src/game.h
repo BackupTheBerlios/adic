@@ -138,7 +138,7 @@ public:
   
   void setInput(const PlayerInput &i);
 
-  void replace(Game &o, int lagCompensation=1);
+  void replace(Game &o, int lagCompensation=0);
   
   //! collide player with world (players, walls, doors)
   /*!
