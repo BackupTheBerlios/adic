@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<Mesh>
+<stdvectorOfV2D this.name="vertices">
+<V2D x="20" y="20" />
+<V2D x="1260" y="20" />
+<V2D x="1260" y="940" />
+<V2D x="140" y="240" />
+<V2D x="100" y="200" />
+<V2D x="20" y="940" />
+<V2D x="960" y="520" />
+<V2D x="500" y="520" />
+<V2D x="500" y="580" />
+<V2D x="500" y="640" />
+<V2D x="500" y="940" />
+<V2D x="1000" y="560" />
+</stdvectorOfV2D>
+<stdvectorOfEdge this.name="edgelist">
+<Edge vid="0" type="0" />
+<Edge vid="1" type="0" />
+<Edge vid="2" type="0" />
+<Edge vid="11" type="1" />
+<Edge vid="6" type="0" />
+<Edge vid="3" type="1" />
+<Edge vid="4" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="5" type="0" />
+<Edge vid="0" type="0" />
+<Edge vid="4" type="1" />
+<Edge vid="3" type="0" />
+<Edge vid="6" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="8" type="0" />
+<Edge vid="9" type="0" />
+<Edge vid="10" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="2" type="0" />
+<Edge vid="10" type="0" />
+<Edge vid="9" type="1" />
+<Edge vid="8" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="6" type="1" />
+<Edge vid="11" type="0" />
+<Edge vid="-1" type="0" />
+</stdvectorOfEdge>
+<stdvectorOfstdpairOfV2DAndfloat this.name="startPoints">
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="100" y="100" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="90"><V2D this.name="first" x="160" y="160" /></stdpairOfV2DAndfloat>
+<stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="800" y="840" /></stdpairOfV2DAndfloat>
+</stdvectorOfstdpairOfV2DAndfloat>
+<stdvectorOfObject this.name="startObjects">
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="300" y="100" />
+  </Object>
+  <Object dir="20" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="350" y="150" />
+  </Object>
+  <Object dir="40" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="400" y="800" />
+  </Object>
+  <Object dir="90" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="750" y="700" />
+  </Object>
+  <Object dir="45" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="700" y="650" />
+  </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="650" y="600" />
+  </Object>
+</stdvectorOfObject>
+</Mesh>
