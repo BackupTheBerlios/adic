@@ -207,7 +207,7 @@ BotClient::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp stepSize(0,12500);
+  TimeStamp stepSize(0,11111); // ~90Hz
   TimeStamp frameSize(stepSize);
   TimeStamp dt;
   TimeStamp null;

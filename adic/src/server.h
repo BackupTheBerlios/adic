@@ -47,7 +47,7 @@
 //! server configuration
 struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(40)
+  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(90)
   {}
   
   std::string m_meshURI;

@@ -105,9 +105,19 @@ void
 Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
   DOPE_CHECK(iPtr.get());
-  // todo: implement lag compensation => input queue
-  m_game.setInput(*iPtr.get());
-    //    std::cerr << "\nGot Input\n";
+  if (m_config.m_lagCompensation) {
+    // todo: implement lag compensation => input queue
+    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
+    if (m_game.getFrame()-iPtr->frame>=0)
+      m_game.setInput(*iPtr.get());
+    else{
+      std::cerr << "Stored input in queue\n";
+      m_inputQueue.push_back(iPtr);
+    }
+  }else{
+    m_game.setInput(*iPtr.get());
+  }
+  //    std::cerr << "\nGot Input\n";
 }
 
 void
@@ -292,7 +302,7 @@ Client::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp stepSize(0,12500);
+  TimeStamp stepSize(0,11111); // ~90Hz
   TimeStamp frameSize(stepSize);
   TimeStamp dt;
   TimeStamp null;
@@ -362,9 +372,25 @@ Client::main()
 
     // start of one frame
     // do main work
+
     R rdt(R(stepSize.getSec())+R(stepSize.getUSec())/1000000);
-    for (int f=0;f<eframes;++f)
+    for (int f=0;f<eframes;++f) {
       m_game.step(rdt);
+      // work on input queue
+      InputQueue::iterator it(m_inputQueue.begin());
+      while (it!=m_inputQueue.end()){
+	if (m_game.getFrame()-(*it)->frame>=0) {
+	  m_game.setInput(*(it->get()));
+	  InputQueue::iterator del(it);
+	  ++it;
+	  m_inputQueue.erase(del);
+	  continue;
+	}
+	++it;
+      }
+    }
+    
+
     // gui
     if (!m_guiPtr->step(rdt*eframes))
       m_quit=true;

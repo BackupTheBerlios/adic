@@ -111,6 +111,8 @@ protected:
   std::streambuf* m_coutbuf;
 
   DOPE_SMARTPTR<NetStream> m_streamPtr;
+  typedef std::list<DOPE_SMARTPTR<PlayerInput > > InputQueue;
+  InputQueue m_inputQueue;
 };
 
 #endif
