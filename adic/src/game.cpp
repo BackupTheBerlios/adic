@@ -438,7 +438,7 @@ Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
   // special case here
   // we want to be able to block doors with barrels
   if (!p.isPlayer())
-    dimp*=0.05;
+    dimp*=0.1;
   p.applyImpuls(dimp*0.9-pimp);
   rd.applyImpuls(dist,pimp*0.9-dimp);
   p.commit();

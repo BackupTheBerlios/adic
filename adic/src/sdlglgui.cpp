@@ -1087,7 +1087,7 @@ SDLGLGUI::drawPlayers(R dt)
       else
 	glColor3f(0.0,1.0,0.0);
       if (players[p].isPlayer())
-	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
+	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.08);
       else
 	m_animations[p].step(dt*20);
       drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
