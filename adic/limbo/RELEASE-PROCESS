@@ -1,0 +1,25 @@
+ADIC RELEASE PROCESS
+This is still too much work:
+
+ 0. edit source code (compile and test)
+
+ 1. commit changes to cvs (commit messages should reflect changes)
+ 2. update doc/index.html (ChangeLog - this should be automated from cvs - perhaps use cvs2cl)
+ 3. update debian/changelog - the same again !!
+
+ 4. build
+	- source package (make distcheck)
+	- debian package (partly automated limbo/build-deb)
+	- linux i386 binary (not yet automated)
+	- cross-compile win32 binary (not yet automated)
+ 5. test (if test fails goto 0)
+
+ 6. cvs tag
+ 7. upload packages to berlios
+	- changelog again !
+ 8. regenerate debian packages file
+ 9. update happy penguin information
+	- changelog again !
+10. update freshmeat entry
+	- changelog again !
+11. upload source code documentation
