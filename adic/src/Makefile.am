@@ -62,6 +62,7 @@ test_world_LDADD = @DOPE_LIBS@
 	gui.h gui.cpp \
 	sdlglgui.h sdlglgui.cpp
 
-@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ @GL_LIBS@
+# we do not need @GL_LIBS@ since we now dlopen it
+@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ 
 
 
