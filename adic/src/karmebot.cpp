@@ -1,6 +1,6 @@
 #include "karmebot.h"
 
-const R KarmeBot::threshold=5;
+const R KarmeBot::threshold=2;
 
 KarmeBot::KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
   : Bot(_client,_pid,_inputID),
@@ -82,7 +82,7 @@ KarmeBot::handleCollision()
   if (client.getGame().getTimeStamp()-lastCollisionTime<10)
     return;
   mode=DEFAULT;
-  dir=R(rand()/(RAND_MAX/360))/R(180)*M_PI;
+  dir+=M_PI;
   lastCollisionTime=client.getGame().getTimeStamp();
 }
 
@@ -118,7 +118,6 @@ KarmeBot::crossLine()
 {
   const Player &me(client.getPlayers()[pid]);
   if (!inFront(finishingLine,me.m_pos)) {
-    std::cerr << "Crossed Line\n";
     followEdge(nextEdge);
   }
 }
