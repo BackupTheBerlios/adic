@@ -42,4 +42,9 @@
 <Edge vid="11" type="0" />
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
+<stdvectorOfV2D this.name="startPoints">
+<V2D x="50" y="50" />
+<V2D x="80" y="80" />
+<V2D x="400" y="420" />
+</stdvectorOfV2D>
 </Mesh>
