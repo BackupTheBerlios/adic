@@ -5,12 +5,19 @@
   </head>
 
   <body>
+    <a href="#news">[News]</a>
+    <a href="#requirements">[Requirements]</a>
+    <a href="#license">[License]</a>
+    <a href="#running">[Running]</a>
+    <a href="#controls">[Controls]</a>
+    <a href="#FAQ">[FAQ]</a>
+
     <h1>ADIC</h1>
     Any door is closed.
     <h2>Description</h2>
     ADIC (Any door is closed) is a cooperative multi-player game. The goal is to lock all the players of the other teams. Main development platform is GNU/Linux - but now there are cross-compiled binaries for win32.
 Beside of playing the game you can write a bot and use the game as testbed for AI/robotics algorithms.
-    <h2>News/Changelog:</h2>
+    <h2><a name="news">News/Changelog:</a></h2>
     <h3>Experimental debian package</h3>
     <a href="http://www.debian.org">Debian</a> users now can simply add <pre>deb http://adic.berlios.de/debian woody main</pre> to the apt sources.list. (NOTE: there are only i386 binaries at the moment)
     <h3>Released beta with debug info(0.1.0)</h3>
@@ -30,7 +37,7 @@ Beside of playing the game you can write a bot and use the game as testbed for A
       <LI>sound has some problems</LI>
       <LI>motion estimation problems but I think this is because I did run the client on the same host as the server - and win multi-tasking ....</LI>
     </UL>
-    <h2>Requirements (build dependencies)</h2>
+    <h2><a name="requirements">Requirements (build dependencies)</a></h2>
     <UL>
       <LI><a href="http://dope.berlios.de">DOPE++</a> (and of course its <a href="http://cvs.berlios.de/cgi-bin/viewcvs.cgi/*checkout*/dope/dope/doc/index.html?rev=HEAD&amp;content-type=text/html#requirements">requirements</a>)</LI>
       <LI><a href="http://www.libsdl.org">SDL >=1.2</a></LI>
@@ -39,9 +46,9 @@ Beside of playing the game you can write a bot and use the game as testbed for A
       <LI><a href="http://www.opengl.org">OpenGL</a> or <a href="http://mesa3d.sourceforge.net/">Mesa</a></LI>
     </UL>
     I suggest you <a href="http://developer.berlios.de/project/filelist.php?group_id=404">download</a> the semi-static binaries.
-    <h2>License/Copyright</h2>
+    <h2><a name="license">License/Copyright</a></h2>
     <a href="COPYING">GPL</a> Copyright (C) 2002 Jens Thiele &lt;jens.thiele@student.uni-tuebingen.de&gt;, Jens Schwarz
-    <h2>Running</h2>
+    <h2><a name="running">Running</a></h2>
     <UL>
       <LI>Take a look at the <a href="http://adic.berlios.de/metaserver/">meta-server</a> to find a running server</LI>
       <LI>if the list is empty start your own server. Run ./adicserver (perhaps you want to disable the metaserver and choose another map. f.e: ./adicserver --metaServer="" --meshURI=data:mesh.xml, see adicserver --help for more info)</LI>
@@ -54,7 +61,7 @@ Beside of playing the game you can write a bot and use the game as testbed for A
     The characters differ in speed, mass, endurance, ...
     <h3>Fitness</h3>
     Either embrace your team mates, drink some water from the springs or just take a rest to recover.
-    <h2>Controls:</h2>
+    <h2><a name="controls">Controls:</a></h2>
     <table border="1">
       <tr><td>Context</td><td>Key</td><td>Action</td></tr>
       <tr><td colspan="3">Global</td></tr>
@@ -95,21 +102,24 @@ Beside of playing the game you can write a bot and use the game as testbed for A
       <tr><td></td><td>left button</td><td>turn left</td></tr>
       <tr><td></td><td>right button</td><td>turn right</td></tr>
     </table>
-    <h3>FAQ</h3>
+    <h2><a name="FAQ">FAQ</a></h2>
     <UL>
       <LI>Q: It does look ugly !</LI>
       <LI>A: Try the --quality=1 switch or enable line smoothing with the "l" key. And change the resolution</LI>
     </UL>
-    <h2>Links</h2>
+    <h2><a name="links">Links</a></h2>
     <UL>
+      <LI><a href="http://adic.berlios.de">ADIC</a> homepage</LI>
+      <LI><a href="http://dope.berlios.de">DOPE</a> homepage</LI>
       <LI><a href="http://adic.berlios.de/doxygen/html/index.html">source documentation</a></LI>
       <LI><a href="doxygen/html/index.html">local source documentation</a> (only available if you generated it)</LI>
+      <LI><a href="http://www.happypenguin.org">The Linux Game Tome</a></LI>
     </UL>
     <hr>
     <address><a href="mailto:jens.thiele@student.uni-tuebingen.de">Jens Thiele</a></address>
 <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
 <!-- hhmts start -->
-Last modified: Fri Oct  4 13:40:03 CEST 2002
+Last modified: Thu Oct 17 12:56:20 CEST 2002
 <!-- hhmts end -->
   </body>
 </html>
