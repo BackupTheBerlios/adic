@@ -1,18 +1,24 @@
 <?xml version="1.0"?>
 <Mesh>
 <stdvectorOfV2D this.name="vertices">
-<V2D x="10" y="200" />
+<V2D x="10" y="20" />
+<V2D x="200" y="20" />
 <V2D x="200" y="200" />
-<V2D x="200" y="300" />
-<V2D x="10" y="300" />
+<V2D x="70" y="120" />
+<V2D x="50" y="100" />
+<V2D x="10" y="200" />
 </stdvectorOfV2D>
 <stdvectorOfEdge this.name="edgelist">
 <Edge vid="0" type="0" />
 <Edge vid="1" type="0" />
 <Edge vid="2" type="0" />
+<Edge vid="3" type="1" />
+<Edge vid="4" type="0" />
 <Edge vid="-1" type="0" />
-<Edge vid="3" type="0" />
+<Edge vid="5" type="0" />
 <Edge vid="0" type="0" />
+<Edge vid="4" type="1" />
+<Edge vid="3" type="0" />
 <Edge vid="2" type="0" />
 <Edge vid="-1" type="0" />
 </stdvectorOfEdge>
