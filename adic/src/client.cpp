@@ -72,10 +72,10 @@ Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
 void 
 Client::handleCollision(V2D pos, R strength)
 {
-  if (m_soundPtr) {
+  if (m_soundPtr.get()) {
     // collision sound 
     R volume=strength/40;
-    if (m_guiPtr) volume-=(m_guiPtr->getPos()-pos).length()/R(200);
+    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(200);
     if (volume>0) {
       if (volume>1) volume=1;
       //  std::cerr << "\nPlay sample\n";
@@ -114,6 +114,11 @@ Client::getPlayerName(PlayerID id) const
 int
 Client::main()
 {
+  DOPE_SMARTPTR<URICache<Mesh> > mc(new URICache<Mesh>());
+  URILoader<URICache<Mesh> >::cache=mc.get();
+  DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
+  URILoader<URICache<PlayerData> >::cache=pdc.get();
+  
   signal(SIGPIPE,sigPipeHandler);
   InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
   NetStreamBuf layer0(adr);
@@ -147,10 +152,11 @@ Client::main()
   unsigned frames=0;
 
   GUIFactory guif;
-  m_guiPtr=guif.create(*this,m_config.m_gui);
-  m_soundPtr=Sound::create(m_config.m_sc);
+  m_guiPtr=DOPE_SMARTPTR<GUI>(guif.create(*this,m_config.m_gui));
+  m_soundPtr=DOPE_SMARTPTR<Sound>(Sound::create(m_config.m_sc));
   m_soundPtr->playMusic("data/music.mod");
-
+  std::vector<int> soundChannel;
+  
   DOPE_CHECK(m_guiPtr->init());
   m_guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
   while (!m_quit) {
@@ -169,10 +175,39 @@ Client::main()
     }
     // do main work
     R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
+    // game
     m_game.step(rdt);
+    // gui
     if (!m_guiPtr->step(rdt))
       m_quit=true;
-    m_soundPtr->step(rdt);
+    // sound
+    if (m_soundPtr.get()) {
+      /*
+      // walking sound
+      for (unsigned i=0;i<m_playerIDs.size();++i) {
+	const Player &p(m_game.getPlayers()[i]);
+	while (soundChannel.size()<i)
+	  soundChannel.push_back(-1);
+	int &c=soundChannel[i];
+	if (!p.getY()) {
+	  if (c!=-1)
+	    m_soundPtr->stopChannel(c);
+	  continue;
+	}
+	V2D pos(p.m_pos);
+	R volume=R(1)-(m_guiPtr->getPos()-pos).length()/R(200);
+	if (volume>0) {
+	  if (volume>1) volume=1;
+	  //  std::cerr << "\nPlay sample\n";
+	  if (c==-1)
+	    c=m_soundPtr->playSample("data/Footsteps.wav",-1);
+	  m_soundPtr->modifyChannel(c,volume);
+	}else if (c!=-1)
+	  m_soundPtr->stopChannel(c);
+      }
+      */
+      m_soundPtr->step(rdt);
+    }
     while (layer0.select(&null))
       si.read();
     // end of main work
@@ -184,11 +219,8 @@ Client::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;
   }
-  delete m_soundPtr;
-  m_soundPtr=NULL;
-  delete m_guiPtr;
-  m_guiPtr=NULL;
-  std::cout << std::endl;
+  m_soundPtr=DOPE_SMARTPTR<Sound>(NULL);
+  m_guiPtr=DOPE_SMARTPTR<GUI>(NULL);
   return 0;
 }
 

@@ -88,16 +88,14 @@ protected:
   Game m_game;
   bool m_quit;
   std::vector<PlayerID> m_playerIDs;
-  Sound* m_soundPtr;
-  GUI* m_guiPtr;
+  DOPE_SMARTPTR<Sound> m_soundPtr;
+  DOPE_SMARTPTR<GUI> m_guiPtr;
 public:
   Client(ClientConfig &config) 
     : m_config(config), m_quit(false), m_soundPtr(NULL), m_guiPtr(NULL)
   {}
   ~Client()
-  {
-    DOPE_CHECK(m_guiPtr==NULL);
-  }
+  {}
 
   void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
   void handleGame(DOPE_SMARTPTR<Game> gPtr);
