@@ -28,8 +28,12 @@
 #include "gameobject.h"
 #include "world.h"
 
+#define RAD(d) R(d)*M_PI/R(180)
+
 //! a door
-class Door : public GameObject
+/*! abstract door not in the game world */
+class Door 
+// : public GameObject not a gameobject because you can't collide with it
 {
   //! angle
   R angle;
@@ -39,25 +43,36 @@ class Door : public GameObject
   R maxAngle;
   //! minimum Angle
   R minAngle;
-  //! edge ID - \todo is not inititialized nor pickled
+  //! edge ID
   FWEdge::EID eid;
+  
+
+  R oldAngle;
+  R oldAngleSpeed;
+
+  bool locked;
   
   static const R damping;
 public:
+  Door(FWEdge::EID _eid=FWEdge::noEdge)
+    : angle(0), angleSpeed(RAD(10)), maxAngle(RAD(90)), minAngle(RAD(-90)), eid(_eid), oldAngle(0), oldAngleSpeed(angleSpeed),
+      locked(false)
+  {}
+
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle);
+    layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle).SIMPLE(eid);
   }
   bool step(R dt)
   {
     angle+=angleSpeed*dt;
-    if (angle>maxAngle) angle=maxAngle-(angle-maxAngle);
-    if (angle<minAngle) angle=minAngle+(minAngle-angle);
+    if (angle>maxAngle) {angle=maxAngle-(angle-maxAngle);angleSpeed*=-1;}
+    if (angle<minAngle) {angle=minAngle+(minAngle-angle);angleSpeed*=-1;}
     angleSpeed-=angleSpeed*damping*dt;
     return true;
   }
-  bool collide(const Circle &c, V2D &cv);
+
   //! is this door closed ?
   /*!
     this is used to test if all doors of a room are closed
@@ -65,6 +80,43 @@ public:
     \return true if door is closed
   */
   bool isClosed() const;
+
+  bool isLocked() const
+  {
+    return locked;
+  }
+
+  FWEdge::EID getEdgeID() const
+  {
+    return eid;
+  }
+  
+  void rollback()
+  {
+    angle=oldAngle;
+    angleSpeed=oldAngleSpeed;
+  }
+  
+  void commit()
+  {
+    oldAngle=angle;
+    oldAngleSpeed=angleSpeed;
+  }
+
+  //! get angular speed
+  R getSpeed() const
+  {
+    return angleSpeed;
+  }
+  //! get angle
+  R getAngle() const
+  {
+    return angle;
+  }
+  void addSpeed(R s)
+  {
+    angleSpeed+=s;
+  }
 };
 DOPE_CLASS(Door);
 template <typename Layer2>
