@@ -77,6 +77,9 @@ struct FWEdge
   {
     return (m_etcw&DOORBIT)||(m_etccw&DOORBIT);
   }
+
+  //! the corresponding wall
+  Wall m_wall;
 };
 
 //! room
@@ -223,10 +226,14 @@ public:
     const FWEdge &e=getEdge(eid);
     if (e.isDoor())
       return false;
+    r=e.m_wall;
+    return true;
+    /*    
     DOPE_CHECK(e.m_sv<m_vertices.size()&&e.m_ev<m_vertices.size());
     Line l(m_vertices[e.m_sv],m_vertices[e.m_ev]);
     r=Wall(l);
     return true;
+    */
   }
   
   //! helper to walk through a room along the walls
