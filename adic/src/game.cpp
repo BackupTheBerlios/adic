@@ -308,14 +308,14 @@ Game::setInput(const PlayerInput &i)
       DOPE_WARN("id out of range: "<<i.id<<">="<<m_players.size());
       return;
     }
-  std::cerr << "\nInput Lag: "<<(m_frame-i.frame)<<" frames\n";
+  //  std::cerr << "\nInput Lag: "<<(m_frame-i.frame)<<" frames\n";
   m_players[i.id].setControl(i.i.x,i.i.y);
 }
 
 void 
 Game::replace(Game &o, bool lagCompensation)
 {
-  std::cerr << "\nLag: "<<(m_frame-o.m_frame)<<" frames\n";
+  //  std::cerr << "\nLag: "<<(m_frame-o.m_frame)<<" frames\n";
   if (lagCompensation) {
     /*
     TimeStamp myTime(getTimeStamp());

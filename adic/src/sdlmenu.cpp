@@ -165,7 +165,7 @@ SDLMenu::handleTeamName(const std::string &name)
     {
 	m_screen = 4;
     }
-  std::cerr << "users: " << config.m_users.users.size() << std::endl;
+  //  std::cerr << "users: " << config.m_users.users.size() << std::endl;
 }
 
 bool
