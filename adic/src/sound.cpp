@@ -1,5 +1,6 @@
 #include "sound.h"
 #include "soundsdlmixer.h"
+#include <stdexcept>
 
 Sound* 
 Sound::create(SoundConfig &sc)

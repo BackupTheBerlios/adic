@@ -517,6 +517,7 @@ SDLGLGUI::step(R dt)
   ct-=m_start;
   R uptime=R(ct.getSec())+(R(ct.getUSec())/1000000);
   ++m_frames;
+  glColor3f(1.0,1.0,1.0);
   if (!(m_toggles&(1<<9))) {
     std::ostringstream o;
     o << "Up: " << std::fixed << std::setprecision(1) << std::setw(7) << uptime 
@@ -524,7 +525,6 @@ SDLGLGUI::step(R dt)
     //	      << " Frame: " << std::setw(10) << m_frames;
     glLoadIdentity();
     glTranslatef(0,m_height-m_fontPtr->getHeight(),0);
-    glColor3f(1.0,1.0,1.0);
     m_fontPtr->drawText(o.str());
   }
 

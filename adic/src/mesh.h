@@ -93,6 +93,9 @@ class Mesh
 {
 public:
   //! edge ID type
+  /*
+    \note -1 is no edge - this is why it is an int
+  */
   typedef int EID;
   typedef std::vector<std::pair<V2D,R> > StartPoints;
   typedef std::vector<Object> StartObjects;
