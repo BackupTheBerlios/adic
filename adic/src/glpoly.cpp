@@ -2,31 +2,43 @@
 #include "sdlgl.h"
 
 #ifndef WINAPI
-#define WINAPI
+#define DOPE_CVOIDFUNC static void
+#else
+#define DOPE_CVOIDFUNC static void WINAPI
 #endif
 
+#define STRINGIFY(m) #m
+
 extern "C" {
-  
-void WINAPI myBegin(GLenum i)
+
+DOPE_CVOIDFUNC myBegin(GLenum i)
 {
+  //  DOPE_MSG("Info:","entered. DOPE_CVOIDFUNC="<<STRINGIFY(DOPE_CVOIDFUNC)<<std::flush);
   glBegin(i);
+  return;
 }
 
-void WINAPI myVertex(void *_v)
+DOPE_CVOIDFUNC myVertex(GLvoid *_v)
 {
+  //  DOPE_MSG("Info:","entered"<<std::flush);
   R* v=(R *)_v;
+  //  DOPE_MSG("Info:","v={"<<v[0]<<","<<v[1]<<"}"<<std::flush);
   // todo 64 should not be hardcoded
   glTexCoord2f(v[0]/128, v[1]/128);
   glVertex2f(v[0],v[1]);
+  return;
 }
 
-void WINAPI myEnd()
+DOPE_CVOIDFUNC myEnd(void)
 {
+  //  DOPE_MSG("Info:","entered"<<std::flush);
   glEnd();
+  return;
 }
  
 }
-
+#undef DOPE_CVOIDFUNC
+#undef STRINGIFY
 
 GLPoly::GLPoly(const std::vector<V2D> &poly)
 {
@@ -54,12 +66,18 @@ GLPoly::GLPoly(const std::vector<V2D> &poly)
     gluTessVertex(tobj, v[i], (GLvoid*)(poly[i].m_v));
   }
   l=glGenLists(1);
+  DOPE_CHECK(l); // todo
   glNewList(l,GL_COMPILE);
   //  gluTessEndPolygon(tobj);
+  //  DOPE_MSG("Info:","reached"<<std::flush);
   gluEndPolygon(tobj);
+  //  DOPE_MSG("Info:","reached"<<std::flush);
   glEndList();
+  //  DOPE_MSG("Info:","reached"<<std::flush);
   gluDeleteTess(tobj);
+  //  DOPE_MSG("Info:","reached"<<std::flush);
   delete [] v;
+  //  DOPE_MSG("Info:","reached"<<std::flush);
 }
 
 GLPoly::~GLPoly()
