@@ -1,9 +1,33 @@
 #include "game.h"
 #include "input.h"
 
+void
+Game::init()
+{
+  m_stepFault=0;
+}
+
 bool
 Game::step(R dt)
 {
+  dt+=m_stepFault;
+  R stepSize=0.01;
+  while (dt>stepSize)
+    {
+      bool r=miniStep(stepSize);
+      if (!r)
+	return false;
+      dt-=stepSize;
+    }
+  m_stepFault=dt;
+  return true;
+}
+
+bool
+Game::miniStep(R dt)
+{
+  // not problematic because a signed int (32bit) can keep 2147*10^6 usec => 2147 sec.
+  m_timeStamp+=TimeStamp(dt);
   bool collided=false;
   for (unsigned p=0;p<m_players.size();++p)
     {
@@ -98,19 +122,26 @@ Game::getWorldPtr()
 {
   if (m_meshPtr.get()&&(!m_worldPtr.get()))
     {
+      DOPE_WARN("reached");
       m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
       DOPE_CHECK(m_worldPtr.get());
       // get all doors
       if (m_doors.empty()) {
 	std::vector<FWEdge::EID> d(m_worldPtr->getAllDoors());
+	std::cerr << "\nWorld has "<<d.size()<<"doors\n";
 	for (unsigned i=0;i<d.size();++i)
 	  {
-	    std::cerr << "\nCreated door\n";
 	    m_doors.push_back(Door(d[i]));
 	  }
       }
     }
   return m_worldPtr;
+}
+
+void
+Game::setWorldPtr(WorldPtr &w)
+{
+  m_worldPtr=w;
 }
 
 RealDoor
