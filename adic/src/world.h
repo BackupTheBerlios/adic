@@ -94,7 +94,10 @@ struct Room
   //! is this edge clockwise
   bool m_cw;
   Poly m_poly;
+  //! walls of this room
   std::vector<Wall> m_walls;
+  //! eids of this room
+  std::vector<FWEdge::EID> m_eids;
 };
 
 
@@ -156,13 +159,14 @@ public:
   /*!
     \param c the circle to collide
     \param room the room to collide the circle with
-    \param collision vector is only set if there is a collision
+    \param cv (collision vector) is only set if there is a collision
+    \param eids (edge ids) is only set if there is a collision
 
     \return true if there is a collision otherwise false
 
     \note doors are not collided ! this has to done in an extra step
   */
-  bool collide(const Circle &c, FWEdge::RoomID room, V2D &cv) const;
+  bool collide(const Circle &c, FWEdge::RoomID room, V2D &cv, std::vector<FWEdge::EID> &eids) const;
 
   unsigned getNumVertices() const
   {

@@ -55,7 +55,7 @@ public:
   {
     return m_client.getConfig().m_gui;
   }
-  ClientConfig &getConfig()
+  GUIClientConfig &getConfig()
   {
     return m_client.getConfig();
   }

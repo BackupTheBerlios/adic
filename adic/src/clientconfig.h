@@ -18,7 +18,7 @@
 
 /*!
    \file clientconfig.h
-   \brief class ClientConfig
+   \brief configuration data of clients
    \author Jens Thiele
 */
 
@@ -33,6 +33,7 @@
 #include "soundconfig.h"
 #include "commonconfig.h"
 
+//! configuration all clients have in common (gui client and bot client)
 struct ClientConfig : public CommonConfig
 {
   ClientConfig() : m_server("localhost")
@@ -57,8 +58,6 @@ struct ClientConfig : public CommonConfig
   }
   
   std::string m_server;
-  GUIConfig m_gui;
-  SoundConfig m_sc;
   UserSetting m_users;
 };
 DOPE_CLASS(ClientConfig);
@@ -66,8 +65,42 @@ template <typename Layer2>
 inline void composite(Layer2 &layer2, ClientConfig &c)
 {
   composite(layer2,static_cast<CommonConfig &>(c));
-  layer2.simple(c.m_server,"server")
-    .simple(c.m_gui,"gui").simple(c.m_sc,"sound").simple(c.m_users,"users");
+  layer2.simple(c.m_server,"server").simple(c.m_users,"users");
+}
+
+//! configuration of GUI client
+struct GUIClientConfig : public ClientConfig
+{
+  GUIClientConfig()
+  {
+  }
+
+  GUIConfig m_gui;
+  SoundConfig m_sc;
+};
+DOPE_CLASS(GUIClientConfig);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, GUIClientConfig &c)
+{
+  composite(layer2,static_cast<ClientConfig &>(c));
+  layer2.simple(c.m_gui,"gui").simple(c.m_sc,"sound");
+}
+
+//! configuration of bot client
+struct BotClientConfig : public ClientConfig
+{
+  BotClientConfig()
+  {
+  }
+
+  std::string implementation;
+};
+DOPE_CLASS(BotClientConfig);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, BotClientConfig &c)
+{
+  composite(layer2,static_cast<ClientConfig &>(c));
+  layer2.simple(c.implementation,"implementation");
 }
 
 #endif

@@ -15,7 +15,7 @@ check_PROGRAMS = \
 	$(manualtests)
 
 bin_PROGRAMS = \
-	adicserver adicclient
+	adicserver adicclient adicbot
 
 # all programs have in common
 allcommon = \
@@ -71,7 +71,10 @@ adicserver_LDADD = @DOPE_LIBS@
 # adicclient_CFLAGS = @SDL_CFLAGS@
 # adicclient_CXXFLAGS = @SDL_CFLAGS@
 
-adicclient_SOURCES = $(gamecommon) \
+clientcommon = $(gamecommon) \
+	netstream.h netstream.cpp
+
+adicclient_SOURCES = $(clientcommon) \
 	clientconfig.h \
 	client.h client.cpp \
 	guiconfig.h \
@@ -97,6 +100,13 @@ adicclient_SOURCES = $(gamecommon) \
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer
 adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer
+
+adicbot_SOURCES = $(clientcommon) \
+	botclient.h botclient.cpp \
+	bot.h bot.cpp \
+	karmebot.h karmebot.cpp
+
+adicbot_LDADD = @DOPE_LIBS@
 
 
 

@@ -189,23 +189,26 @@ World::setFromMesh(const Mesh &mesh)
 	if (it.getEdge().isDoor())
 	  continue;
 	m_rooms[r].m_walls.push_back(it.getEdge().m_wall);
+	m_rooms[r].m_eids.push_back(it.getID());
       }
   }
 }
 
 bool
 World::collide
-(const Circle &c, FWEdge::RoomID room, V2D &cv) const
+(const Circle &c, FWEdge::RoomID room, V2D &cv, std::vector<FWEdge::EID> &eids) const
 {
   // loop through walls
   const Room &r(m_rooms[room]);
   unsigned nw=r.m_walls.size();
+  assert(nw==r.m_eids.size());
   bool res=false;
   V2D subc;
   for (unsigned w=0;w<nw;++w) {
     if (r.m_walls[w].collide(c,subc)) {
       res=true;
       cv+=subc;
+      eids.push_back(r.m_eids[w]);
     }
   }
   return res;

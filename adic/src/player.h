@@ -30,7 +30,7 @@
 #include "genericpointer.h"
 #include "uriloader.h"
 
-//! a player in the game world
+//! a player (or object similar to a player) in the game world
 /*!
   \note there are also non-player objects represented by this class
  */

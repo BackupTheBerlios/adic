@@ -139,6 +139,7 @@ Game::collidePlayer(unsigned pid, bool test)
 	  p.commit();
 	  m_players[o].commit();
 	  collision.emit(p.m_pos,oimp.length()+timp.length());
+	  playerCollision.emit(pid,o,cv);
 	  return true;
 	}
     }
@@ -146,24 +147,32 @@ Game::collidePlayer(unsigned pid, bool test)
     // 2. collide with walls
     if (r!=FWEdge::noRoom) {
       V2D cv;
+      std::vector<FWEdge::EID> eids;
       // collide with room
-      if (w->collide(p,r,cv))
+      if (w->collide(p,r,cv,eids))
 	{
 	  p.rollback();
 	  calcPlayerInRoom(pid);
 	  r=playerInRoomCached(pid);
-	  assert(!w->collide(p,r,cv));
+#ifndef NDEBUG
+	  V2D foocv;
+	  std::vector<FWEdge::EID> fooeids;
+	  assert(!w->collide(p,r,foocv,fooeids));
+#endif
 	  V2D imp(cv.project(p.getImpuls()));
 	  p.applyImpuls(imp*-2);
 	  p.commit();
-	  if (!test) collision.emit(p.m_pos,2*imp.length());
+	  if (!test) {
+	    collision.emit(p.m_pos,2*imp.length());
+	    wallCollision.emit(pid,eids,cv);
+	  }
 	  return true;
 	}
     }
     // 3. collide with doors
     for (unsigned d=0;d<m_doors.size();++d)
       {
-	if (collideDoorAndPlayer(m_doors[d],pid,false))
+	if (collideDoorAndPlayer(d,pid,false))
 	  return true;
       }
   }
@@ -201,7 +210,7 @@ Game::miniStep(R dt)
 	// collide with players
 	for (unsigned p=0;p<m_players.size();++p)
 	  {
-	    if (collideDoorAndPlayer(m_doors[d],p,true))
+	    if (collideDoorAndPlayer(d,p,true))
 	      break;
 	  }
       }
@@ -386,8 +395,10 @@ Game::doorInWorld(Door &d)
   return RealDoor(d,sv,ev);
 }
 bool
-Game::collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor)
+Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
 {
+  assert(did<m_doors.size());
+  Door &d(m_doors[did]);
   // check if player and door are in the same room
   const WorldPtr &wp(getWorldPtr());
   DOPE_CHECK(wp.get());
@@ -432,6 +443,7 @@ Game::collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor)
   p.commit();
   d.commit();
   collision.emit(p.m_pos,pimp.length()+dimp.length());
+  doorCollision.emit(pid,did,cv);
   // todo remove it again
   {
     RealDoor rd(doorInWorld(d));

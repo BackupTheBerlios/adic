@@ -102,8 +102,11 @@ struct User
   User()
   {}
   
-  User(const char *uname) : m_uname(uname)
-  {}
+  User(const char *uname, const char *tname=NULL) 
+  {
+    m_uname=uname ? uname : "";
+    m_tname=tname ? tname : "";
+  }
   
   std::string m_uname;
   std::string m_tname;

@@ -82,6 +82,14 @@ public:
   */
   SigC::Signal2<void, V2D, R> collision;
 
+  //! signal emitted if two "players" collide
+  SigC::Signal3<void, PlayerID, PlayerID, const V2D &> playerCollision;
+  //! signal emitted if a "player" collides with one or more walls
+  SigC::Signal3<void, PlayerID, const std::vector<FWEdge::EID> &, const V2D &> wallCollision;
+  //! signal emitted if a "player" and a door collide
+  SigC::Signal3<void, PlayerID, unsigned, const V2D &> doorCollision;
+  
+
   Game() 
   {init();}
   Game(const std::string &meshURI);
@@ -140,7 +148,7 @@ public:
 
     \return true on collision otherwise false
   */
-  bool collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor);
+  bool collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor);
   
   //! return corresponding RealDoor to a door
   RealDoor doorInWorld(Door &d);

@@ -25,6 +25,7 @@
 #ifndef COMMONCONFIG_H
 #define COMMONCONFIG_H
 
+//! configuration all programs have in common (server,client,botclient)
 struct CommonConfig
 {
 public:

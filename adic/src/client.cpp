@@ -30,19 +30,8 @@ void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }
 
-NetStream::NetStream(const std::string &name, unsigned short int port)
-  : adr(HostAddress(name.c_str()),port),
-    layer0(adr), l2out(layer0), 
-#if USE_RAW_PROTOCOL == 1
-    l2in(layer0), 
-#elif USE_XML_PROTOCOL == 1
-    l2in(layer0,TimeStamp(0,300),2),
-#endif
-    so(l2out), si(l2in)
-{
-}
 
-Client::Client(ClientConfig &config) 
+Client::Client(GUIClientConfig &config) 
   : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
@@ -125,6 +114,7 @@ Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
   std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
+  DOPE_CHECK(m_guiPtr.get());
   m_guiPtr->handleNewClient(mPtr);
 }
 
@@ -396,7 +386,7 @@ int cppmain(int argc,char *argv[])
 {
   try{
     ArgvParser parser(argc,argv);
-    ClientConfig config;
+    GUIClientConfig config;
     parser.simple(config,NULL);
     // exit if parser printed the help message
     if (parser.shouldExit()) return 1;

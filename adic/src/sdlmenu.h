@@ -32,7 +32,7 @@
 
 //! menu displayed on game start
 /*!
-  the job of the menu ist to fill the ClientConfig config member
+  the job of the menu ist to fill the GUIClientConfig config member
   and to emit signals reporting which fields have changed
 
   you can select: (corresponding member)
@@ -112,7 +112,7 @@ protected:
   SDLGLGUI &gui;
   SDLGL &gl;
   //! the whole job of SDLMenu is to fill this struct
-  ClientConfig &config;
+  GUIClientConfig &config;
   
   SDLInputField serverName;
   SDLInputField serverPort;

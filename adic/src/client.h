@@ -37,41 +37,15 @@
 #include "game.h"
 #include "sound.h"
 #include "clientconfig.h"
+#include "netstream.h"
 
 class GUI;
 
-struct NetStream
-{
-  NetStream(const std::string &name, unsigned short int port);
-
-  bool select(TimeStamp *stamp)
-  {
-    return layer0.select(stamp);
-  }
-
-  void read()
-  {
-    si.read();
-  }
-
-  void readAll()
-  {
-    TimeStamp null;
-    while (select(&null)) read();
-  }
-  
-  InternetAddress adr;
-  NetStreamBuf layer0;
-  OutProto l2out;
-  InProto l2in;
-  SignalOutAdapter<OutProto> so;
-  SignalInAdapter<InProto> si;
-};
-
+// GUI client
 class Client : public SigC::Object
 {
 protected:
-  ClientConfig &m_config;
+  GUIClientConfig &m_config;
   Game m_game;
   bool m_quit;
   std::vector<PlayerID> m_playerIDs;
@@ -80,7 +54,7 @@ protected:
   unsigned m_csong;
   DOPE_SMARTPTR<GUI> m_guiPtr;
 public:
-  Client(ClientConfig &config);
+  Client(GUIClientConfig &config);
   ~Client();
 
   void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
@@ -127,7 +101,7 @@ public:
   /*!
     \note although this field is protected we allow direct access
   */
-  ClientConfig &getConfig()
+  GUIClientConfig &getConfig()
   {
     return m_config;
   }
