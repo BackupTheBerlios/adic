@@ -1,8 +1,10 @@
 adic (0.9.1-1) unstable; urgency=low
 
   * use dope network byte order stream
+  * meta-server now disabled by default
+  * server may now report any address to meta-server
 
- -- Jens Thiele <jens@quark.karme-net.hirschau>  Fri,  2 May 2003 12:01:56 +0200
+ -- Jens Thiele <karme@berlios.de>  Fri,  2 May 2003 12:01:56 +0200
 
 adic (0.9.0-1) unstable; urgency=low
 

@@ -229,8 +229,29 @@ Server::main()
   listener.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
 
   Host host;
-  //  host.adr=""; // we leave it blank and let the metaserver decide
-  host.port=m_config.m_port;
+  if (!m_config.m_useMetaServer)
+    m_metaServer.clear();
+  else{
+    if (m_config.m_myAddress.empty())
+      /* myAddress not set => we only report our port and the metaserver will use the ip
+	 from which it was connected (if the server is behind a nat-firewall this means
+	 that the nat firewall must redirect this port to the server) */
+      host.port=m_config.m_port;
+    else{
+      /* myAddress is set => we report it to the metaserver (if the address contains a :
+	 the port is assumed to follow the :
+      */
+      host.adr=m_config.m_myAddress;
+      std::string::size_type pos(host.adr.find_first_of(':'));
+      if (pos!=std::string::npos) {
+	if (pos+1<host.adr.size())
+	  stringToAny(std::string(host.adr,pos+1),host.port);
+	else
+	  host.port=m_config.m_port;
+	host.adr=std::string(host.adr,0,pos);
+      }
+    }
+  }
   const std::string &msURI(m_config.m_metaServer);
   if (!msURI.empty()) {
     try {

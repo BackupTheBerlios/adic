@@ -51,6 +51,7 @@ struct ServerConfig : public CommonConfig
   
   std::string m_meshURI;
   unsigned m_broadcastFreq;
+  std::string m_myAddress;
 };
 DOPE_CLASS(ServerConfig);
 
@@ -58,7 +59,9 @@ template <typename Layer2>
 inline void composite(Layer2 &layer2, ServerConfig &c)
 {
   composite(layer2,static_cast<CommonConfig &>(c));
-  layer2.simple(c.m_meshURI,"meshURI").simple(c.m_broadcastFreq,"broadcastFreq");
+  layer2.simple(c.m_meshURI,"meshURI")
+    .simple(c.m_broadcastFreq,"broadcastFreq")
+    .simple(c.m_myAddress,"myAddress");
 }
 
 template <typename INP = InProto>
