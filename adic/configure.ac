@@ -1,9 +1,8 @@
 dnl process this file with autoconf to produce a configure script
-
+AC_PREREQ(2.53)
 AC_INIT
 AC_CONFIG_SRCDIR([src/mesh.h])
 
-PACKAGE=adic
 
 dnl
 dnl Source packaging numbers
@@ -17,13 +16,12 @@ AC_DEFINE_UNQUOTED(PACKAGE_MICRO_VERSION, $PACKAGE_MICRO_VERSION, [micro version
 
 dnl for automake
 VERSION=$PACKAGE_VERSION
+PACKAGE=adic
 
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_TARGET
-
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
 AM_CONFIG_HEADER(config/config.h)
-
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_CC
@@ -37,6 +35,7 @@ AC_ARG_VAR(ADIC_PORT, the default port to use)
 dnl checks for libraries
 AM_PATH_DOPE(0.0.3, , [AC_MSG_ERROR([dope++ required])])
 MDL_HAVE_OPENGL
+
 AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR([SDL required])])
 AC_CACHE_SAVE
 
