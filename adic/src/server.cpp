@@ -289,12 +289,17 @@ Server::main()
       newTime.now();
       dt=newTime-oldTime;
     }
+
+#ifdef ADIC_DEBUG_TIMING
+    // todo remove again
     // last frame size was dt
     // and it should have been frameSize
     std::cerr << "\nLast frame took: "
 	      << (R(dt.getSec())+(R(dt.getUSec())/1000000))
 	      << " and should have taken: "
 	      << (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+#endif
+
     frameSize=(dt-frameSize);
     int eframes=1;
     while (frameSize>stepSize) {
@@ -302,10 +307,14 @@ Server::main()
       frameSize-=stepSize;
     }
     frameSize=stepSize-frameSize;
+
+#ifdef ADIC_DEBUG_TIMING
+    // todo remove again
     std::cerr << "\nFramesize: "<< (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
     if (eframes>1) {
       DOPE_WARN("\nmachine too slow: calculate "<<eframes<<" frames at once");
     }
+#endif
 
     // start of one frame
     R rdt(R(stepSize.getSec())+R(stepSize.getUSec())/1000000);

@@ -68,11 +68,6 @@ Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
   std::cout << "I found "<<devs<<" input devices\n";
   if ((req>0)&&(!got))
     std::cout << "The server is full.\n";
-  /*
-    for (unsigned i=0;i<m_playerIDs.size();++i)
-    std::cerr << "\n"<<m_playerIDs[i];
-    std::cerr << "\n";
-  */
 }
 
 void 
@@ -94,7 +89,6 @@ Client::handleCollision(V2D pos, R strength)
     if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(10000);
     if (volume>0.2) {
       if (volume>0.75) volume=0.75;
-      //  std::cerr << "\nPlay sample\n";
       int c=m_soundPtr->playSample("collision.wav");
       m_soundPtr->modifyChannel(c,volume);
     }
@@ -106,11 +100,11 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
   assert(iPtr.get());
   if (m_config.m_lagCompensation) {
-    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
+    //    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
     if (m_game.getFrame()-iPtr->frame>=0)
       m_game.setInput(*iPtr.get());
     else{
-      std::cerr << "Stored input in queue\n";
+      //      std::cerr << "Stored input in queue\n";
       m_inputQueue.push_back(iPtr);
     }
   }else{
@@ -121,10 +115,6 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 void
 Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 {
-  /*
-  std::cerr << "\ngot player names:\n";
-  for (unsigned i=0;i<mPtr->playerNames.size();++i)
-  std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
   assert(m_guiPtr.get());
@@ -348,12 +338,17 @@ Client::main()
       newTime.now();
       dt=newTime-oldTime;
     }
+
+#ifdef ADIC_DEBUG_TIMING
+    // todo remove again
     // last frame size was dt
     // and it should have been frameSize
     std::cerr << "\nLast frame took: "
 	      << (R(dt.getSec())+(R(dt.getUSec())/1000000))
 	      << " and should have taken: "
 	      << (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
+#endif
+
     frameSize=(dt-frameSize);
     // the new framesize should be stepSize-frameSize
     int eframes=1;
@@ -363,10 +358,14 @@ Client::main()
       frameSize-=stepSize;
     }
     frameSize=stepSize-frameSize;
+
+#ifdef ADIC_DEBUG_TIMING
+    // todo remove again
     std::cerr << "\nNext frame size: "<< (R(frameSize.getSec())+(R(frameSize.getUSec())/1000000));
     if (eframes>1) {
       DOPE_WARN(" (machine too slow: calculate "<<eframes<<" frames at once)");
     }
+#endif
 
     // start of one frame
     // do main work

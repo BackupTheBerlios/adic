@@ -93,6 +93,7 @@ BOTS:
 - write docu - bot HOWTO
 
 MISC:
+- botclient.cpp and client.cpp have lots of code in common
 - generic_pointer funktioniert ?
 	nur nicht bei xmlsaxinstream
 	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
