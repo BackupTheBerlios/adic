@@ -169,20 +169,52 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     return false;
   switch (k) {
   case SDLK_LEFT:
+    if (m_menuPtr.get()) {
+      if (!pressed) return true;
+      // synthesize right pressed event for menu
+      Input i;
+      i.x=-1;
+      m_menuPtr->handleInput(i);
+      return true;
+    }
     m_scrollOp[0]=(pressed ? -1 : 0);
-    m_autoCenter=false;
+    if (pressed) m_autoCenter=false;
     return true;
   case SDLK_RIGHT:
+    if (m_menuPtr.get()) {
+      if (!pressed) return true;
+      // synthesize right pressed event for menu
+      Input i;
+      i.x=1;
+      m_menuPtr->handleInput(i);
+      return true;
+    }
     m_scrollOp[0]=(pressed ? 1 : 0);
-    m_autoCenter=false;
+    if (pressed) m_autoCenter=false;
     return true;
   case SDLK_UP:
+    if (m_menuPtr.get()) {
+      if (!pressed) return true;
+      // synthesize right pressed event for menu
+      Input i;
+      i.y=1;
+      m_menuPtr->handleInput(i);
+      return true;
+    }
     m_scrollOp[1]=(pressed ? 1 : 0);
-    m_autoCenter=false;
+    if (pressed) m_autoCenter=false;
     return true;
   case SDLK_DOWN:
+    if (m_menuPtr.get()) {
+      if (!pressed) return true;
+      // synthesize right pressed event for menu
+      Input i;
+      i.y=-1;
+      m_menuPtr->handleInput(i);
+      return true;
+    }
     m_scrollOp[1]=(pressed ? -1 : 0);
-    m_autoCenter=false;
+    if (pressed) m_autoCenter=false;
     return true;
   case SDLK_SPACE:
     if (pressed)

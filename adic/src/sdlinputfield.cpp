@@ -39,6 +39,10 @@ SDLInputField::handleKey(SDL_KeyboardEvent e)
   // check for special keys
   switch (k) {
   case SDLK_RETURN:
+  case SDLK_KP2:
+  case SDLK_KP6:
+  case SDLK_RIGHT:
+  case SDLK_DOWN:
     {
       input.emit(m_content);
       printed.emit('\n');

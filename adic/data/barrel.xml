@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <PlayerData
 	minspeed="5.0"
-	mass="2"
+	mass="1.0"
 	type="10"
-	r="32"
+	r="31"
 	>
 </PlayerData>
