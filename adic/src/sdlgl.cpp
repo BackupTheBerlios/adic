@@ -2,6 +2,9 @@
 
 #include <SDL/SDL.h>
 #include <assert.h>
+#include <iostream>
+
+#define DEBUG_GL(msg) std::cerr << __FILE__ << ":" << __LINE__ << ":" << msg << std::endl
 
 SDLGL::SDLGL()
 {
@@ -11,7 +14,15 @@ void
 SDLGL::init()
 {
 #define STRINGIFY(m) #m
-#define LOOKUP(m,t) m=(t)SDL_GL_GetProcAddress(STRINGIFY(gl##m));assert(m)
+
+#ifdef DLOPEN_OPENGL
+  DEBUG_GL("init called => we loaded the dll and now lookup the symbols");
+#define LOOKUP(m,t) m=(t)SDL_GL_GetProcAddress(STRINGIFY(gl##m));assert(m);DEBUG_GL("got address of:" STRINGIFY(gl##m) " it is at: " << ((void *)m));
+#else
+#define LOOKUP(m,t) m=(t)&gl##m;
+#endif
+
+
   LOOKUP(Clear,uintFunc);
   LOOKUP(MatrixMode,uintFunc);
   LOOKUP(LoadIdentity,voidFunc);
@@ -47,5 +58,6 @@ SDLGL::init()
   LOOKUP(PixelStorei, uint2Func);
   LOOKUP(DrawPixels, ivec4voidPFunc);
   LOOKUP(PixelZoom, fvec2Func);
+  LOOKUP(GetError, glErrorFunc);
 #undef LOOKUP
 }

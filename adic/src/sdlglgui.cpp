@@ -2,6 +2,9 @@
 #include "sdlmenu.h"
 #include <algorithm>
 
+
+#define DEBUG_GL(msg) std::cerr << __FILE__ << ":" << __LINE__ << ":" << msg << std::endl
+
 SDLGLGUI::SDLGLGUI(Client &client) 
   : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
     //    m_textureTime(5), 
@@ -28,11 +31,22 @@ bool
 SDLGLGUI::init()
 {
   // Initialize SDL
+
+  // first init
   if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0 )
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
-  if (SDL_GL_LoadLibrary(getGUIConfig().libGL.c_str())==-1)
+  DEBUG_GL("sdl init success");
+  
+#ifdef DLOPEN_OPENGL
+  // load the lib before we call setvidmode
+  if (SDL_GL_LoadLibrary(getGUIConfig().libGL.c_str())==-1) {
+    DEBUG_GL("failed to load gl library");
     throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+getGUIConfig().libGL.c_str()+"\": "+SDL_GetError());
+  }
+#endif
+  
   gl.init();
+  DEBUG_GL("returned from gl.init");
 
   int major=2;
   int minor=0;
@@ -65,6 +79,7 @@ SDLGLGUI::init()
   // handle input
   m_chatLine.input.connect(SigC::slot(*this,&SDLGLGUI::handleChatInput));
 
+  DEBUG_GL("calling createwindow");
   createWindow();
 
   // create menu
@@ -78,6 +93,8 @@ SDLGLGUI::init()
   m_menuPtr->serverSelected.connect(SigC::slot(m_client,&Client::connect));
   m_menuPtr->configured.connect(SigC::slot(m_client,&Client::sendGreeting));
   m_menuPtr->printed.connect(printed.slot());
+  DEBUG_GL("init complete");
+  DEBUG_GL("gl error state: " << gl.GetError());
   return true;
 }
 
@@ -92,6 +109,9 @@ SDLGLGUI::createWindow()
   SDL_ResizeEvent e;
   e.w=getGUIConfig().width;
   e.h=getGUIConfig().height;
+
+  DEBUG_GL("creating window by resize evvent");
+
   sf.resize.emit(e);
   //  resize(getGUIConfig().width, getGUIConfig().height);
   //  m_texturePtr=getTexture("data:gui_0001.png");

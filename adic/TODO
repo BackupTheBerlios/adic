@@ -96,3 +96,5 @@ MISC:
 CROSS-COMPILE to WIN with mingw:
 - wrong GL.h is included - i think simply disabling the check should be enough if SDL
   is configured correct
+
+ich wollte grad schauen was für libs bei dem sdl opengl bsp. dazugelinkt werden

@@ -382,11 +382,16 @@ Client::main()
 int main(int argc,char *argv[])
 #else
 
-extern "C" {
-  int SDL_main(int argc,char *argv[]);
-}
-int SDL_main(int argc,char *argv[])
+int cppmain(int argc,char *argv[]);
 
+extern "C" {
+  int SDL_main(int argc,char *argv[])
+  {
+    return cppmain(argc,argv);
+  }
+}
+
+int cppmain(int argc,char *argv[])
 #endif
 {
   try{
@@ -403,6 +408,9 @@ int SDL_main(int argc,char *argv[])
   }
   catch (const std::exception &error){
     std::cerr << "\nUncaught std::exception: "<<error.what()<<std::endl;
+  }
+  catch (...){
+    std::cerr << "\nUncaught unknown exception\n";
   }
   return 1;
 }

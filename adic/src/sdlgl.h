@@ -25,10 +25,13 @@
 #ifndef SDLGL_H
 #define SDLGL_H
 
+#define DLOPEN_OPENGL
+
 #if defined(__WIN32__) || defined(WIN32)
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX
+#undef DLOPEN_OPENGL
 #endif
 
 #include <GL/gl.h>
@@ -37,6 +40,10 @@
 /*!
   this class uses SDL to look up the symbols
   \example take a look at sdlglgui.cpp on how to use it
+  \todo when cross-compiling with mingw we can't dlopen the native opengl libs
+  i assume the opengl library included in the mingw dist is just a wrapper around
+  the native opengl library - but I did not yet look at it
+  for now i disable dlopening opengl for win platforms
 */
 struct SDLGL
 {
@@ -74,6 +81,7 @@ public:
 				     GLsizei width, GLsizei height,
 				     GLint border, GLenum format, GLenum type,
 				     const GLvoid *pixels );
+  typedef int (*glErrorFunc) ();
 
 #define LOOKUP(m,t) t m
   LOOKUP(Clear,uintFunc);
@@ -111,6 +119,7 @@ public:
   LOOKUP(PixelStorei, uint2Func);
   LOOKUP(DrawPixels, ivec4voidPFunc);
   LOOKUP(PixelZoom, fvec2Func);
+  LOOKUP(GetError, glErrorFunc);
 #undef LOOKUP
 };
 
