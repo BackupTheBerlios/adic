@@ -763,11 +763,11 @@ SDLGLGUI::drawPolys()
   unsigned nr=worldPtr->getNumRooms();
   if (nr!=m_polys.size()) {
     m_polys.resize(nr);
-    DOPE_MSG("Info:","start tesselating polygons\n"<<std::flush);
+    //    DOPE_MSG("Info:","start tesselating polygons\n"<<std::flush);
     for (unsigned i=0;i<nr;++i){
       m_polys[i]=DOPE_SMARTPTR<GLPoly>(new GLPoly(worldPtr->getRoomPoly(i).getLineLoop()));
     }
-    DOPE_MSG("Info:","finished tesselating polygons\n"<<std::flush);
+    //    DOPE_MSG("Info:","finished tesselating polygons\n"<<std::flush);
   }
   float cschemes[4][3]={
     {1.0,0.7,0.7},
@@ -1217,9 +1217,11 @@ SDLGLGUI::drawPlayers(R dt)
 	  glTranslatef(0,-40,0);
 	  std::ostringstream o;
 	  o.setf(std::ios::fixed);
+	  o.precision(1);
+	  o << "Room: " << m_client.getGame().playerInRoomCached(p) << " ";
+	  o << cp.m_pos[0] << "/" << cp.m_pos[1] << " L=" << m_client.getGame().playerIsLocked(p);
 	  o.precision(2);
-	  o << "Room: " << m_client.getGame().playerInRoomCached(p) << " Pos:";
-	  o << cp.m_pos[0] << "/" << cp.m_pos[1] << " Locked" << m_client.getGame().playerIsLocked(p);
+	  o << " F:"<<cp.getFitness();
 	  m_fontPtr->drawText(o.str(),true);
 	}
 

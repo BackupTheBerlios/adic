@@ -10,13 +10,19 @@ Player::Player()
 }
 
 Player::Player(const V2D &pos, R dir, const std::string &playerDataURI)
-  : RoundObject(pos,0), m_direction(dir), m_ix(0), m_iy(0), m_playerDataPtr(playerDataURI),
-    m_fitness(1.0)
+  : RoundObject(pos,0), m_direction(dir), m_ix(0), m_iy(0), m_playerDataPtr(playerDataURI)
   //, m_oldDirection(0)
 {
   DOPE_CHECK(m_playerDataPtr.get());
   DOPE_CHECK(m_defaultDataPtr.get());
   m_r=m_defaultDataPtr->r*m_playerDataPtr->r;
+  increaseFitness(0.75);
+}
+
+void
+Player::increaseFitness(R f)
+{
+  m_fitness=std::max(m_fitness,f*m_defaultDataPtr->maxfitness*m_playerDataPtr->maxfitness);
 }
 
 bool
@@ -30,7 +36,12 @@ Player::step(R dt)
 
   // usable fitness
   R fit=m_fitness;
-  if (fit>1.0) fit=1.2;
+  if (fit>1.0) {
+    if (fit>R(0.90)*m_defaultDataPtr->maxfitness*m_playerDataPtr->maxfitness)
+      fit=1.2; // fountain boost
+    else
+      fit=1.0;
+  }
 
   // calculate direction
   if (getX()) m_direction+=R(getX())*dt*m_defaultDataPtr->rotspeed*m_playerDataPtr->rotspeed;

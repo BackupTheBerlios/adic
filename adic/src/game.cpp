@@ -44,7 +44,7 @@ void
 Game::loadMesh(const std::string &meshURI)
 {
   m_meshPtr=MeshPtr(meshURI);
-  DOPE_MSG("Info:","Loaded Mesh: \""<<meshURI<<"\"");
+  //  DOPE_MSG("Info:","Loaded Mesh: \""<<meshURI<<"\"");
 }
 
 /*
@@ -124,17 +124,17 @@ Game::collidePlayer(unsigned pid, bool test)
 	  // increase fitness if team members
 	  TeamID t1=getTeamIDofPlayer(pid);
 	  if ((t1!=TeamID(~0U))&&(t1==getTeamIDofPlayer(o))) {
-	    m_players[pid].setFitness();
-	    m_players[o].setFitness();
+	    m_players[pid].increaseFitness(R(0.75));
+	    m_players[o].increaseFitness(R(0.75));
 	  }
 	  if ((m_players[pid].isPlayer()||m_players[o].isPlayer())&&
 	      (m_players[pid].getType()==11)||(m_players[o].getType()==11)) {
 	    
 	    // increase fitness if it is a fountain (todo: either make a const or method and not 11)
 	    if (m_players[o].getType()==11)
-	      m_players[pid].setFitness();
+	      m_players[pid].increaseFitness();
 	    else
-	      m_players[o].setFitness();
+	      m_players[o].increaseFitness();
 	  }
 	  
 	  // now calculate impuls

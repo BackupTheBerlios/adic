@@ -58,9 +58,15 @@ public:
     m_iy=y;
   }
 
-  void setFitness(R f=1.0)
+  //! increase fitness
+  /*!
+    \param f increase to f*maxfitness
+  */
+  void increaseFitness(R f=1.0);
+
+  R getFitness() const
   {
-    m_fitness=f;
+    return m_fitness;
   }
   
   R getDirection() const
