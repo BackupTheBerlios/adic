@@ -38,6 +38,11 @@ Client::Client(GUIClientConfig &config)
   : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
+  m_songs.push_back("music-eric.s3m");
+  m_songs.push_back("music-eric.s3m");
+  m_songs.push_back("music-eric.s3m");
+  m_songs.push_back("music1.xm");
+  m_songs.push_back("music1.xm");
   m_songs.push_back("music1.xm");
   // todo add some songs here - or better put the list into clientconfig
 }
