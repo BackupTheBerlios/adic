@@ -60,6 +60,7 @@ FEATURES:
 
 
 BUGS/QUESTIONS:
+- the wall collide return -cv instead of cv
 - it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO
 - win codition wrong ? teamStat wrong ? i think this is fixed now
 - uriloader muss besser werden

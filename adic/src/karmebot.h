@@ -37,10 +37,8 @@
 class KarmeBot : public Bot
 {
 public:
-  KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
-    : Bot(_client,_pid,_inputID)
-  {}
-
+  KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID);
+  
   bool step(R dt);
   void playerCollision(PlayerID cp, const V2D &cv);
   void wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv);
@@ -49,9 +47,15 @@ public:
 protected:  
   //! try to rotate to wished direction - by setting cinput as needed
   void reachDir();
-
+  //! try to follow rabbit
+  void follow();
+  
   //! wished direction
   R dir;
+  //! follow mode ?
+  bool followMode;
+  //! the id of the player we follow
+  PlayerID rabbit;
 };
 
 #endif

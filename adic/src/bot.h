@@ -53,7 +53,7 @@ public:
   /*!
     \param dt the time elapsed
   */
-  virtual bool step(R dt){}
+  virtual bool step(R dt){return true;}
 protected:
   //! send input state to server (if changed)
   void sendInput();
