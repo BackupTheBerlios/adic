@@ -33,24 +33,41 @@
 #include <dope/dopeexcept.h>
 #include "utils.h"
 
+//! concept of object cache
+/*!
+  objects are referenced by a uri string
+*/
 class CacheConcept
 {
 public:
+  //! get object from cache
+  /*!
+    \param uri the uri string
+    \param dest the pointer to the object
+
+    \return set dest to the object or NULL if the object is not in the cache
+  */
   template <class X>
   void get(const std::string &uri, DOPE_SMARTPTR<X> &dest)
   {}
+  //! add object to cache
+  /*!
+    \param uri the uri string
+    \param dest the pointer to the object
+  */  
   template <class X>
   void add(const std::string &uri, DOPE_SMARTPTR<X> &dest)
   {}
-  //  int foo;
 };
-  
+
+//! get object referenced by uri (probably from a cache)
 template <class Cache=CacheConcept>
 class URILoader {
 public:
   URILoader() {}
   ~URILoader(){}
 
+  //! get object referenced by uri
   template <class X>
   void get(const std::string &uri, DOPE_SMARTPTR<X> &dest)
   {
@@ -79,6 +96,7 @@ public:
     }
     throw ResourceNotFound(uri,std::string("Unsupported URI: \"")+uri+"\"");
   }
+  //! pointer to the cache object or NULL
   static Cache* cache;
 protected:
   template <typename X>
@@ -97,11 +115,13 @@ protected:
 };
 template <class Cache> Cache* URILoader<Cache>::cache=NULL;
 
+//! URICache implementing the CacheConcept
 template <class X, class REF = std::string >
 class URICache
 {
 protected:
   typedef std::map<std::string,DOPE_SMARTPTR<X> > Cache;
+  //! the cache
   Cache cache;
 
 public:
