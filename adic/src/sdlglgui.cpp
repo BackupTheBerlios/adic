@@ -171,6 +171,21 @@ SDLGLGUI::resize(int width, int height)
   if ( SDL_SetVideoMode(width, height, 0, m_flags) == NULL ) {
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   }
+
+  // hack for 8bit displays (especially for my sdl+osmesa+aalib and sdl+osmesa+fbcon hack)
+  if (SDL_GetVideoSurface()->format->BitsPerPixel == 8) {
+    SDL_Color colors[256];
+    int i;
+    //    int c=0;
+    for(i=0;i<256;i++){
+      colors[i].r=i; //(c&0xff0000)>>16;
+      colors[i].g=i; //(c&0x00ff00)>>8;
+      colors[i].b=i; //c&0x0000ff;
+      //      c+=(0xffffff)>>8;
+    }
+    SDL_SetPalette(SDL_GetVideoSurface(), SDL_LOGPAL|SDL_PHYSPAL, colors, 0, 256);
+  }
+
   SDL_WM_SetCaption(getGUIConfig().title.c_str(), getGUIConfig().title.c_str());
   if (m_flags&SDL_FULLSCREEN)
     SDL_ShowCursor(SDL_DISABLE);
