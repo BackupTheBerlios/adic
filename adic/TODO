@@ -33,6 +33,8 @@ TUNING:
   (glDrawPixels ist bei mesa schneller als texturen)
 
 FEATURES:
+- spielereigenschaften sollten relativ zu einem "globalen" spielereigenschaften objekt sein
+  => man kann z.bsp leicht alle spieler schneller machen
 - mehr sounds
 - restrukturiere mesh
   mesh hat sachen die da nicht reingehören

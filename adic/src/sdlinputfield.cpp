@@ -53,11 +53,16 @@ SDLInputField::handleKey(SDL_KeyboardEvent e)
   case SDLK_DELETE:
   case SDLK_BACKSPACE:
   case SDLK_LEFT:
-    unsigned s=m_content.size();
-    if (s)
-      m_content.resize(s-1);
-    printed.emit(k);
-    return true;
+    {
+      unsigned s=m_content.size();
+      if (s)
+	m_content.resize(s-1);
+      printed.emit(k);
+      return true;
+    }
+    break;
+  default:
+    break;
   }
 
   Uint16 unicode(e.keysym.unicode);

@@ -307,6 +307,8 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     m_textureTime=5;
     return true;
     break;
+  default:
+    return false;
   }
   return false;
 }
