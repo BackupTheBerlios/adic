@@ -2,11 +2,11 @@
 <Mesh>
 <stdvectorOfV2D this.name="vertices">
 <V2D x="10" y="20" />
-<V2D x="200" y="20" />
-<V2D x="200" y="200" />
+<V2D x="630" y="20" />
+<V2D x="630" y="470" />
 <V2D x="70" y="120" />
 <V2D x="50" y="100" />
-<V2D x="10" y="200" />
+<V2D x="10" y="470" />
 </stdvectorOfV2D>
 <stdvectorOfEdge this.name="edgelist">
 <Edge vid="0" type="0" />
