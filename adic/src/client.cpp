@@ -29,6 +29,28 @@ void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }
 
+
+void 
+Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
+{
+  assert(gPtr.get());
+  std::cerr << "\nGot game data\n";
+  TimeStamp myTime(m_game.getTimeStamp());
+  TimeStamp serverTime(gPtr->getTimeStamp());
+  if (serverTime<myTime) {
+    // packet lag
+    TimeStamp lag(myTime-serverTime);
+    R dt=lag.getSec()+R(lag.getUSec())/1000000;
+    std::cerr << "\nLag: "<<dt<<" sec.\n";
+    gPtr->step(dt);
+  }
+  // todo later we will perhaps need a replace method
+  // backup worldPtr - otherwise it would be verry time-consuming (build world from mesh ...)
+  Game::WorldPtr w=m_game.getWorldPtr();
+  m_game=*gPtr.get();
+  m_game.setWorldPtr(w);
+}
+
 int
 Client::main()
 {
@@ -37,7 +59,11 @@ Client::main()
   NetStreamBuf layer0(adr);
   layer0.setBlocking(false);
   OutProto l2out(layer0);
+#if USE_RAW_PROTOCOL == 1
+  InProto l2in(layer0);
+#elif USE_XML_PROTOCOL == 1
   InProto l2in(layer0,TimeStamp(0,300),2);
+#endif
   SignalOutAdapter<OutProto> so(l2out);
   SignalInAdapter<InProto> si(l2in);
   si.connect(SigC::slot(*this,&Client::handleGreeting));
