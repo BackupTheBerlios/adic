@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <PlayerData
 	type="2"
-	r="20"
-	endurance="400"
-	maxspeed="130"
+	endurance="2"
+	maxspeed="0.9"
 	mass="1.2"
+	rotspeed="1.1"
 	>
 </PlayerData>

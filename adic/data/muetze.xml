@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <PlayerData
 	type="3"
-	r="20"
+	maxspeed="0.9"
+	rotspeed="0.9"
+	mass="1.2"
 	>
 </PlayerData>

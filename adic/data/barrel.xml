@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <PlayerData
-	minspeed="5.0"
-	mass="1.0"
+	minspeed="10"
 	type="10"
-	r="31"
-	hdamping="1"
-	vdamping="1"
+	r="1.5"
+	hdamping="0.2"
+	vdamping="0.5"
 	>
 </PlayerData>

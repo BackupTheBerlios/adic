@@ -389,6 +389,15 @@ int main(int argc,char *argv[])
     if (parser.shouldExit()) return 1;
     if (!config.m_dataPath.empty())
       dataPathPtr=&config.m_dataPath;
+
+    DOPE_SMARTPTR<URICache<Mesh> > mc(new URICache<Mesh>());
+    URILoader<URICache<Mesh> >::cache=mc.get();
+    DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
+    URILoader<URICache<PlayerData> >::cache=pdc.get();
+    
+    Player::m_defaultDataPtr.setAddress("data:default.xml");
+    DOPE_CHECK(Player::m_defaultDataPtr.get());
+
     Server server(config);
     return server.main();
   }

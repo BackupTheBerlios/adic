@@ -277,6 +277,8 @@ Client::main()
   URILoader<URICache<Mesh> >::cache=mc.get();
   DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
   URILoader<URICache<PlayerData> >::cache=pdc.get();
+
+  Player::m_defaultDataPtr.setAddress("data:default.xml");
   
 #ifndef WINDOOF
   signal(SIGPIPE,sigPipeHandler);

@@ -153,6 +153,10 @@ protected:
     R m_oldDirection;
   */
   bool locked;
+
+public:
+  //! player data is relative to a default
+  static PlayerDataPtr m_defaultDataPtr;
 };
 DOPE_CLASS(Player);
 

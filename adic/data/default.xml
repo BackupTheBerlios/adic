@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<PlayerData
+	    maxspeed="150"
+	    minspeed="0.5"
+	    rotspeed="2.5" 
+	    acceleration="75" 
+	    hdamping="5" 
+	    vdamping="2" 
+	    mass="1"
+	    maxfitness="10"
+	    minfitness="0.6"
+	    endurance="260"
+	    r="20"
+	    recoverTime="30"
+	    >
+</PlayerData>

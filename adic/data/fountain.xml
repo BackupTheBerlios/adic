@@ -2,8 +2,8 @@
 <PlayerData
 	mass="0.7"
 	type="11"
-	r="31"
-	hdamping="1"
-	vdamping="1"
+	r="1.5"
+	hdamping="0.2"
+	vdamping="0.2"
 	>
 </PlayerData>
