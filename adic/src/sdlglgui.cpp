@@ -71,6 +71,8 @@ SDLGLGUI::createWindow()
   m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/textures.png"));
   m_fontTexPtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/font.png"));
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
+  m_circlePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/pillar.png"));
+  m_texCircle=true;
   gl.Disable(GL_NORMALIZE);
   gl.Disable(GL_LIGHTING);
   gl.Disable(GL_CULL_FACE);
@@ -196,6 +198,8 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       if (!pressed)
 	return true;
       break;
+    case SDLK_c:
+      if (pressed) m_texCirle=!m_texCircle;
     }
     return false;
   }
@@ -538,22 +542,28 @@ SDLGLGUI::getPos() const
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
 {
-  unsigned d=1.0/m_zoom;
-  unsigned res=12;
-  if (d>1) res/=d;
-  if (res>=3) {
-    gl.PushMatrix();
-    gl.Translatef(p[0], p[1], 0);
-    gl.Begin(GL_TRIANGLE_FAN);
-    gl.Vertex2f(0, 0);
-    for (unsigned i=0;i<res;++i) {
-      double angle(double(i)*2*M_PI/double(res-1));
-      gl.Vertex2f(r * cos(angle), r * sin(angle));
+  if (!m_texCircle) {
+    unsigned d=1.0/m_zoom;
+    unsigned res=12;
+    if (d>1) res/=d;
+    if (res>=3) {
+      gl.PushMatrix();
+      gl.Translatef(p[0], p[1], 0);
+      gl.Begin(GL_TRIANGLE_FAN);
+      gl.Vertex2f(0, 0);
+      for (unsigned i=0;i<res;++i) {
+	double angle(double(i)*2*M_PI/double(res-1));
+	gl.Vertex2f(r * cos(angle), r * sin(angle));
+      }
+      gl.End();
+      gl.PopMatrix();
+      gl.Flush();
     }
-    gl.End();
-    gl.PopMatrix();
-    gl.Flush();
   }
+  else
+    {
+      drawTexture(m_circlePtr->getTexture(),p);
+    }
 }
 void
 SDLGLGUI::drawWall(const Wall &w)

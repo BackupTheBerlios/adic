@@ -6,6 +6,7 @@ gamefiles_DATA = \
 	music.mod collision.wav \
 	printer.wav newline.wav \
 	font.png textures.png barrel.png \
+	pillar.png \
 	girl_blue_0001.png \
 	girl_blue_0002.png \
 	girl_blue_0003.png \

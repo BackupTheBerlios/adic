@@ -88,7 +88,9 @@ protected:
   R m_textureTime;
   DOPE_SMARTPTR<Texture> m_fontTexPtr;
   std::vector<Animation> m_animations;
-
+  DOPE_SMARTPTR<Texture> m_circlePtr;
+  bool m_texCirle;
+  
   V2D m_pos;
   int m_scrollOp[2];
   bool m_autoCenter;

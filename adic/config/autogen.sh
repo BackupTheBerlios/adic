@@ -1,13 +1,14 @@
 #!/bin/sh
-# Run this to generate all the initial makefiles, etc.
+# modified version from gnome
 
 DIE=0
+
+GET="You can get it from http://www.gnu.org/directory/"
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`autoconf' installed to compile $PKG_NAME."
-  echo "Download the appropriate package for your distribution,"
-  echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
+  echo "$GET"
   DIE=1
 }
 
@@ -15,8 +16,7 @@ DIE=0
   (libtool --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`libtool' installed to compile $PKG_NAME."
-    echo "Get ftp://ftp.gnu.org/pub/gnu/libtool-1.2d.tar.gz"
-    echo "(or a newer version if it is available)"
+    echo "$GET"
     DIE=1
   }
 }
@@ -26,8 +26,7 @@ grep "^AM_GNU_GETTEXT" $srcdir/configure.in >/dev/null && {
   (gettext --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`gettext' installed to compile $PKG_NAME."
-    echo "Get ftp://alpha.gnu.org/gnu/gettext-0.10.35.tar.gz"
-    echo "(or a newer version if it is available)"
+    echo "$GET"
     DIE=1
   }
 }
@@ -37,8 +36,7 @@ grep "^AM_GNOME_GETTEXT" $srcdir/configure.in >/dev/null && {
   (gettext --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`gettext' installed to compile $PKG_NAME."
-    echo "Get ftp://alpha.gnu.org/gnu/gettext-0.10.35.tar.gz"
-    echo "(or a newer version if it is available)"
+    echo "$GET"
     DIE=1
   }
 }
@@ -46,8 +44,7 @@ grep "^AM_GNOME_GETTEXT" $srcdir/configure.in >/dev/null && {
 (automake --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`automake' installed to compile $PKG_NAME."
-  echo "Get ftp://ftp.gnu.org/pub/gnu/automake-1.3.tar.gz"
-  echo "(or a newer version if it is available)"
+  echo "$GET"
   DIE=1
   NO_AUTOMAKE=yes
 }
@@ -58,8 +55,7 @@ test -n "$NO_AUTOMAKE" || (aclocal --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: Missing \`aclocal'.  The version of \`automake'"
   echo "installed doesn't appear recent enough."
-  echo "Get ftp://ftp.gnu.org/pub/gnu/automake-1.3.tar.gz"
-  echo "(or a newer version if it is available)"
+  echo "$GET"
   DIE=1
 }
 
