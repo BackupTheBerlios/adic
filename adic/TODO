@@ -54,6 +54,10 @@ TUNING:
   just paint some picture and think about the dependencies
 
 FEATURES:
+- client should be able to start a server (alternatively it shouldn't be too difficult to integrate the
+  server part into the client)
+- make controls more intuitive/customizable
+
 - spielereigenschaften sollten relativ zu einem "globalen" spielereigenschaften objekt sein
   => man kann z.bsp leicht alle spieler schneller machen
 - mehr sounds
