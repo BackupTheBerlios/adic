@@ -32,6 +32,8 @@
       <LI>tuned parameters (due to popular demand - gameplay is faster now => more action)</LI>
       <LI>added music from Olech Kaczanowski (amuzen)</LI>
       <LI>added --enable-fastcompile configure switch. You should use it for faster one time compilation. It creates on the fly some cpp's that include other cpps  (=>this reduces the overhead of parsing the headers again and again - it seems gcc does not have precompiled headers yet?). This works as long as .cpp files don't assume they are one compilation unit (=> no static variables, no obscure macros, ...)</LI>
+      <LI>lag compensation is still disabled</LI>
+      <LI>the client/server synchronisation issues are now grave due to the increased game speed</LI>
     </UL>
     <p>
     <h3>Experimental debian package</h3>
