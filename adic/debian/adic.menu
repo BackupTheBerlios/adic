@@ -1,0 +1,2 @@
+?package(adic):needs=X11 section=Games/Arcade\
+  title="adicclient" command="/usr/games/adicclient"
