@@ -215,6 +215,7 @@ adicbot_SOURCES = $(adicboth) $(adicbotcpp)
 
 adicbot_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
 
+# needed to get make dist working with fastcompile
+extradist = $(realgamecommoncpp) $(realadicclientcpp) $(realadicbotcpp)
 
-
-
+EXTRA_DIST = $(extradist)

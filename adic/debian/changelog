@@ -1,6 +1,5 @@
-adic (1.0.0-1) unstable; urgency=low
+adic (0.9.0-1) unstable; urgency=low
 
-  * first stable "upstream" release, minor fixes
   * added TCP_NODELAY option
   * Split into architecture dependent and independent packages.
 

@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR([src/mesh.h])
 
 dnl
 dnl Source packaging numbers
-source ${top_srcdir}/version
+. ${srcdir}/version
 
 AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $PACKAGE_MAJOR_VERSION, [major version])
 AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $PACKAGE_MINOR_VERSION, [minor version])
