@@ -5,7 +5,7 @@ adic (0.9.1-1) unstable; urgency=low
   * server may now report any address to meta-server
   * lag compensation for input events	
 
- -- Jens Thiele <karme@berlios.de>  Fri,  2 May 2003 12:01:56 +0200
+ -- Jens Thiele (Karme) <karme@berlios.de>  Fri,  2 May 2003 12:01:56 +0200
 
 adic (0.9.0-1) unstable; urgency=low
 
