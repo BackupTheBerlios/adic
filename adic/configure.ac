@@ -46,7 +46,7 @@ AC_ARG_ENABLE([fastcompile],
      AM_CONDITIONAL(FASTCOMPILE, test x$fastcompile = xtrue)
 
 dnl checks for libraries
-AM_PATH_DOPE(0.0.8, , [AC_MSG_ERROR([dope++ required])])
+AM_PATH_DOPE(0.0.9, , [AC_MSG_ERROR([dope++ required])])
 dnl MDL_HAVE_OPENGL
 
 AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR([SDL required])])

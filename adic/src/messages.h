@@ -34,12 +34,10 @@
 
 #if USE_RAW_PROTOCOL == 1
 
-// layer 2 to 1 adapter
-#include <dope/adapter2to1.h>
-// layer 1 raw stream
-#include <dope/raw.h>
-typedef RawOutStream<std::streambuf> OutProto;
-typedef RawInStream<std::streambuf> InProto;
+// layer 1 network byte order raw stream
+#include <dope/nbostream.h>
+typedef NBOOutStream<std::streambuf> OutProto;
+typedef NBOInStream<std::streambuf> InProto;
 
 #elif USE_XML_PROTOCOL == 1
 
