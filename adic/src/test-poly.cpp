@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
   std::cout << "a: " << a << std::endl;
 
-  Polygon poly(vpoly);
+  Poly poly(vpoly);
 
   std::cout << "in polygon: " << poly.inside(a) << std::endl;
 

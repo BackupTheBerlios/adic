@@ -96,8 +96,10 @@ SoundSDLMixer::playMusic(const char *uri, R volume, unsigned repeat)
   assert(uri);
   std::string f(findDataFile(uri));
   music = Mix_LoadMUS(f.c_str());
-  if ( music == NULL )
-    throw std::runtime_error(std::string("Couldn't load ")+uri+" "+SDL_GetError());
+  if ( music == NULL ) {
+    DOPE_WARN(std::string("Couldn't load ")+uri+" "+SDL_GetError());
+    return;
+  }
   Mix_FadeInMusic(music,0,2000);
 }
   

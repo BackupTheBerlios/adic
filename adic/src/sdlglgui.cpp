@@ -1,5 +1,6 @@
 #include "sdlglgui.h"
 #include "sdlmenu.h"
+#include <algorithm>
 
 SDLGLGUI::SDLGLGUI(Client &client) 
   : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
@@ -826,10 +827,19 @@ SDLGLGUI::setupCamera(R dt)
 	// perhaps we did not receive all our players yet
 	if (id<players.size()) {
 	  pos+=players[id].m_pos;
-	  minp[0]=std::min(minp[0],players[id].m_pos[0]);
-	  minp[1]=std::min(minp[1],players[id].m_pos[1]);
-	  maxp[0]=std::max(maxp[0],players[id].m_pos[0]);
-	  maxp[1]=std::max(maxp[1],players[id].m_pos[1]);
+	  /* did not compile on mingw gcc 3.1.?
+	    minp[0]=std::min(minp[0],players[id].m_pos[0]);
+	    minp[1]=std::min(minp[1],players[id].m_pos[1]);
+	  */
+#define min(a,b) (a<=b) ? a : b
+	  minp[0]=min(minp[0],players[id].m_pos[0]);
+	  minp[1]=min(minp[1],players[id].m_pos[1]);
+#undef min
+
+#define max(a,b) (a>=b) ? a : b
+	  maxp[0]=max(maxp[0],players[id].m_pos[0]);
+	  maxp[1]=max(maxp[1],players[id].m_pos[1]);
+#undef max
 	  maxr=std::max(maxr,players[id].m_r);
 	  ++c;
 	}

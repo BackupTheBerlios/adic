@@ -254,7 +254,9 @@ Client::main()
   DOPE_SMARTPTR<URICache<PlayerData> > pdc(new URICache<PlayerData>());
   URILoader<URICache<PlayerData> >::cache=pdc.get();
   
+#ifndef WIN32
   signal(SIGPIPE,sigPipeHandler);
+#endif
 
   /*
     InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
@@ -376,7 +378,16 @@ Client::main()
   return 0;
 }
 
+#ifndef ADIC_NEED_SDLMAIN
 int main(int argc,char *argv[])
+#else
+
+extern "C" {
+  int SDL_main(int argc,char *argv[]);
+}
+int SDL_main(int argc,char *argv[])
+
+#endif
 {
   try{
     ArgvParser parser(argc,argv);

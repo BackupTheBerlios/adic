@@ -241,7 +241,7 @@ World::isInRoom(const V2D &p, FWEdge::RoomID r)
   return m_rooms[r].m_poly.inside(p);
   /*
   const std::vector<V2D> &ll(getLineLoop(r));
-  bool res=Polygon(ll).inside(p);
+  bool res=Poly(ll).inside(p);
   if (res) {
     std::cerr << p << " in "; 
     for (unsigned i=0;i<ll.size();++i)

@@ -1,4 +1,4 @@
-INCLUDES = @DOPE_CFLAGS@ @SDL_CFLAGS@ @GL_CFLAGS@ -DDATADIR=\"$(pkgdatadir):data\"
+INCLUDES = @DOPE_CFLAGS@ -DADIC_DATAPATH=\"$(pkgdatadir):data\" @SDL_CFLAGS@
 
 # automatic tests - are build and run by make check
 TESTS =
@@ -66,6 +66,10 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 
 adicserver_SOURCES = $(gamecommon) server.h server.cpp
 adicserver_LDADD = @DOPE_LIBS@
+
+# did not work with automake 1.4
+# adicclient_CFLAGS = @SDL_CFLAGS@
+# adicclient_CXXFLAGS = @SDL_CFLAGS@
 
 adicclient_SOURCES = $(gamecommon) \
 	clientconfig.h \

@@ -93,7 +93,7 @@ struct Room
   FWEdge::EID m_e;
   //! is this edge clockwise
   bool m_cw;
-  Polygon m_poly;
+  Poly m_poly;
   std::vector<Wall> m_walls;
 };
 

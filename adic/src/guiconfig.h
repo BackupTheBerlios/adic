@@ -29,6 +29,7 @@
 
 struct GUIConfig
 {
+  // todo - default for libGL should be different on win
   GUIConfig() 
     : implementation("SDLGLGUI"), title(PACKAGE), libGL("/usr/lib/libGL.so"), 
     width(640), height(480), bits(32), fullscreen(false), quality(0), flush(true)

@@ -65,7 +65,9 @@ GLTerminal::step(R dt)
     if (wtimer>0) chars=wtimer;
     if (chars) {
       wtimer-=chars;
-      chars=std::min(chars,src.size());
+#define min(a,b) (a<=b) ? a : b
+      chars=min(chars,src.size());
+#undef min
       if (!chars) {
 	  buffered.pop_front();
 	  rows.push_back();

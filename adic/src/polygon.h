@@ -1,12 +1,15 @@
 #ifndef POLYGON_H
 #define POLYGON_H
 
-#include <vector>
 #include "vector2d.h"
 #include "line.h"
+#include <vector>
 
 //! class representing a polygon
-class Polygon
+/*!
+  \note renamed it from Polygon to Poly because of a name clash with the WINAPI
+*/
+class Poly
 {
 protected:
   //! the polygon
@@ -14,17 +17,10 @@ protected:
   R m_xmax;
 public:
   //! empty polygon
-  Polygon()
+  Poly()
   {}
   
-  Polygon(const std::vector<V2D> &lineloop) : m_lineloop(lineloop)
-  {
-    m_xmax = 0;
-    for(unsigned i=0; i<lineloop.size(); i++)
-      {
-	m_xmax = std::max( m_xmax, lineloop[i].m_v[0] );
-      }
-  }
+  Poly(const std::vector<V2D> &lineloop);
 
   //! is the point inside of the polygon ?
   /*!

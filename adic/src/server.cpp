@@ -170,7 +170,11 @@ Server::getWeakestTeam()
   // try to fill the first two teams first
   if (numTeams<2) createTeam=true;
   else {
-    if (std::min(teams[0].playerIDs.size(),teams[1].playerIDs.size())==maxPlayers)
+    // hmm std::min did not work
+    unsigned p0=teams[0].playerIDs.size();
+    unsigned p1=teams[1].playerIDs.size();
+    unsigned minp=(p0<=p1) ? p0 : p1;
+    if (minp==maxPlayers)
       // team 0 and 1 are full - if team 2 does not exist create it if it is full create team 3 (if possible)
       if ((numTeams<3)||((numTeams==3)&&(teams[2].playerIDs.size()==maxPlayers)))
 	createTeam=true;
@@ -185,8 +189,11 @@ Server::getWeakestTeam()
   // find team with fewest players
   unsigned minp=~0U;
   unsigned i=0;
-  for (;i<numTeams;++i)
-    minp=std::min(teams[i].playerIDs.size(),minp);
+  for (;i<numTeams;++i) {
+    // std::min does not work    minp=std::min(teams[i].playerIDs.size(),minp);
+    unsigned tp=teams[i].playerIDs.size();
+    minp=(tp<minp) ? tp : minp;
+  }
   if (minp>=maxPlayers)
     return NULL;
   for (i=0;i<numTeams;++i)
@@ -200,9 +207,12 @@ Server::getWeakestTeam()
 int 
 Server::main()
 {
+#ifndef WIN32
   signal(SIGPIPE,sigPipeHandler);
+#endif
   signal(SIGTERM,sigTermHandler);
   signal(SIGINT,sigTermHandler);
+
   NetStreamBufServer listener(m_config.m_port);
   listener.init();
   listener.newConnection.connect(SigC::slot(*this,&Server::handleNewConnection));
@@ -275,9 +285,9 @@ Server::main()
     ++frames;
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
-    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(10) << uptime 
-	      << " FPS: " << std::setw(8) << R(frames)/uptime 
-	      << " Frame: " << std::setw(10) << frames;
+    std::cout << "\rUp: " << std::fixed << std::setprecision(2) << std::setw(8) << uptime 
+	      << " FPS: " << std::setw(6) << R(frames)/uptime 
+	      << " Frame: " << std::setw(8) << frames;
   }
   connections.clear();
 

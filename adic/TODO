@@ -92,3 +92,7 @@ MISC:
 - clean up
 - resize bug:
   this is probably a bug in sawfish or libSDL - but not in ADIC
+- solve the min max problem (std::min did not work on mingw 3.1.?)
+CROSS-COMPILE to WIN with mingw:
+- wrong GL.h is included - i think simply disabling the check should be enough if SDL
+  is configured correct

@@ -13,16 +13,18 @@ std::string findDataFile(const std::string &fname, const char *dataPath)
   else if (dataPathPtr)
     path=*dataPathPtr;
   else
-    path=DATADIR;
+    path=ADIC_DATAPATH;
   bool c=true;
   do {
     c=split(path,first,path,':');
     int s=first.size();
     if (s&&(first[s-1]!='/')) first+='/';
     std::string n(first+fname);
-    std::ifstream i(n.c_str());
-    if (i.good())
-      return n;
+#if defined(__WIN32__) || defined(WIN32)
+    for (unsigned i=0;i<n.size();++i) if (n[i]=='/') n[i]='\\';
+#endif
+    std::ifstream ist(n.c_str());
+    if (ist.good()) return n;
   }while(c);
   return "";
 }

@@ -109,9 +109,9 @@ public:
     layer2.SIMPLE(vertices).SIMPLE(edgelist).SIMPLE(startPoints).SIMPLE(startObjects);
   }
 
-  uint getNumFaces() const
+  unsigned getNumFaces() const
   {
-    uint r=0;
+    unsigned r=0;
     for (std::vector<Edge>::const_iterator it=edgelist.begin();it!=edgelist.end();++it)
       {
 	if (it->vid==Edge::noVertice)
@@ -119,7 +119,7 @@ public:
       }
     return r;
   }
-  uint getNumEdges() const
+  unsigned getNumEdges() const
   {
     return edgelist.size()-getNumFaces();
   }

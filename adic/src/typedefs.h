@@ -32,13 +32,36 @@
 
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
+
 #else
+
+
 #error you must define int8_t int16_t ...
+
+// todo we should not assume that we use SDL
+#include <SDL/SDL_types.h>
+
+typedef Uint8 uint8_t;
+typedef Sint8 int8_t;
+typedef Uint16 uint16_t;
+typedef Sint16 int16_t;
+typedef Uint32 uint32_t;
+typedef Sint32 int32_t;
+
 #endif
 
 typedef float R;
 typedef uint16_t PlayerID;
 typedef uint16_t TeamID;
+
+#ifndef M_PI
+#define M_PI  3.1415926535f
+#endif
+
+#ifdef main
+#undef main
+#define ADIC_NEED_SDLMAIN
+#endif
 
 // std::streambuf
 #include <iostream>

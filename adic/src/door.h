@@ -28,6 +28,11 @@
 #include "gameobject.h"
 #include "world.h"
 
+#ifndef M_PI
+#define M_PI  3.1415926535f
+#endif
+
+
 #define RAD(d) R(d)*M_PI/R(180)
 
 //! a door

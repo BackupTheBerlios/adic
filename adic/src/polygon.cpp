@@ -1,7 +1,19 @@
 #include "polygon.h"
 
+#include <algorithm> // std::max
+
+Poly::Poly(const std::vector<V2D> &lineloop) 
+  : m_lineloop(lineloop)
+{
+  m_xmax = 0;
+  for(unsigned i=0; i<lineloop.size(); i++)
+    {
+      m_xmax = std::max( m_xmax, lineloop[i].m_v[0] );
+    }
+}
+
 bool 
-Polygon::inside(const V2D &p) const
+Poly::inside(const V2D &p) const
 {
   if (m_lineloop.empty()) return false;
   

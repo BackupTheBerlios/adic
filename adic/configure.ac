@@ -34,7 +34,7 @@ AC_ARG_VAR(ADIC_PORT, the default port to use)
 
 dnl checks for libraries
 AM_PATH_DOPE(0.0.5, , [AC_MSG_ERROR([dope++ required])])
-MDL_HAVE_OPENGL
+dnl MDL_HAVE_OPENGL
 
 AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR([SDL required])])
 AC_CACHE_SAVE

@@ -25,6 +25,12 @@
 #ifndef SDLGL_H
 #define SDLGL_H
 
+#if defined(__WIN32__) || defined(WIN32)
+#define NOMINMAX
+#include <windows.h>
+#undef NOMINMAX
+#endif
+
 #include <GL/gl.h>
 
 //! wrapper around OpenGL functions to allow dlopening OpenGL
