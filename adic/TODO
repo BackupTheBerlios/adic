@@ -31,6 +31,8 @@ TUNING:
   think about the right point for a commit (the best would be before a step now?)
 - einfacher blit mit glDrawPixels fürs Menü und evtl sogar für andere sachen die nicht gedreht werden
   (glDrawPixels ist bei mesa schneller als texturen)
+- compilation times (the preprocessor needs already much time => simplify the includes)
+  just paint some picture and think about the dependencies
 
 FEATURES:
 - spielereigenschaften sollten relativ zu einem "globalen" spielereigenschaften objekt sein
