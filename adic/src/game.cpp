@@ -122,8 +122,8 @@ Game::collidePlayer(unsigned pid, bool test)
 	  if (test)
 	    return true;
 	  // increase fitness if team members
-	  unsigned t1=getTeamIDofPlayer(pid);
-	  if ((t1!=~0U)&&(t1==getTeamIDofPlayer(o))) {
+	  TeamID t1=getTeamIDofPlayer(pid);
+	  if ((t1!=TeamID(~0U))&&(t1==getTeamIDofPlayer(o))) {
 	    m_players[pid].setFitness();
 	    m_players[o].setFitness();
 	  }

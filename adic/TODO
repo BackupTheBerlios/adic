@@ -37,6 +37,8 @@ FEATURES:
 - maus?
 
 BUGS/QUESTIONS:
+- teamID and playerID are now 16bit but I often use unsigned and ~0U
+  check if this is still all correct
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)

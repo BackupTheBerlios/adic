@@ -215,6 +215,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       chatMessage.emit(m);
       m_chatMode=0;
       m_chatLine.clear();
+      printed.emit('\n');
       return true;
     }
     break;
@@ -224,6 +225,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     unsigned s=m_chatLine.size();
     if (s)
       m_chatLine.resize(s-1);
+    printed.emit(k);
     return true;
   }
 
@@ -231,8 +233,10 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
   char ch;
   if ( (unicode & 0xFF80) == 0 ) {
     ch = unicode & 0x7F;
-    if (ch>=32)
+    if (ch>=32) {
       m_chatLine+=ch;
+      printed.emit(ch);
+    }
   }
   else {
     std::cerr << "An International Character.\n";

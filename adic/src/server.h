@@ -278,7 +278,7 @@ public:
   std::string getPlayersTeamName(PlayerID pid)
   {
     TeamID tid=m_game.getTeamIDofPlayer(pid);
-    assert(tid!=~0U);
+    assert(tid!=TeamID(~0U));
     // this is not const => we are not const
     Team *t(m_game.getTeam(tid));
     assert(t);

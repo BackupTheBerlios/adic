@@ -283,7 +283,7 @@ Server::sendChatMessage(ChatMessage &msg)
     // no => check if sender is a team name
     tid=m_game.getTeamID(msg.sender);
   }
-  DOPE_CHECK(tid!=~0U);
+  DOPE_CHECK(tid!=TeamID(~0U));
   // now we have the team id we want to send messages to
   // => send message to every client which has a member of this team
   Connections::iterator it(connections.begin());
@@ -307,8 +307,9 @@ Server::getTeamIDs(const Connection *c) const
   const std::vector<PlayerID> &pids(c->getPlayerIDs());
   for (unsigned p=0;p<pids.size();++p) {
     TeamID tid=m_game.getTeamIDofPlayer(pids[p]);
-    assert(tid!=~0U);
-    res.push_back(tid);
+    assert(tid!=TeamID(~0U));
+    if (std::find(res.begin(),res.end(),tid)==res.end())
+      res.push_back(tid);
   }
   return res;
 }

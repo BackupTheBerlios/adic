@@ -187,7 +187,7 @@ public:
   Team *getTeam(const std::string &t)
   {
     TeamID tid(getTeamID(t));
-    if (tid==~0U)
+    if (tid==TeamID(~0U))
       return NULL;
     assert(tid<m_teams.size());
     return &m_teams[tid];
