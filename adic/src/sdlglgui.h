@@ -89,7 +89,7 @@ protected:
   DOPE_SMARTPTR<Texture> m_fontTexPtr;
   std::vector<Animation> m_animations;
   DOPE_SMARTPTR<Texture> m_circlePtr;
-  bool m_texCirle;
+  bool m_texCircle;
   
   V2D m_pos;
   int m_scrollOp[2];

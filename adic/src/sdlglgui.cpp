@@ -199,7 +199,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
 	return true;
       break;
     case SDLK_c:
-      if (pressed) m_texCirle=!m_texCircle;
+      if (pressed) m_texCircle=!m_texCircle;
     }
     return false;
   }
@@ -562,7 +562,7 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
   }
   else
     {
-      drawTexture(m_circlePtr->getTexture(),p);
+      drawTexture(*m_circlePtr,p);
     }
 }
 void
@@ -572,13 +572,13 @@ SDLGLGUI::drawWall(const Wall &w)
   gl.GetFloatv(GL_LINE_WIDTH,&lw);
   gl.LineWidth(2*w.getWallWidth()*m_zoom);
   Line l(w.getLine());
-  drawCircle(l.m_a,w.getPillarRadius());
-  drawCircle(l.m_b,w.getPillarRadius());
   gl.Begin(GL_LINES);
   gl.Vertex2f(l.m_a[0],l.m_a[1]);
   gl.Vertex2f(l.m_b[0],l.m_b[1]);
   gl.End();
   gl.LineWidth(lw);
+  drawCircle(l.m_a,w.getPillarRadius());
+  drawCircle(l.m_b,w.getPillarRadius());
   gl.Flush();
 }
 
