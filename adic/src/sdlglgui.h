@@ -33,15 +33,19 @@ public:
   SDLGLGUI(Client &client, const GUIConfig &config) 
     : GUI(client,config) 
   {}
+  //! intitialize gui
   bool init();
+  //! repaint
   bool step(R dt);
+  //! cleanup
   ~SDLGLGUI(){killWindow();}
 protected:
 
+  //! create window
+  void createWindow();
+  //! resize gui
   void resize(int width, int height);
-  void initSDL();
-  void createWindow(const char* title, int width, int height, int bits, bool fullscreenflag);
-  void initGL();
+  //! close window
   void killWindow();
 
   void drawCircle(const V2D &p, float r);
@@ -51,6 +55,7 @@ protected:
   Input i;
   int m_width;
   int m_height;
+  unsigned m_flags;
 
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);

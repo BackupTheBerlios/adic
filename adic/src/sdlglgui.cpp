@@ -20,7 +20,9 @@
 bool
 SDLGLGUI::init()
 {
-  initSDL();
+  // Initialize SDL
+  if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
+    throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   if (SDL_GL_LoadLibrary(m_config.libGL.c_str())==-1)
     throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+m_config.libGL.c_str()+"\": "+SDL_GetError());
   LOOKUP(glClear,uintFunc);
@@ -41,8 +43,53 @@ SDLGLGUI::init()
   LOOKUP(glFlush,voidFunc);
   LOOKUP(glFinish,voidFunc);
 
-  createWindow(m_config.title.c_str(),m_config.width,m_config.height,m_config.bits,m_config.fullscreen);
+  createWindow();
   return true;
+}
+
+void
+SDLGLGUI::createWindow() 
+{
+  m_flags = SDL_OPENGL|SDL_RESIZABLE;
+  if ( m_config.fullscreen) m_flags |= SDL_FULLSCREEN;
+
+  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  resize(m_config.width, m_config.height);
+}
+
+void
+SDLGLGUI::resize(int width, int height)		
+{
+  // Prevent A Divide By Zero By
+  if (width==0)
+    width=1;
+  if (height==0)			
+    height=1;
+
+  if ( SDL_SetVideoMode(width, height, 0, m_flags) == NULL ) {
+    throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
+  }
+  SDL_WM_SetCaption(m_config.title.c_str(), m_config.title.c_str());
+  if (m_flags&SDL_FULLSCREEN)
+    SDL_ShowCursor(SDL_DISABLE);
+  else
+    SDL_ShowCursor(SDL_ENABLE);
+  m_width=width;
+  m_height=height;
+
+  // Reset The Current Viewport
+  glViewportP(0,0,width,height);
+  // Select The Projection Matrix
+  glMatrixModeP(GL_PROJECTION);		
+  glLoadIdentityP();
+  glOrthoP(0.0f,width,0.0f,height,-100.0f,100.0f);
+  glClearColorP(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+void
+SDLGLGUI::killWindow()
+{
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 bool
@@ -54,6 +101,9 @@ SDLGLGUI::step(R dt)
     switch (event.type) {
     case SDL_QUIT:
       return false;
+      break;
+    case SDL_VIDEORESIZE:
+      resize(event.resize.w,event.resize.h);
       break;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
@@ -77,6 +127,16 @@ SDLGLGUI::step(R dt)
       case SDLK_ESCAPE:
       case SDLK_q:
 	return false;
+	break;
+      case SDLK_f:
+	if (event.key.type==SDL_KEYDOWN) {
+	  if (m_flags&SDL_FULLSCREEN)
+	    m_flags&=~SDL_FULLSCREEN;
+	  else
+	    m_flags|=SDL_FULLSCREEN;
+	  resize(m_width,m_height);
+	}
+	break;
       default:
 	break;
       }
@@ -130,8 +190,7 @@ SDLGLGUI::step(R dt)
     for (unsigned r=0;r<worldPtr->getNumRooms();++r)
       {
 	// select room color
-	RealRoom room(*worldPtr.get(),m_client.getGame().getDoors(),r);
-	bool adic=room.getADIC();
+	bool adic=m_client.getGame().roomIsClosed(r);
 	if (adic)
 	  glColor3fP(0.5,0.0,0.0);
 	else
@@ -150,8 +209,11 @@ SDLGLGUI::step(R dt)
     // paint doors
     std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
     Game::Doors &doors(m_client.getGame().getDoors());
-    glColor3fP(0.0,0.0,1.0);
     for (unsigned d=0;d<doors.size();++d) {
+      if (doors[d].isClosed())
+	  glColor3fP(0.5,0.0,0.0);
+      else
+	glColor3fP(0.0,0.0,1.0);
       RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
       Wall w(rd.asWall());
       drawWall(w);
@@ -163,7 +225,10 @@ SDLGLGUI::step(R dt)
   // paint players
   for (unsigned p=0;p<players.size();++p)
     {
-      glColor3fP(0.0,1.0,0.0);
+      if (m_client.getGame().playerIsLocked(p))
+	glColor3fP(1.0,0.0,0.0);
+      else
+	glColor3fP(0.0,1.0,0.0);
       drawCircle(players[p].m_pos,players[p].m_r);
       V2D dv(V2D(0,100).rot(players[p].getDirection()));
       glColor3fP(1.0,1.0,0.0);
@@ -175,90 +240,29 @@ SDLGLGUI::step(R dt)
       glColor3fP(1.0,1.0,1.0);
     }
   glFlushP();
-  //glFinishP();
+  glFinishP();
   SDL_GL_SwapBuffers();
   return true;
 }
 
-//! Resize And Initialize The GL Window
-void SDLGLGUI::resize(int width, int height)		
-{
-  // Prevent A Divide By Zero By
-  if (height==0)			
-    height=1;
 
-  m_width=width;
-  m_height=height;
 
-  // Reset The Current Viewport
-  glViewportP(0,0,width,height);
-  // Select The Projection Matrix
-  glMatrixModeP(GL_PROJECTION);		
-  glLoadIdentityP();
-  glOrthoP(0.0f,width,0.0f,height,-100.0f,100.0f);
-}
-
-void SDLGLGUI::initSDL() {
-  /* Initialize SDL */
-  if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
-    throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
-}
-
-void
-SDLGLGUI::createWindow(const char* title, int width, int height, int bits, bool fullscreenflag) 
-{
-  Uint32 flags;
-  
-  flags = SDL_OPENGL;
-  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-  if ( fullscreenflag ) {
-    flags |= SDL_FULLSCREEN;
-  }
-  if ( SDL_SetVideoMode(width, height, 0, flags) == NULL ) {
-    throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
-  }
-  SDL_WM_SetCaption(title, "opengl");
-  if (fullscreenflag)
-    SDL_ShowCursor(SDL_DISABLE);
-  resize(width, height);					// Set Up Our Perspective GL Screen
-  
-  initGL();
-}
-
-void
-SDLGLGUI::initGL() 
-{
-  glClearColorP(0.0f, 0.0f, 0.0f, 0.0f);
-  /*
-  glShadeModel(GL_SMOOTH);
-  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  */
-}
-
-void
-SDLGLGUI::killWindow()
-{
-  SDL_QuitSubSystem(SDL_INIT_VIDEO);
-}
 
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
 {
-  double angle;
-
   glPushMatrixP();
   glTranslatefP(p[0], p[1], 0);
   glBeginP(GL_TRIANGLE_FAN);
   glVertex2fP(0, 0);
-  for (angle = 0.0; angle <= 2 * M_PI; angle += M_PI / 12) {
+  unsigned res=12;
+  for (unsigned i=0;i<res;++i) {
+    double angle(double(i)*2*M_PI/double(res-1));
     glVertex2fP(r * cos(angle), r * sin(angle));
   }
   glEndP();
   glPopMatrixP();
+  glFlushP();
 }
 void
 SDLGLGUI::drawWall(const Wall &w)
@@ -274,6 +278,7 @@ SDLGLGUI::drawWall(const Wall &w)
   glVertex2fP(l.m_b[0],l.m_b[1]);
   glEndP();
   glLineWidthP(lw);
+  glFlushP();
 }
 
 void
