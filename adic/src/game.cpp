@@ -223,12 +223,38 @@ void Game::calcClosedRooms()
   const WorldPtr &w(getWorldPtr());
   if (!w.get())
     return;
-  for (unsigned r=0;r<w->getNumRooms();++r)
-    {
-      RealRoom room(*w.get(),m_doors,r);
-      if (room.getADIC())
-	m_closedRooms.push_back(r);
+  unsigned nr=w->getNumRooms();
+  if (nr>m_roomDoors.size()) {
+    m_roomDoors.resize(nr);
+    for (unsigned r=0;r<nr;++r) {
+      for (World::EdgeIterator i(*w,r);i!=World::EdgeIterator(*w);++i)
+	{
+	  if ((*i).isDoor())
+	    {
+	      unsigned doorID=~0U;
+	      unsigned eid=i.getID();
+	      for (unsigned d=0;d<m_doors.size();++d)
+		{
+		  if (m_doors[d].getEdgeID()==eid) {
+		    doorID=d;
+		    break;
+		  }
+		}
+	      DOPE_CHECK(doorID!=~0U);
+	      m_roomDoors[r].push_back(doorID);
+	    }
+	}
     }
+  }
+  for (unsigned r=0;r<nr;++r) {
+    unsigned nd=m_roomDoors[r].size();
+    unsigned d=0;
+    for (;d<nd;++d) {
+      if (!m_doors[m_roomDoors[r][d]].isClosed())
+	break;
+    }
+    if (d==nd) m_closedRooms.push_back(r);
+  }
 }
 
 PlayerID

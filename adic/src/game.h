@@ -66,53 +66,6 @@ public:
   void applyImpuls(R dist, V2D impuls);
 };
 
-class RealRoom
-{
-  const World &w;
-  typedef std::map<FWEdge::EID,unsigned> Dmap;
-  Dmap dmap;
-  const std::vector<Door> &allDoors;
-  FWEdge::RoomID roomID;
-public:
-  RealRoom(const World& _w, const std::vector<Door> &_allDoors, FWEdge::RoomID _roomID)
-    : w(_w), allDoors(_allDoors), roomID(_roomID)
-  {
-    for (World::EdgeIterator i(w,roomID);i!=World::EdgeIterator(w);++i)
-      {
-	if ((*i).isDoor())
-	  {
-	    unsigned doorID=~0U;
-	    for (unsigned d=0;d<allDoors.size();++d)
-	      {
-		if (allDoors[d].getEdgeID()==i.getID()) {
-		  doorID=d;
-		  break;
-		}
-	      }
-	    DOPE_CHECK(doorID!=~0U);
-	    dmap[i.getID()]=doorID;
-	  }
-      }
-  }
-  
-  //! any door is closed ?
-  bool getADIC() const
-  {
-    for (World::EdgeIterator i(w,roomID);i!=World::EdgeIterator(w);++i)
-      {
-	if ((*i).isDoor())
-	  {
-	    Dmap::const_iterator it(dmap.find(i.getID()));
-	    DOPE_CHECK(it!=dmap.end());
-	    unsigned d=it->second;
-	    if (!allDoors[d].isClosed())
-	      return false;
-	  }
-      }
-    return true;
-  }
-};
-
 class Game
 {
 public:
@@ -298,6 +251,8 @@ protected:
   //! players where in this room
   PlayerRoomMap m_playerRoomMap;
 
+  std::vector<std::vector<unsigned> > m_roomDoors;
+  
   //! all closed rooms
   std::vector<FWEdge::RoomID> m_closedRooms;
 
