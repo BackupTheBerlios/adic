@@ -98,15 +98,15 @@ struct InputDevName
   //!  the device number in the game
   int8_t devno;
 
-  bool isMouse() 
+  bool isMouse() const
   {
     return major==0;
   }
-  bool isJoystick()
+  bool isJoystick() const
   {
     return major==1;
   }
-  bool isKeyboard()
+  bool isKeyboard() const
   {
     return major==2;
   }
