@@ -20,7 +20,7 @@ SDLKeyboard::SDLKeyboard(SDLSigFactory &sf, const InputDevName &n)
   sf.keyEvent.connect(SigC::slot(*this,&SDLKeyboard::handleKey));
 }
   
-void
+bool
 SDLKeyboard::handleKey(SDL_KeyboardEvent e)
 {
   Input old(m_state);
@@ -43,6 +43,9 @@ SDLKeyboard::handleKey(SDL_KeyboardEvent e)
     if (pressed) m_state.x=1;
     else if (m_state.x==1) m_state.x=0;
   }
-  if (m_state!=old)
+  if (m_state!=old) {
     input.emit(m_state);
+    return true;
+  }
+  return false;
 }

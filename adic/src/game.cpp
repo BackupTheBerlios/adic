@@ -446,7 +446,7 @@ Game::collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor)
 }
 
 TeamID 
-Game::getTeamIDofPlayer(PlayerID pid)
+Game::getTeamIDofPlayer(PlayerID pid) const
 {
   if (!m_players[pid].isPlayer())
     return ~0U;
@@ -454,8 +454,21 @@ Game::getTeamIDofPlayer(PlayerID pid)
   for (unsigned i=0;i<m_teams.size();++i) {
     std::vector<PlayerID>::const_iterator it(std::find(m_teams[i].playerIDs.begin(),m_teams[i].playerIDs.end(),pid));
     if (it!=m_teams[i].playerIDs.end())
-      return i;
+      return TeamID(i);
   }
   return ~0U;
 }
 
+void
+Game::setPlayerName(PlayerID id,const std::string &name)
+{
+  if (id>=m_playerNames.size())
+    m_playerNames.resize(id+1);
+  std::string rname=name;
+  unsigned c=2;
+  while (std::find(m_playerNames.begin(),m_playerNames.end(),rname)!=m_playerNames.end()) {
+    rname=name+"["+anyToString(c)+"]";
+    ++c;
+  }
+  m_playerNames[id]=rname;
+}

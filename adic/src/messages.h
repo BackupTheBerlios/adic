@@ -148,17 +148,35 @@ inline void composite(Layer2 &layer2, ClientGreeting &c)
   c.composite(layer2);
 }
 
+//! a chat message
 struct ChatMessage
 {
-  std::string m_message;
-  //! global message or team message ?
-  bool m_global;
+  //! username or teamname or empty
+  /*! 
+    server must check this to prevent faked names 
+    => client should leave this field empty and server will fill it
+  */
+  std::string sender;
+  //! the message content
+  std::string message;
+  //! global message ?
+  /*!
+    global messages are sent to every client
+    non-global messages are sent to team mates
+  */
+  bool global;
+
+  template <typename Layer2>
+  void composite(Layer2 &l2)
+  {
+    l2.SIMPLE(sender).SIMPLE(message).SIMPLE(global);
+  }
 };
 DOPE_CLASS(ChatMessage);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ChatMessage &c)
 {
-  layer2.simple(c.m_message,"message").simple(c.m_global,"global");
+  c.composite(layer2);
 }
 
 //! new client connected

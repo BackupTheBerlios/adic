@@ -116,7 +116,8 @@ public:
   
   void handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr);
   void handleInput(DOPE_SMARTPTR<Input> inputPtr);
-  
+  void handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr);
+
   /*
   void handleFoo(DOPE_SMARTPTR<foo> fooPtr)
   {
@@ -126,6 +127,11 @@ public:
     writeFoo(*fooPtr.get(),"foo.net");
     }*/
 
+  const std::vector<PlayerID> &getPlayerIDs() const
+  {
+    return playerIDs;
+  }
+  
 protected:
   //! pointer to out layer0 network stream
   DOPE_SMARTPTR<NetStreamBuf> streamPtr;
@@ -140,6 +146,20 @@ protected:
   SignalOutAdapter<OutProto> emitter;
   //! client player IDs
   std::vector<PlayerID> playerIDs;
+
+  //! this connection has none player
+  bool noPlayer() const
+  {
+    return playerIDs.empty();
+  }
+  
+  //! this connection has only one player
+  bool singlePlayer() const
+  {
+    return playerIDs.size()==1;
+  }
+  //! this connection has only one team
+  bool singleTeam() const;
 };
 
 //! the server application
@@ -241,6 +261,29 @@ public:
 
   //! broaadcast NewClient message
   void broadcastNewClient(Connection* c);
+
+  //! send non-global chat message
+  /*!
+    sender must be set to either a player or team name
+  */
+  void sendChatMessage(ChatMessage &msg);
+
+  std::vector<TeamID> getTeamIDs(const Connection *c) const;
+
+  std::string getPlayerName(PlayerID pid) const
+  {
+    assert(pid<m_game.getPlayerNames().size());
+    return m_game.getPlayerNames()[pid];
+  }
+  std::string getPlayersTeamName(PlayerID pid)
+  {
+    TeamID tid=m_game.getTeamIDofPlayer(pid);
+    assert(tid!=~0U);
+    // this is not const => we are not const
+    Team *t(m_game.getTeam(tid));
+    assert(t);
+    return t->name;
+  }
 };
 
 #endif

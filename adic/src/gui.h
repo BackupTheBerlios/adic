@@ -43,7 +43,8 @@ public:
 
   SigC::Signal1<void, Input &> input;
   SigC::Signal1<void, char> printed;
-
+  SigC::Signal1<void, ChatMessage &> chatMessage;
+  
   virtual std::ostream &getOstream()=0;
 
   virtual unsigned numInputDevices() const=0;

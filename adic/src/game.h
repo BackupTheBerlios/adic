@@ -186,12 +186,22 @@ public:
   */
   Team *getTeam(const std::string &t)
   {
-    std::vector<Team>::iterator it(find(m_teams.begin(),m_teams.end(),t));
-    if (it!=m_teams.end())
-      return &(*it);
-    return NULL;
+    TeamID tid(getTeamID(t));
+    if (tid==~0U)
+      return NULL;
+    assert(tid<m_teams.size());
+    return &m_teams[tid];
   }
-  TeamID getTeamIDofPlayer(PlayerID pid);
+
+  TeamID getTeamID(const std::string &t) const
+  {
+    std::vector<Team>::const_iterator it(find(m_teams.begin(),m_teams.end(),t));
+    if (it!=m_teams.end())
+      return it-m_teams.begin();
+    return ~0U;
+  }
+
+  TeamID getTeamIDofPlayer(PlayerID pid) const;
   
   //! get team by ID
   Team *getTeam(unsigned id)
@@ -219,11 +229,16 @@ public:
     m_teams=teams;
   }
 
-  void setPlayerName(PlayerID id,const std::string &name)
+  void setPlayerName(PlayerID id,const std::string &name);
+
+  PlayerID getPlayerID(const std::string &pn) const 
   {
-    if (id>=m_playerNames.size())
-      m_playerNames.resize(id+1);
-    m_playerNames[id]=name;
+    PlayerID pid=0U;
+    for (;pid<m_playerNames.size();++pid) {
+      if (m_playerNames[pid]==pn)
+	return pid;
+    }
+    return ~0U;
   }
   const std::vector<std::string> &getPlayerNames() const
   {

@@ -27,12 +27,27 @@
 
 #include <SDL/SDL.h>
 
+//! sig c++ marshaller which stops emit on first true value
+struct StopOnTrue
+{
+  typedef bool InType;
+  typedef bool OutType;
+  OutType  return_value_;
+  
+  OutType value() { return return_value_; }
+  static OutType default_value() { return false; }
+  bool marshal(const InType& val) { return_value_ = val; return val; }
+  
+  StopOnTrue() : return_value_(false) {}
+};
+
+
 class SDLSigFactory {
 public:
   typedef SigC::Signal0<void> QuitSignal;
   typedef SigC::Signal1<void, SDL_MouseMotionEvent> MouseMotion;
   typedef SigC::Signal1<void, SDL_MouseButtonEvent> MouseButton;
-  typedef SigC::Signal1<void, SDL_KeyboardEvent> KeyEvent;
+  typedef SigC::Signal1<bool, SDL_KeyboardEvent, StopOnTrue> KeyEvent;
   typedef SigC::Signal1<void, SDL_JoyAxisEvent> JoyMotion;
   typedef SigC::Signal1<void, SDL_JoyButtonEvent> JoyButton;
   typedef SigC::Signal1<void, float> TimeStep;

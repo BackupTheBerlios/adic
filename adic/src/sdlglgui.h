@@ -47,7 +47,7 @@ public:
   //! cleanup
   ~SDLGLGUI(){m_textures.clear();killWindow();}
 
-  void handleKey(SDL_KeyboardEvent e);
+  bool handleKey(SDL_KeyboardEvent e);
   void handleResize(SDL_ResizeEvent e);
   void handleQuit();
 
@@ -107,6 +107,9 @@ protected:
 
   TimeStamp m_start;
   unsigned m_frames;
+
+  int m_chatMode;
+  std::string m_chatLine;
 };
 
 #endif

@@ -24,9 +24,19 @@ R Line::dist(const V2D &p, V2D &vn)
     {
       V2D va = (p-m_a);
       V2D vb = (p-m_b);
-      if (va.norm2() < vb.norm2()) vn = va; else vn = vb;
-      l = vn.norm2();
-      vn.normalize();
+      R a = va.norm2sqr();
+      R b = vb.norm2sqr();
+      if (a < b) 
+ 	{
+ 	  vn = va; 
+ 	  l = sqrt(a);
+ 	}
+      else 
+ 	{
+ 	  vn = vb;
+ 	  l = sqrt(b);
+ 	}
+      vn = vn * (1/l);
     }
 
   return l;

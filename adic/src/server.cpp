@@ -35,6 +35,7 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
   //  streamPtr->setBlocking(false);
   factory.connect(SigC::slot(*this,&Connection::handleInput));
   factory.connect(SigC::slot(*this,&Connection::handleGreeting));
+  factory.connect(SigC::slot(*this,&Connection::handleChatMessage));
 }
 
 void 
@@ -81,6 +82,42 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
+}
+
+void
+Connection::handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr)
+{
+  // set/check sender global
+  if (noPlayer()) {
+    // we did not get any player => chat global in any case
+    chatPtr->sender="";
+    chatPtr->global=true;
+  }else if (singlePlayer()) {
+    // we got exactly one player => sender is the name of this player
+    chatPtr->sender=server.getPlayerName(playerIDs[0]);
+  }else{
+    // we have more than one player => check if all players are in the same team
+    if (singleTeam()) {
+      // yes => sender is team name
+      chatPtr->sender=server.getPlayersTeamName(playerIDs[0]);
+    }else{
+      // no => sender is empty / or client name and message is global in any case
+      chatPtr->sender="";
+      chatPtr->global=true;
+    }
+  }
+  if (chatPtr->global) {
+    server.broadcast(*chatPtr);
+  }else{
+    // non global message and sender is set to either a player or team name
+    server.sendChatMessage(*chatPtr);
+  }
+}
+
+bool 
+Connection::singleTeam() const
+{
+  return (server.getTeamIDs(this).size()==1);
 }
 
 Server::Server(ServerConfig &config) 
@@ -228,4 +265,52 @@ Server::broadcastNewClient(Connection* c)
   m.teams=m_game.getTeams();
   broadcast(m);
 }
+
+void 
+Server::sendChatMessage(ChatMessage &msg)
+{
+  // check if sender is a player name
+  assert(msg.sender.size());
+  assert(!msg.global);
+  const std::vector<std::string> &pn(m_game.getPlayerNames());
+  PlayerID pid=m_game.getPlayerID(msg.sender);
+  TeamID tid=~0U;
+  if (pid<pn.size()) {
+    // yes => find team of player
+    tid=m_game.getTeamIDofPlayer(pid);
+    assert(tid!=~0U);
+  }else{
+    // no => check if sender is a team name
+    tid=m_game.getTeamID(msg.sender);
+  }
+  DOPE_CHECK(tid!=~0U);
+  // now we have the team id we want to send messages to
+  // => send message to every client which has a member of this team
+  Connections::iterator it(connections.begin());
+  while (it!=connections.end()) {
+    const std::vector<PlayerID> &pids(it->second->getPlayerIDs());
+    for (unsigned p=0;p<pids.size();++p) {
+      if (m_game.getTeamIDofPlayer(pids[p])==tid) {
+	it->second->emit(msg);
+	break;
+      }
+    }
+    ++it;
+  }
+}
+
+std::vector<TeamID> 
+Server::getTeamIDs(const Connection *c) const
+{
+  assert(c);
+  std::vector<TeamID> res;
+  const std::vector<PlayerID> &pids(c->getPlayerIDs());
+  for (unsigned p=0;p<pids.size();++p) {
+    TeamID tid=m_game.getTeamIDofPlayer(pids[p]);
+    assert(tid!=~0U);
+    res.push_back(tid);
+  }
+  return res;
+}
+
 

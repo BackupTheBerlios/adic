@@ -148,6 +148,12 @@ Client::printed(char c)
   else m_soundPtr->playSample("data/newline.wav");
 }
 
+void
+Client::handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr)
+{
+  std::cout << chatPtr->sender << ">" << chatPtr->message << "\n";
+}
+
 int
 Client::main()
 {
@@ -172,6 +178,7 @@ Client::main()
   si.connect(SigC::slot(*this,&Client::handleGame));
   si.connect(SigC::slot(*this,&Client::handlePlayerInput));
   si.connect(SigC::slot(*this,&Client::handleNewClient));
+  si.connect(SigC::slot(*this,&Client::handleChatMessage));
 
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
@@ -205,6 +212,7 @@ Client::main()
   
   DOPE_CHECK(m_guiPtr->init());
   m_guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
+  m_guiPtr->chatMessage.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
   std::cout << "Welcome to ADIC !!!\n";
   while (!m_quit) {
     newTime.now();

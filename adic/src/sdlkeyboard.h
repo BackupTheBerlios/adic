@@ -41,7 +41,7 @@ public:
   ~SDLKeyboard()
   {}
 
-  void handleKey(SDL_KeyboardEvent e);
+  bool handleKey(SDL_KeyboardEvent e);
 protected:
   int minor;
 };
