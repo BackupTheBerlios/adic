@@ -33,4 +33,6 @@
 */ 
 std::string findDataFile(const std::string &fname, const char *dataPath=NULL);
 
+extern std::string *dataPathPtr;
+
 #endif

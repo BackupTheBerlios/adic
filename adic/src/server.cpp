@@ -161,19 +161,30 @@ Team *
 Server::getWeakestTeam()
 {
   unsigned maxTeams=4;
+  assert(maxTeams>=4);
   unsigned numTeams=m_game.numTeams();
   unsigned maxPlayers=4;
-  if (numTeams<maxTeams)
-    {
-      // create team
-      std::string tname("Team");
-      tname+=anyToString(numTeams+1);
-      return m_game.addTeam(tname,numTeams);
-    }
-  // todo: better alogrithm - check for max players
+  const std::vector<Team> &teams(m_game.getTeams());
+  bool createTeam=false;
+  
+  // try to fill the first two teams first
+  if (numTeams<2) createTeam=true;
+  else {
+    if (std::min(teams[0].playerIDs.size(),teams[1].playerIDs.size())==maxPlayers)
+      // team 0 and 1 are full - if team 2 does not exist create it if it is full create team 3 (if possible)
+      if ((numTeams<3)||((numTeams==3)&&(teams[2].playerIDs.size()==maxPlayers)))
+	createTeam=true;
+  }
+  if (createTeam) {
+    // create team
+    std::string tname("Team");
+    tname+=anyToString(numTeams+1);
+    return m_game.addTeam(tname,numTeams);
+  }
+
+  // find team with fewest players
   unsigned minp=~0U;
   unsigned i=0;
-  const std::vector<Team> &teams(m_game.getTeams());
   for (;i<numTeams;++i)
     minp=std::min(teams[i].playerIDs.size(),minp);
   if (minp>=maxPlayers)
@@ -202,19 +213,20 @@ Server::main()
   //  host.adr=""; // we leave it blank and let the metaserver decide
   host.port=m_config.m_port;
   const std::string &msURI(m_config.m_metaServer);
-  
-  try {
-    MetaServer metaServer(msURI.c_str());
-    RegisterServer reg;
-    reg.host=host;
-    ServerRegistered answer;
-    metaServer.rpc(reg,answer);
-    std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
-    m_msecret=answer.secret;
+  if (!msURI.empty()) {
+    try {
+      MetaServer metaServer(msURI.c_str());
+      RegisterServer reg;
+      reg.host=host;
+      ServerRegistered answer;
+      metaServer.rpc(reg,answer);
+      std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
+      m_msecret=answer.secret;
 
-    updateMetaserver();
-  }catch(...){
-    DOPE_WARN("Could not connect to Metaserver\n");
+      updateMetaserver();
+    }catch(...){
+      DOPE_WARN("Could not connect to Metaserver\n");
+    }
   }
   
   TimeStamp start;
@@ -303,6 +315,8 @@ int main(int argc,char *argv[])
     parser.simple(config,NULL);
     // exit if parser printed the help message
     if (parser.shouldExit()) return 1;
+    if (!config.m_dataPath.empty())
+      dataPathPtr=&config.m_dataPath;
     Server server(config);
     return server.main();
   }

@@ -14,7 +14,6 @@ gamefiles_DATA = \
 	gui_0006.png \
 	gui_0007.png \
 	hi.png \
-	textures.png \
 	barrel.png \
 	pillar.png \
 	girl_blue_0001.png \

@@ -3,7 +3,7 @@
 
 SDLGLGUI::SDLGLGUI(Client &client) 
   : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
-    m_textureTime(5), 
+    //    m_textureTime(5), 
     m_autoCenter(true), 
     m_zoom(1), m_zoomOp(0), m_autoZoom(true),
     m_showNames(true),
@@ -93,7 +93,7 @@ SDLGLGUI::createWindow()
   e.h=getGUIConfig().height;
   sf.resize.emit(e);
   //  resize(getGUIConfig().width, getGUIConfig().height);
-  m_texturePtr=getTexture("data:textures.png");
+  //  m_texturePtr=getTexture("data:gui_0001.png");
   m_fontTexPtr=getTexture("data:font.png");
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
   m_circlePtr=getTexture("data:pillar.png");
@@ -103,7 +103,7 @@ SDLGLGUI::createWindow()
   gl.Disable(GL_CULL_FACE);
   float range[2];
   gl.GetFloatv(GL_LINE_WIDTH_RANGE,range);
-  std::cerr << range[0] << "<LINE_WIDTH<"<<range[1]<<"\n";
+  //  std::cerr << range[0] << "<LINE_WIDTH<"<<range[1]<<"\n";
   if (!m_lineSmooth)
     gl.Disable(GL_LINE_SMOOTH);
   else
@@ -319,7 +319,7 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     }
     break;
   case SDLK_m:
-    m_textureTime=5;
+    //    m_textureTime=5;
     return true;
     break;
   default:
@@ -402,7 +402,7 @@ SDLGLGUI::step(R dt)
     }
     if (m_toggles&(1<<8)) {
       if (!test) {
-	test=IMG_Load("data:textures.png");
+	test=IMG_Load("data:gui_0001.png");
 	if (!test) DOPE_FATAL("Could not load image");
 	SDL_LockSurface(test);
 	char *p=(char *)(test->pixels);
@@ -1005,6 +1005,18 @@ SDLGLGUI::drawPlayers(R dt)
 	float s=1.0f/m_zoom;
 	gl.Scalef(s,s,1);
 	m_fontPtr->drawText(m_client.getPlayerName(p),true);
+
+	if (!(m_toggles&(1<<8))) {
+	  // draw some info
+	  gl.Translatef(0,-40,0);
+	  std::ostringstream o;
+	  o.setf(std::ios::fixed);
+	  o.precision(2);
+	  o << "Room: " << m_client.getGame().playerInRoomCached(p) << " Pos:";
+	  o << cp.m_pos[0] << "/" << cp.m_pos[1] << " Locked" << m_client.getGame().playerIsLocked(p);
+	  m_fontPtr->drawText(o.str(),true);
+	}
+
 	gl.PopMatrix();
       }
     }

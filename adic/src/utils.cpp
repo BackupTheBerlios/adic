@@ -3,11 +3,15 @@
 #include <fstream>
 #include <dope/utils.h>
 
+std::string *dataPathPtr=NULL;
+
 std::string findDataFile(const std::string &fname, const char *dataPath)
 {
   std::string first,path;
   if (dataPath)
     path=dataPath;
+  else if (dataPathPtr)
+    path=*dataPathPtr;
   else
     path=DATADIR;
   bool c=true;

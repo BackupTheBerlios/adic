@@ -119,9 +119,10 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 void
 Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 {
+  /*
   std::cerr << "\ngot player names:\n";
   for (unsigned i=0;i<mPtr->playerNames.size();++i)
-    std::cerr << mPtr->playerNames[i] << std::endl;
+  std::cerr << mPtr->playerNames[i] << std::endl;*/
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
   m_guiPtr->handleNewClient(mPtr);
@@ -384,9 +385,9 @@ int main(int argc,char *argv[])
     // exit if parser printed the help message
     if (parser.shouldExit()) return 1;
     config.setDefaults();
+    if (!config.m_dataPath.empty()) dataPathPtr=&config.m_dataPath;
     Client client(config);
     return client.main();
-
     return 0;
   }
   catch (const std::exception &error){

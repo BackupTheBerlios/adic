@@ -4,7 +4,7 @@ SDLJoystick*
 SDLJoystick::create(SDLSigFactory &sf, const InputDevName &n)
 {
   int numj=SDL_NumJoysticks();
-  std::cerr << "Found "<<numj<< " joysticks\n";
+  //  std::cerr << "Found "<<numj<< " joysticks\n";
   if (n.minor>=numj)
     return NULL;
   SDL_Joystick* joy=SDL_JoystickOpen(n.minor);

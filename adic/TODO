@@ -1,34 +1,31 @@
 GAMEPLAY:
-- tueren schneller zu gehen
-- nicht gleich wieder auf
-- kisten "tragen"
 - sichtbarkeit einschränken
 
 TUNING:
 - alpha-blending with mesa too slow - test alpha values of 0/1 with DrawPixels 
   (did not help)
-  how do transparent sprites work in opengl / colorkeying
+  how do transparent (not semi-transparent/alpha blended) sprites work in opengl / colorkeying
   stencil buffer ? there should be an easy solution
 - stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
 - tueren uebertragen viel zu viel (angle und anglespeed sollte genuegen)
 - uebertrage nur tueren/spieler die sich bewegt haben
 - drawCircle ist lahm
-- kollision in räume unterteilen
-  da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
-  daß ich erst schaue in welchem raum ist der spieler und dann schaue ob der spieler mit
-  einer türkante kollidiert falls ja ist er auch im benachbarten raum
-  auf der anderen seite liegt der worst case, daß sich alle spieler in einem raum tummeln durchaus
-  im bereich des möglichen (zumindest solange die räume so groß sind uns es keine unsichtbaren
-  kanten gibt)
+- collision:
+	- collision is good but still not perfect
+	  think about the right point for a commit (the best would be before a step now?)
+	- kollision in räume unterteilen
+	  da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
+	  daß ich erst schaue in welchem raum ist der spieler und dann schaue ob der spieler mit
+	  einer türkante kollidiert falls ja ist er auch im benachbarten raum
+	  auf der anderen seite liegt der worst case, daß sich alle spieler in einem raum tummeln durchaus
+	  im bereich des möglichen (zumindest solange die räume so groß sind uns es keine unsichtbaren
+	  kanten gibt)
 - ersetze DOPE_CHECK durch assert wo sinnvoll
-- mesa noch schnell genug ? 
-  ist noch erstaunlich schnell (10fps) aber muß schon noch schneller werden
+- mesa
 - skaliert schlecht zumindest der client
 - profiling (especially the client)
   i think the most time is consumed in the client
   for the lag compensation (is disabled now)
-- collision is good but still not perfect
-  think about the right point for a commit (the best would be before a step now?)
 - einfacher blit mit glDrawPixels fürs Menü und evtl sogar für andere sachen die nicht gedreht werden
   (glDrawPixels ist bei mesa schneller als texturen)
 - compilation times (the preprocessor needs already much time => simplify the includes)
@@ -44,8 +41,6 @@ FEATURES:
   und ansonsten die startpos. und so
 - mesh/level muß vom server zum client übertragen werden
 - server muß levels in round-robin haben
-- wände 2 linien (pro raum die innere malen)
-- wände dicker
 - sound:
   - (walking, breath, ...)
 - improve the physics
@@ -54,30 +49,33 @@ FEATURES:
 - locked anzeigen
 - AI gegner oder robots (könnte rumlaufen und türen schließen)
 - i18n (localization)
-- metaserver
+- client should use metaserver
 - schlüssel
 - Türen kaputtbar
-- make install - sollte nicht zum zwang werden
-  => wo soll nach data files geschaut werden (ich hasse hardcoded pfade v.a. bei spielen)
-  => uriloader muss besser werden
-  => uriloader sollte immer verwendet werden
-  => eine gescheite uri klasse
+
 
 BUGS/QUESTIONS:
+- it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO
+- zum debuggen brauche ich:
+	anzeige der raumnummer
+	anzeige der koordinaten
+	anzeige der kantennummer
+	anzeige der türnummer
+	...
+- win codition wrong ? teamStat wrong ? i think this is fixed now
+- uriloader muss besser werden
+  => uriloader sollte immer verwendet werden
+  => eine gescheite uri klasse
 - spieler auf teams verteilen scheint nicht immer zu klappen
   v.a. wenn selbst benannte teams dabei sind ?
 - client crash in fullscreen mode => X schwer brauchbar da maus fehlt und auflösung falsch
 - zu viele sounds auf einmal v.a. beim crash
-- win codition wrong ? teamStat wrong ? 
-  (spieler die noch garnicht bewegt wurden sind anscheinend nie gelockt - aber die räume
-  werden als closed erkannt => müßte eigentlich daran liegen, daß die spieler nicht im richtigen
-  raum aufgefunden werden also ein problem mit playerInRoomCached)
 - teamID and playerID are now 16bit but I often use unsigned and ~0U
   check if this is still all correct
 - terminal hat nen bug da es davon ausgeht dass zeilenweise geschrieben wird
 - we now rely upon the same fpu precision on every machine ? 
   (make some tests with dope)
-- server closes connection, client "dies" -> print message and exit
+- server closes connection, client "dies" -> print nice message and exit
 - dope todo: darüber nachdenken
   ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
   können verändert werden)

@@ -176,8 +176,10 @@ public:
 
   bool roomIsClosed(FWEdge::RoomID r) const
   {
+    // if (r==FWEdge::noRoom) DOPE_WARN("no room can't be closed");
     if (r<m_closedRooms.size())
       return m_closedRooms[r];
+    //    DOPE_WARN("m_closedRooms too small");
     return false;
   }
   bool playerIsLocked(unsigned p)

@@ -62,7 +62,10 @@ FWEdge::RoomID
 Game::calcPlayerInRoom(unsigned p)
 {
   const WorldPtr &w(getWorldPtr());
-  if (!w.get()) return FWEdge::noRoom;
+  if (!w.get()) {
+    //    DOPE_WARN("\nreturned noRoom because I don't have the world yet\n");
+    return FWEdge::noRoom;
+  }
   FWEdge::RoomID r=FWEdge::noRoom;
   while (p>=m_playerRoomMap.size()) {
     m_playerRoomMap.push_back(r);
@@ -264,6 +267,8 @@ Game::addPlayer(const std::string &name, const std::string &URI)
       return id;
     }else{
       m_players.pop_back();
+      // remove cache entry if it exists
+      m_playerRoomMap.resize(m_players.size());
     }
   }
   // did not find a start place
@@ -354,7 +359,7 @@ Game::getWorldPtr()
       // get all doors
       if (m_doors.empty()) {
 	std::vector<FWEdge::EID> d(m_worldPtr->getAllDoors());
-	std::cerr << "\nWorld has "<<d.size()<<"doors\n";
+	//	std::cerr << "\nWorld has "<<d.size()<<"doors\n";
 	for (unsigned i=0;i<d.size();++i)
 	  {
 	    m_doors.push_back(Door(d[i]));

@@ -135,8 +135,8 @@ protected:
   int m_width;
   int m_height;
   unsigned m_flags;
-  DOPE_SMARTPTR<Texture> m_texturePtr;
-  R m_textureTime;
+  //  DOPE_SMARTPTR<Texture> m_texturePtr;
+  //  R m_textureTime;
   DOPE_SMARTPTR<Texture> m_fontTexPtr;
   std::vector<Animation> m_animations;
   DOPE_SMARTPTR<Texture> m_circlePtr;

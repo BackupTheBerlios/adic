@@ -46,7 +46,7 @@
 //! server configuration
 struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_meshURI("data:mesh.xml")
+  ServerConfig() : m_meshURI("data:adic.xml")
   {}
   
   std::string m_meshURI;
