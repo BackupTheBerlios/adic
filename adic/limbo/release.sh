@@ -8,7 +8,9 @@ export ACLOCAL_FLAGS="-I config/m4"
 export CXX=g++-3.2
 export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
 CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX"
-export ADIC_DEB_CONFIGURE_OPTIONS=$CONFIGURE_OPTIONS
+#todo use debian libsdl-* again (i do not use it because of troubles with libpng and debian testing)
+#if I do this the sdl stuff must be build after the debian packages again
+export ADIC_DEB_CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS --with-sdl-prefix=$PREFIX"
 DOPE_BUILD=$BUILDDIR/dope-release.sh
 ADIC_DEBREP=/mnt/schlumpf-pub/debian/adic/packages
 SETUPCROSS=~/develop/cross/config
@@ -86,23 +88,6 @@ fi
 
 #build in seperate directory
 mkdir -p build
-cd build
-
-#build debian packages
-mkdir -p debian
-cd debian
-if test -e $DIR; then
-    echo Warning `pwd`/$DIR directory already exists - assuming we already build the debian package
-    read
-else
-    tar xzvf $BUILDDIR/$PACKAGE/$DISTFILE
-    cd $DIR
-    $BUILDDEB
-    mkdir -p $UPLOADDIR
-    mv $BUILDDIR/build/debian/adic_${DIR#adic-*}* $UPLOADDIR
-    mv $BUILDDIR/build/debian/adic-data_${DIR#adic-*}* $UPLOADDIR
-fi
-
 
 
 # get SDL stuff
@@ -117,9 +102,6 @@ fi
 if test ! -e SDL_mixer-1.2.5; then
     $HTTPGET http://www.libsdl.org/projects/SDL_mixer/release/SDL_mixer-1.2.5.tar.gz|tar xzf -
 fi
-
-#build semi-static binary package for linux/x11
-#we cannot statically link the client
 
 #build SDL stuff
 if test -e $PREFIX/bin/sdl-config; then
@@ -145,7 +127,25 @@ mv libSDL_mixer.la libSDL_mixer.la.old
 sed "s/^dependency_libs=.*\$/dependency_libs=\'\'/" libSDL_mixer.la.old > libSDL_mixer.la
 
 
-#build semi-static adic
+#build debian packages
+
+mkdir -p $BUILDDIR/build/debian
+cd $BUILDDIR/build/debian
+if test -e $DIR; then
+    echo Warning `pwd`/$DIR directory already exists - assuming we already build the debian package
+    read
+else
+    tar xzvf $BUILDDIR/$PACKAGE/$DISTFILE
+    cd $DIR
+    $BUILDDEB
+    mkdir -p $UPLOADDIR
+    mv $BUILDDIR/build/debian/adic_${DIR#adic-*}* $UPLOADDIR
+    mv $BUILDDIR/build/debian/adic-data_${DIR#adic-*}* $UPLOADDIR
+fi
+
+
+#build semi-static binary package for linux/x11
+#we cannot statically link the client
 
 cd $BUILDDIR/build
 mkdir -p semi-static
@@ -168,11 +168,18 @@ else
     mv d2 data
     strip adicclient adicserver adicbot
     #create configuration
-    ./adicclient --dump --dataPath=data --width=800 --height=600 --quality=3 2>&1 |xmllint --format - >cconfig.xml
-    cat >startclient.sh <<-EOF
+    ./adicserver --dump --dataPath=data 2>&1 |xmllint --format - >sconfig.xml
+    cat >startserver <<-EOF
 	#!/bin/bash
-	cd ${0%/*}
-	./adicclient --file=cconfig.xml
+	cd \${0%/*}
+	exec ./adicserver --file=sconfig.xml
+	EOF
+    chmod +x startserver.sh
+    ./adicclient --dump --dataPath=data --width=800 --height=600 --quality=3 2>&1 |xmllint --format - >cconfig.xml
+    cat >startclient <<-EOF
+	#!/bin/bash
+	cd \${0%/*}
+	exec ./adicclient --file=cconfig.xml
 	EOF
     chmod +x startclient.sh
     cd ..
