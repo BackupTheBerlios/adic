@@ -233,7 +233,7 @@ Client::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/30); // max. 30 Hz will be less because of the min sleep problem
+  TimeStamp minStep(0,1000000/200); // max. 200 Hz will be less because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;
