@@ -1,6 +1,7 @@
 #include "bot.h"
 #include "karmebot.h"
 #include "blackbot.h"
+#include "samplebot.h"
 
 void
 Bot::sendInput()

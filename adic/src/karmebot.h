@@ -45,20 +45,40 @@ public:
   void doorCollision(unsigned did, const V2D &cv);
 
 protected:  
+  //! different operating modes
+  enum Mode{
+    DEFAULT,
+    FOLLOW,
+    CROSSLINE
+  };
+
   //! try to rotate to wished direction - by setting cinput as needed
   void reachDir();
   //! try to follow rabbit
   void follow();
+  //! test if we crossed finishingLine and if so set a new one
+  void crossLine();
+  //! follow a new edge
+  void followEdge(FWEdge::EID e);
   
   //! wished direction
   R dir;
-  //! follow mode ?
-  bool followMode;
+  //! current operating mode
+  Mode mode;
   //! the id of the player we follow
   PlayerID rabbit;
-
+  //! line to cross
+  Line finishingLine;
+  //! next edge to walk along
+  FWEdge::EID nextEdge;
+  
   //! we accept a direction +-threshold
   static const R threshold;
+
+  static bool inFront(const Line &l, const V2D &v)
+  {
+    return l.m_n*(v-l.m_a)>0;
+  }
 };
 
 #endif
