@@ -41,6 +41,11 @@ public:
   virtual ~SDLInputDev(){}
 
   SigC::Signal1<void, Input &> input;
+
+  const InputDevName &getDevName() const
+  {
+    return m_devName;
+  }
 protected:
   Input m_state;
   InputDevName m_devName;

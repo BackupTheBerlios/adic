@@ -85,6 +85,10 @@ inline void composite(Layer2 &layer2, PlayerInput &g)
 }
 
 //! input device name
+/*!
+  \note we do not use enums because DOPE++ does not support them
+  \todo think about this
+*/
 struct InputDevName
 {
   //! major number (f.e. mouse keyboard joystick)
@@ -93,6 +97,19 @@ struct InputDevName
   int minor;
   //!  the device number in the game
   int8_t devno;
+
+  bool isMouse() 
+  {
+    return major==0;
+  }
+  bool isJoystick()
+  {
+    return major==1;
+  }
+  bool isKeyboard()
+  {
+    return major==2;
+  }
 };
 
 #endif

@@ -35,14 +35,14 @@
   the job of the menu ist to fill the ClientConfig config member
   and to emit signals reporting which fields have changed
 
-  you can select:
-  the servername
-  the number of players
+  you can select: (corresponding member)
+  the servername (config.m_server)
+  the number of players (the size of config.m_users.users)
   for each player:
-  - name
-  - team name
+  - name (config.m_users.users.m_uname)
+  - team name (config.m_users.users.m_tname)
 
-  save configuration
+  save configuration (save.emit())
 */
 class SDLMenu : public SigC::Object
 {
