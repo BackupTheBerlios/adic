@@ -27,6 +27,8 @@
 
 #include "gui.h"
 #include "texture.h"
+#include "sdlsigfactory.h"
+#include "sdlinputdev.h"
 
 class SDLGLGUI : public GUI
 {
@@ -42,6 +44,10 @@ public:
   
   //! cleanup
   ~SDLGLGUI(){m_textures.clear();killWindow();}
+
+  void handleKey(SDL_KeyboardEvent e);
+  void handleResize(SDL_ResizeEvent e);
+  void handleQuit();
 protected:
 
   struct Animation
@@ -68,7 +74,8 @@ protected:
   void drawTexture(const Texture &tex, const V2D &p, R rot=0);
   void drawText(const std::string &text, bool centered=false);
   
-  Input i[3];
+  std::vector<DOPE_SMARTPTR<SDLInputDev> > m_inputDevices;
+
   int m_width;
   int m_height;
   unsigned m_flags;
@@ -90,6 +97,9 @@ protected:
   typedef std::map<std::string, DOPE_SMARTPTR<Texture> > Textures;
   Textures m_textures;
   bool m_showNames;
+
+  SDLSigFactory sf;
+  bool m_quit;
   
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);

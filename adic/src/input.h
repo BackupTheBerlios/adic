@@ -25,7 +25,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include "game.h"
+#include "typedefs.h"
 
 //! input control message
 struct Input
@@ -41,6 +41,15 @@ struct Input
   void composite(Layer2 &l2)
   {
     l2.SIMPLE(x).SIMPLE(y).SIMPLE(devno);
+  }
+
+  bool operator==(const Input &o) const
+  {
+    return (x==o.x)&&(y==o.y)&&(devno==o.devno);
+  }
+  bool operator!=(const Input &o) const
+  {
+    return !operator==(o);
   }
 };
 DOPE_CLASS(Input);
@@ -74,5 +83,16 @@ inline void composite(Layer2 &layer2, PlayerInput &g)
 {
   g.composite(layer2);
 }
+
+//! input device name
+struct InputDevName
+{
+  //! major number (f.e. mouse keyboard joystick)
+  int major;
+  //! minor number (f.e. 0=the first joystick 1=the second joystick)
+  int minor;
+  //!  the device number in the game
+  int8_t devno;
+};
 
 #endif

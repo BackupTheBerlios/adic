@@ -1,6 +1,5 @@
 #include "sdlglgui.h"
 
-#include <SDL/SDL.h>
 #if defined(__APPLE__) && defined(__MACH__)
 #include <OpenGL/gl.h>	// Header File For The OpenGL32 Library
 #include <OpenGL/glu.h>	// Header File For The GLu32 Library
@@ -51,9 +50,13 @@ SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config)
   : GUI(client,config), m_textureTime(5), 
   m_autoCenter(true), 
   m_zoom(1), m_zoomOp(0), m_autoZoom(true),
-  m_showNames(true)
+  m_showNames(true),
+  m_quit(false)
 {
   m_scrollOp[0]=m_scrollOp[1]=0;
+  sf.keyEvent.connect(SigC::slot(*this,&SDLGLGUI::handleKey));
+  sf.quitSignal.connect(SigC::slot(*this,&SDLGLGUI::handleQuit));
+  sf.resize.connect(SigC::slot(*this,&SDLGLGUI::handleResize));
 }
 
 
@@ -61,7 +64,7 @@ bool
 SDLGLGUI::init()
 {
   // Initialize SDL
-  if ( SDL_Init(SDL_INIT_VIDEO) < 0 )
+  if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0 )
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   if (SDL_GL_LoadLibrary(m_config.libGL.c_str())==-1)
     throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+m_config.libGL.c_str()+"\": "+SDL_GetError());
@@ -95,10 +98,28 @@ SDLGLGUI::init()
   LOOKUP(glTexImage2D,glTexImage2DFunc);
   LOOKUP(glRotatef,fvec4Func);
 
+  int major=2;
+  int minor=0;
+  int8_t devno=0;
+  while (major>=0) {
+    InputDevName devname;
+    devname.major=major;
+    devname.minor=minor;
+    devname.devno=devno;
+
+    DOPE_SMARTPTR<SDLInputDev> dev(SDLInputDev::create(sf,devname));
+    if (dev.get()) {
+      dev->input.connect(input.slot());
+      m_inputDevices.push_back(dev);
+      ++minor;
+      ++devno;
+    }else{
+      --major;
+      minor=0;
+    }
+  }
+
   createWindow();
-  i[0].devno=0;
-  i[1].devno=1;
-  i[2].devno=2;
   return true;
 }
 
@@ -163,159 +184,93 @@ SDLGLGUI::getTexture(const std::string &uri)
   return r;
 }
 
+void 
+SDLGLGUI::handleKey(SDL_KeyboardEvent e)
+{
+  bool pressed=e.state==SDL_PRESSED;
+  SDLKey k(e.keysym.sym);
+  switch (k) {
+  case SDLK_LEFT:
+    m_scrollOp[0]=(pressed ? -1 : 0);
+    m_autoCenter=false;
+    break;
+  case SDLK_RIGHT:
+    m_scrollOp[0]=(pressed ? 1 : 0);
+    m_autoCenter=false;
+    break;
+  case SDLK_UP:
+    m_scrollOp[1]=(pressed ? 1 : 0);
+    m_autoCenter=false;
+    break;
+  case SDLK_DOWN:
+    m_scrollOp[1]=(pressed ? -1 : 0);
+    m_autoCenter=false;
+    break;
+  case SDLK_SPACE:
+    if (pressed)
+      m_showNames=!m_showNames;
+    break;
+  case SDLK_KP_PLUS:
+    if (pressed) {
+      m_autoZoom=false;
+      m_zoomOp=1;
+    } else
+      m_zoomOp=0;
+    break;
+  case SDLK_KP_MINUS:
+    if (pressed) {
+      m_autoZoom=false;
+      m_zoomOp=-1;
+    }else
+      m_zoomOp=0;
+    break;
+  case SDLK_1:
+    if (pressed) 
+      m_autoZoom=!m_autoZoom;
+    break;
+  case SDLK_2:
+    if (pressed) 
+      m_autoCenter=!m_autoCenter;
+    break;
+  case SDLK_ESCAPE:
+  case SDLK_q:
+    m_quit=true;
+    break;
+  case SDLK_f:
+    if (pressed) {
+      if (m_flags&SDL_FULLSCREEN)
+	m_flags&=~SDL_FULLSCREEN;
+      else
+	m_flags|=SDL_FULLSCREEN;
+      resize(m_width,m_height);
+    }
+    break;
+  case SDLK_t:
+    m_textureTime=5;
+    break;
+  default:
+    break;
+  }
+}
+
+void
+SDLGLGUI::handleResize(SDL_ResizeEvent e)
+{
+  resize(e.w,e.h);
+}
+
+void
+SDLGLGUI::handleQuit()
+{
+  m_quit=true;
+}
+
+
 bool
 SDLGLGUI::step(R dt)
 {
-  SDL_Event event;
-  bool ichanged[3]={false,false,false};
-  while ( SDL_PollEvent(&event) ) {
-    switch (event.type) {
-    case SDL_QUIT:
-      return false;
-      break;
-    case SDL_VIDEORESIZE:
-      resize(event.resize.w,event.resize.h);
-      break;
-    case SDL_KEYDOWN:
-    case SDL_KEYUP:
-      switch (event.key.keysym.sym) {
-      case SDLK_LEFT:
-	i[0].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[0]=true;
-	break;
-      case SDLK_RIGHT:
-	i[0].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[0]=true;
-	break;
-      case SDLK_UP:
-	i[0].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[0]=true;
-	break;
-      case SDLK_DOWN:
-	i[0].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[0]=true;
-	break;
-      case SDLK_a:
-	i[1].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[1]=true;
-	break;
-      case SDLK_d:
-	i[1].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[1]=true;
-	break;
-      case SDLK_w:
-	i[1].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[1]=true;
-	break;
-      case SDLK_s:
-	i[1].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[1]=true;
-	break;
-	/* third player - this does not work well because of the stupid pc keyboard
-	   case SDLK_KP4:
-	   i[2].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	   ichanged[2]=true;
-	   break;
-	   case SDLK_KP6:
-	   i[2].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	   ichanged[2]=true;
-	   break;
-	   case SDLK_KP8:
-	   i[2].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	   ichanged[2]=true;
-	   break;
-	   case SDLK_KP2:
-	   i[2].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	   ichanged[2]=true;
-	   break;
-	*/
-      case SDLK_KP4:
-	m_scrollOp[0]=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	m_autoCenter=false;
-	break;
-      case SDLK_KP6:
-	m_scrollOp[0]=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	m_autoCenter=false;
-	break;
-      case SDLK_KP8:
-	m_scrollOp[1]=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	m_autoCenter=false;
-	break;
-      case SDLK_KP2:
-	m_scrollOp[1]=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	m_autoCenter=false;
-	break;
-      case SDLK_SPACE:
-	if (event.key.type==SDL_KEYDOWN)
-	  m_showNames=!m_showNames;
-	break;
-      case SDLK_KP_PLUS:
-	if (event.key.type==SDL_KEYDOWN) {
-	  m_autoZoom=false;
-	  m_zoomOp=1;
-	} else
-	  m_zoomOp=0;
-	break;
-      case SDLK_KP_MINUS:
-	if (event.key.type==SDL_KEYDOWN) {
-	  m_autoZoom=false;
-	  m_zoomOp=-1;
-	}else
-	  m_zoomOp=0;
-	break;
-      case SDLK_1:
-	if (event.key.type==SDL_KEYDOWN) 
-	  m_autoZoom=!m_autoZoom;
-	break;
-      case SDLK_2:
-	if (event.key.type==SDL_KEYDOWN) 
-	  m_autoCenter=!m_autoCenter;
-	break;
-      case SDLK_ESCAPE:
-      case SDLK_q:
-	return false;
-	break;
-      case SDLK_f:
-	if (event.key.type==SDL_KEYDOWN) {
-	  if (m_flags&SDL_FULLSCREEN)
-	    m_flags&=~SDL_FULLSCREEN;
-	  else
-	    m_flags|=SDL_FULLSCREEN;
-	  resize(m_width,m_height);
-	}
-	break;
-      case SDLK_t:
-	m_textureTime=5;
-	break;
-      default:
-	break;
-      }
-      break;
-    default:
-      break;
-    }
-    /*
-      case SDL_MOUSEMOTION:
-      mouseMotion.emit(event.motion);
-      break;
-      case SDL_MOUSEBUTTONDOWN:
-      case SDL_MOUSEBUTTONUP:
-      mouseButton.emit(event.button);
-      break;
-      case SDL_JOYAXISMOTION:
-      joyMotion.emit(event.jaxis);
-      break;
-      case SDL_JOYBUTTONDOWN:
-      case SDL_JOYBUTTONUP:
-      joyButton.emit(event.jbutton);
-      break;
-      default:
-      break;
-      }*/
-  }
-  for (unsigned c=0;c<3;++c)
-    if (ichanged[c])
-      input.emit(i[c]);
+  if (m_quit) return false;
+  sf.produce();
 
   // Clear The Screen And The Depth Buffer
   //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -29,7 +29,7 @@
 #include "client.h"
 #include "input.h"
 
-class GUI
+class GUI : public SigC::Object
 {
 public:
   GUI(Client &client, const GUIConfig &config) : m_client(client), m_config(config)

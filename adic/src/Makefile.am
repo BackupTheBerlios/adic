@@ -71,7 +71,11 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	sdlglgui.h sdlglgui.cpp \
 	texture.h texture.cpp \
 	sound.h sound.cpp \
-	soundsdlmixer.h soundsdlmixer.cpp
+	soundsdlmixer.h soundsdlmixer.cpp \
+	sdlinputdev.h sdlinputdev.cpp \
+	sdlkeyboard.h sdlkeyboard.cpp \
+	sdljoystick.h sdljoystick.cpp \
+	sdlmouse.h sdlmouse.cpp
 
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer
