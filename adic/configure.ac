@@ -123,6 +123,9 @@ if $mostlystatic; then
 fi
 
 if $allstatic; then
+	dnl this does not work with XFree & Nvidia Opengl
+	dnl it seems you cannot dlopen nvidia's opengl from a static binary
+	dnl did not look into the details yet
 	echo "linking statically"
 	SERVER_LDADD="-all-static"
 	GUICLIENT_LDADD="-all-static"

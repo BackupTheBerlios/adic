@@ -187,7 +187,8 @@ endif
 adicclient_SOURCES = $(adicclienth) $(adicclientcpp)
 
 # todo check for SDL_image and SDL_mixer
-adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer @GUICLIENT_LDADD@
+# note: order is important
+adicclient_LDADD = @DOPE_LIBS@ -lSDL_image -lSDL_mixer @SDL_LIBS@ @GUICLIENT_LDADD@
 
 adicboth = \
 	$(clientcommonh) \
