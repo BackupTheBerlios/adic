@@ -37,7 +37,7 @@ Client::main()
   NetStreamBuf layer0(adr);
   layer0.setBlocking(false);
   OutProto l2out(layer0);
-  InProto l2in(layer0,TimeStamp(0,300),5);
+  InProto l2in(layer0,TimeStamp(0,300),2);
   SignalOutAdapter<OutProto> so(l2out);
   SignalInAdapter<InProto> si(l2in);
   si.connect(SigC::slot(*this,&Client::handleGreeting));
@@ -51,6 +51,7 @@ Client::main()
   TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
+  TimeStamp timeOut;
   oldTime.now();
   unsigned frames=0;
 
@@ -59,20 +60,27 @@ Client::main()
   DOPE_CHECK(guiPtr->init());
   guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
   while (!m_quit) {
-    // read all messages
-    while (layer0.select(&null))
-      si.read();
     newTime.now();
     dt=newTime-oldTime;
     while(dt<minStep) {
-      (minStep-dt).sleep();
+      timeOut=(minStep-dt);
+      if (layer0.select(&timeOut)) {
+	// read all messages
+	do {
+	  si.read();
+	}while (layer0.select(&null));
+      }
       newTime.now();
       dt=newTime-oldTime;
     }
+    // do main work
     R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
     m_game.step(rdt);
     if (!guiPtr->step(rdt))
       m_quit=true;
+    while (layer0.select(&null))
+      si.read();
+    // end of main work
     oldTime=newTime;
     ++frames;
     dt=newTime-start;
@@ -81,6 +89,7 @@ Client::main()
 	      << " FPS: " << std::setw(10) << R(frames)/uptime 
 	      << " Frame: " << std::setw(20) << frames;
   }
+  delete guiPtr;
   std::cout << std::endl;
   return 0;
 }
