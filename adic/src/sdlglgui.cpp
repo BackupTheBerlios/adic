@@ -359,6 +359,9 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       return true;
     }
     break;
+  case SDLK_p:
+    if (pressed) m_client.ping();
+    break;
   case SDLK_m:
     //    m_textureTime=5;
     return true;

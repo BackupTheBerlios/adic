@@ -42,6 +42,7 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
 {
   //  streamPtr->setBlocking(false);
   factory.connect(SigC::slot(*this,&Connection::handleInput));
+  factory.connect(SigC::slot(*this,&Connection::handlePing));
   factory.connect(SigC::slot(*this,&Connection::handleGreeting));
   factory.connect(SigC::slot(*this,&Connection::handleChatMessage));
 }
@@ -90,6 +91,13 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
+}
+
+void
+Connection::handlePing(DOPE_SMARTPTR<Ping> pingPtr)
+{
+  pingPtr->m_stime.now();
+  emit(*pingPtr);
 }
 
 void
@@ -250,6 +258,7 @@ Server::main()
   TimeStamp timeOut;
   oldTime.now();
   unsigned frames=0;
+  R maxLatency=0;
   while (!quit) {
     // todo - should it be a loop while(dataAvailable?)
     listener.select(&null); // test for input and emit signals if input is available
@@ -261,9 +270,16 @@ Server::main()
       newTime.now();
       dt=newTime-oldTime;
     }
+    TimeStamp ltStart;
+    ltStart.now();
     // main work
-    m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
-    if (!(frames%100))
+    // todo move the loop from game::step here
+    // perhaps it really does not matter
+    // the introduced latency is measured and stored in maxLatency
+    // my max was: 0.000881 - which isn't too much
+    R rdt(R(dt.getSec())+R(dt.getUSec())/1000000);
+    m_game.step(rdt);
+    if (!(frames%60))
       broadcast(m_game);
     // check for win condition
     TeamID wt;
@@ -289,6 +305,11 @@ Server::main()
     std::cout << "\rUp: " << std::fixed << std::setprecision(2) << std::setw(8) << uptime 
 	      << " FPS: " << std::setw(6) << R(frames)/uptime 
 	      << " Frame: " << std::setw(8) << frames;
+    TimeStamp ltEnd;
+    ltEnd.now();
+    ltEnd-=ltStart;
+    R clt(R(ltEnd.getSec())+R(ltEnd.getUSec())/1000000);
+    maxLatency=std::max(maxLatency,clt);
   }
   connections.clear();
 
@@ -306,7 +327,7 @@ Server::main()
       DOPE_WARN("Could not connect to Metaserver\n");
     }
   }
-  
+  std::cerr << "Max (reduceable) latency was: "<<maxLatency<<"\n";
   return 0;
 }
 

@@ -2,5 +2,8 @@
 <PlayerData
 	type="2"
 	r="20"
+	endurance="400"
+	maxspeed="100"
+	mass="1.1"
 	>
 </PlayerData>

@@ -28,6 +28,7 @@
 #include "typedefs.h"
 #include "version.h"
 #include "team.h"
+#include <dope/timestamp.h>
 
 #define USE_RAW_PROTOCOL 1
 
@@ -220,5 +221,16 @@ inline void composite(Layer2 &layer2, EndGame &o)
   o.composite(layer2);
 }
 
+struct Ping
+{
+  TimeStamp m_ctime;
+  TimeStamp m_stime;
+};
+DOPE_CLASS(Ping);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Ping &o)
+{
+  layer2.simple(o.m_ctime,"ctime").simple(o.m_stime,"stime");
+}
 
 #endif

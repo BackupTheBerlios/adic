@@ -117,6 +117,7 @@ public:
   
   void handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr);
   void handleInput(DOPE_SMARTPTR<Input> inputPtr);
+  void handlePing(DOPE_SMARTPTR<Ping> pingPtr);
   void handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr);
 
   /*
@@ -203,6 +204,7 @@ public:
   {
     std::cerr << "\nNew connection ("<<id<<")\n";
     assert(streamPtr.get());
+    streamPtr->setTcpNoDelay(m_config.m_tcpNoDelay);
     m_emitFilter=id;
     Connection *c(new Connection(streamPtr,*this));
     connections[id]=DOPE_SMARTPTR<Connection>(c);

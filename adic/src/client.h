@@ -64,6 +64,8 @@ public:
   void printed(char c);
   void handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr);
   void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr);
+  void handlePing(DOPE_SMARTPTR<Ping> pingPtr);
+
   //! try to connect
   /*!
     \return true on success otherwise false
@@ -71,7 +73,8 @@ public:
   bool connect();
   
   void sendGreeting();
-
+  void ping();
+  
   int main();
 
   Game::WorldPtr getWorldPtr()

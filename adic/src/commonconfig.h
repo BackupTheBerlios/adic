@@ -30,12 +30,13 @@ struct CommonConfig
 {
 public:
   CommonConfig() 
-    : m_port(ADIC_PORT), m_metaServer("http://adic.berlios.de/metaserver/index.php")
+    : m_port(ADIC_PORT), m_metaServer("http://adic.berlios.de/metaserver/index.php"), m_tcpNoDelay(true)
   {}
 
   unsigned short int m_port;
   std::string m_dataPath;
   std::string m_metaServer;
+  bool m_tcpNoDelay;
 };
 DOPE_CLASS(CommonConfig);
 template <typename Layer2>
@@ -43,7 +44,8 @@ inline void composite(Layer2 &layer2, CommonConfig &c)
 {
   layer2.simple(c.m_port,"port")
     .simple(c.m_dataPath,"dataPath")
-    .simple(c.m_metaServer,"metaServer");
+    .simple(c.m_metaServer,"metaServer")
+    .simple(c.m_tcpNoDelay,"tcpNoDelay");
 }
 
 #endif

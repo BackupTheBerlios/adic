@@ -202,6 +202,15 @@ Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   m_streamPtr->so.emit(g);
 }
 
+void
+Client::handlePing(DOPE_SMARTPTR<Ping> pingPtr)
+{
+  TimeStamp pt;
+  pt.now();
+  pt-=pingPtr->m_ctime;
+  std::cout << "Ping time: "<<pt.getSec()<<"sec and "<<pt.getUSec()<<"usec\n";
+}
+
 bool
 Client::connect()
 {
@@ -217,13 +226,14 @@ Client::connect()
     if (m_streamPtr.get()) m_streamPtr=DOPE_SMARTPTR<NetStream>();
   }
   if (!m_streamPtr.get()) return false;
-
+  m_streamPtr->layer0.setTcpNoDelay(m_config.m_tcpNoDelay);
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleGreeting));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleGame));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handlePlayerInput));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleNewClient));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleChatMessage));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleEndGame));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handlePing));
 
   DOPE_CHECK(m_guiPtr.get());
   m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
@@ -237,6 +247,14 @@ Client::sendGreeting()
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
   m_streamPtr->so.emit(g);
+}
+
+void
+Client::ping()
+{
+  Ping p;
+  p.m_ctime.now();
+  m_streamPtr->so.emit(p);
 }
 
 int

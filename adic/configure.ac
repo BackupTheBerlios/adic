@@ -34,12 +34,12 @@ AC_ARG_VAR(ADIC_PORT, the default port to use)
 
 AC_ARG_ENABLE([staticcpp],
 	AC_HELP_STRING([--enable-staticcpp],
-		[enable static cpp libs @<:@default=no@:>@]),
+		[enable static cpp standard library @<:@default=no@:>@]),
 		[],
 		[enable_staticcpp=no])
 
 dnl checks for libraries
-AM_PATH_DOPE(0.0.6, , [AC_MSG_ERROR([dope++ required])])
+AM_PATH_DOPE(0.0.8, , [AC_MSG_ERROR([dope++ required])])
 dnl MDL_HAVE_OPENGL
 
 AM_PATH_SDL(1.2.0, , [AC_MSG_ERROR([SDL required])])
@@ -57,7 +57,11 @@ if test "x$enable_staticcpp" = "xno"; then
      SPECIAL_LDADD=""
 else
      dnl hack to get static linkage with libtool and g++-3.2 of stdc++ library
-     SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.so|sed s/\.so/.a/g` -lgcc_s -lc"
+     dnl it seems we have to use the dynamic gcc_s - otherwise exception handling does
+     dnl not work - but are different gcc_s libraries compatible ?
+     dnl especially is the gcc_s from gcc 3.0.x compatible with the one in gcc 3.2 ?
+     dnl it seems to work
+     SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_s -lc"
 fi
 AC_SUBST(SPECIAL_LDADD)
 

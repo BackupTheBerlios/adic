@@ -215,10 +215,12 @@ public:
   */
   V2D rot(R rad) const
   {
-    R cosx=cos(rad)*m_v[0];
-    R sinx=sin(rad)*m_v[0];
-    R cosy=cos(rad)*m_v[1];
-    R siny=sin(rad)*m_v[1];
+    R cosr=cos(rad);
+    R sinr=sin(rad);
+    R cosx=cosr*m_v[0];
+    R sinx=sinr*m_v[0];
+    R cosy=cosr*m_v[1];
+    R siny=sinr*m_v[1];
     return V2D(cosx+siny,cosy-sinx);
   }
   
@@ -239,6 +241,20 @@ public:
   /*! we keep it public because we allow direct access with the operator[] anyway */
   R m_v[2]; 
 
+  //! calculates direction of given vector
+  /*!
+    our coord sys is a little bit weird (we have clockwise angles and start from 0/1)
+
+    \return direction (0<=direction<2*Pi)
+   */
+  R getDir() const
+  {
+    // atan2 is between -M_PI and +M_PI
+    R res=M_PI/2-atan2(m_v[1],m_v[0]);
+    // res is now between -M_PI/2 and M_PI+M_PI/2
+    return (res>=0) ? res : res+M_PI*2;
+  }
+  
 protected:
   V2D &add(const V2D &o)
   {
