@@ -169,6 +169,11 @@ World::setFromMesh(const Mesh &mesh)
 	    lastID=newID;
 	    lastCW=true;
 	  }
+
+	  // calculate corresponding wall
+	  DOPE_CHECK(newEdge.m_sv<m_vertices.size()&&newEdge.m_ev<m_vertices.size());
+	  newEdge.m_wall=Wall(Line(m_vertices[newEdge.m_sv],m_vertices[newEdge.m_ev]));
+
 	  m_edges.push_back(newEdge);
 	  stored[Key(mesh.edgelist[ce].vid,mesh.edgelist[ne].vid)]=newID;
 	  //	  std::cout << "Stored "<<mesh.edgelist[ce].vid<<","<<mesh.edgelist[ne].vid<<std::endl;
@@ -212,7 +217,8 @@ World::getLineLoop(FWEdge::RoomID room) const
 {
   std::vector<V2D> lineloop;
   EdgeIterator it(*this,room);
-  lineloop.push_back(it.getStartPoint());  
+  // not needed because the last end point produces this point
+  // lineloop.push_back(it.getStartPoint());  
   for (;it!=EdgeIterator(*this);++it)
     lineloop.push_back(it.getEndPoint());
   return lineloop;
@@ -222,6 +228,20 @@ bool
 World::isInRoom(const V2D &p, FWEdge::RoomID r)
 {
   return Polygon(getLineLoop(r)).inside(p);
+  /*
+  const std::vector<V2D> &ll(getLineLoop(r));
+  bool res=Polygon(ll).inside(p);
+  if (res) {
+    std::cerr << p << " in "; 
+    for (unsigned i=0;i<ll.size();++i)
+      std::cerr << ll[i] << ":";
+  }else{
+    std::cerr << p << " not in ";
+    for (unsigned i=0;i<ll.size();++i)
+      std::cerr << ll[i] << ":";
+  }
+  std::cerr << std::endl;
+  return res;*/
 }
 
 std::vector<FWEdge::EID>
