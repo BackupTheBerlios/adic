@@ -35,7 +35,6 @@ world = \
 # client and server have in common
 gamecommon = \
 	$(world) \
-	timestamp.h timestamp.cpp \
 	gameobject.h \
 	roundobject.h \
 	door.h \

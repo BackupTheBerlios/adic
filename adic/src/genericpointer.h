@@ -65,15 +65,20 @@ public:
     setAddress(a);
   }
 
-  X& operator*() const          
+  X& operator*()
   { 
     return *get(); 
   }
-  X* operator->() const 
+  X* operator->() 
   { 
     return get(); 
   }
-  X* get() const 
+
+  //! get referenced object
+  /*!
+    \note not const because fetch might be called if (!derefOnSet)
+  */
+  X* get()
   {
     if (derefOnSet)
       return m_xp.get();

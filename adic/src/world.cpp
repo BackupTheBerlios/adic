@@ -35,6 +35,7 @@ World::EdgeIterator::inc()
 
 World::World(const Mesh &mesh)
 {
+  init();
   setFromMesh(mesh);
 }
 

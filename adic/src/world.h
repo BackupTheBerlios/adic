@@ -105,11 +105,20 @@ protected:
   std::vector<FWEdge> m_edges;
   //! room / face list
   std::vector<Room> m_rooms;
+  //! temporary mesh object
+  DOPE_SMARTPTR<Mesh> m_meshptr;
+  //! stack depth counter for composite
+  int m_stackDepth;
 
+  //! common to call constructors
+  void init()
+  {
+    m_stackDepth=0;
+  }
+  
 public:
   // empty world
-  World()
-  {}
+  World() {init();}
 
   //! create world from mesh
   World(const Mesh &mesh);
@@ -158,13 +167,24 @@ public:
 
   void setFromMesh(const Mesh &mesh);
   
-  template <typename Layer2>
-  void composite(Layer2 &layer2, True)
-  {
+  /*
+    template <typename Layer2>
+    void composite(Layer2 &layer2, True)
+    {
+
+    // BUG: see also <dope/xmlsaxinstream.h>
     Mesh m;
     layer2.simple(m,NULL);
     setFromMesh(m);
-  }
+    // here the mesh will be destroyed and we will loose its data 
+    // => this is (in the moment) not allowed with the XMLSAXInStream
+
+    this does not work either: 
+    i thought a workaround would be to count the stack depth - but it isn't since
+    the xmlsaxinstream returns completely and just calls us more than once ?
+    is this true ?
+    }
+  */
   
   //! helper to walk through a room along the walls
   /*!
@@ -238,13 +258,14 @@ public:
     }
   };
 };
-DOPE_CLASS(World);
 
+/*
+DOPE_CLASS(World);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, World &w)
 {
   w.composite(layer2,typename Layer2::Traits::InStream());
 }
-
+*/
 
 #endif

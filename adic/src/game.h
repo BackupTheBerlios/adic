@@ -38,10 +38,11 @@ public:
   typedef std::vector<Player> Players;
   typedef std::vector<Icon> Icons;
   typedef std::vector<Door> Doors;
-  typedef GenericPointer<World, std::string, URILoader<URICache<World> > > WorldPtr;
+  typedef GenericPointer<Mesh, std::string, URILoader<URICache<Mesh> > > MeshPtr;
+  typedef DOPE_SMARTPTR<World> WorldPtr;
   
   Game(){}
-  Game(const std::string &worldURI) : m_worldPtr(worldURI)
+  Game(const std::string &meshURI) : m_meshPtr(meshURI)
   {}
   
   ~Game(){}
@@ -55,7 +56,10 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(m_players).SIMPLE(m_icons).SIMPLE(m_doors);
+    layer2.SIMPLE(m_players).SIMPLE(m_icons).SIMPLE(m_doors).SIMPLE(m_meshPtr);
+    // karme 2002-05-30:
+    // m_worldPtr is not listed here because I did not solve the "reentrance" problem in DOPE++ yet
+    // (s.a. dope TODO and xmlsaxinstream.h) and i pickle m_meshPtr instead to work around the problem
   }
 
   SigC::Signal1<void,PlayerID> playerAdded;
@@ -63,6 +67,8 @@ protected:
   Players m_players;
   Icons m_icons;
   Doors m_doors;
+  MeshPtr m_meshPtr;
+  //! pointer to world
   WorldPtr m_worldPtr;
 };
 DOPE_CLASS(Game);

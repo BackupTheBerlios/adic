@@ -44,15 +44,18 @@ void sigPipeHandler(int x){
 //! server configuration
 struct ServerConfig
 {
+  ServerConfig() : m_port(40700), m_meshURI("file:data/mesh.xml")
+  {}
+  
   unsigned short int m_port;
-  std::string m_worldURI;
+  std::string m_meshURI;
 };
 DOPE_CLASS(ServerConfig);
 
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ServerConfig &c)
 {
-  layer2.simple(c.m_port,"port").simple(c.m_worldURI,"worldURI");
+  layer2.simple(c.m_port,"port").simple(c.m_meshURI,"meshURI");
 }
 
 typedef XMLOutStream<std::streambuf> OutProto;
@@ -68,6 +71,8 @@ public:
 
   void read()
   {
+    // todo: only one object is read but perhaps there is more than one
+    // does it at least get read in the next loop ?
     sigFactory.read();
   }
   
@@ -125,7 +130,7 @@ protected:
   bool m_quit;
   
 public:
-  Server(ServerConfig &config) : m_config(config), m_game(config.m_worldURI), m_quit(false)
+  Server(ServerConfig &config) : m_config(config), m_game(config.m_meshURI), m_quit(false)
   {}
   ~Server(){}
 
@@ -157,8 +162,32 @@ public:
     listener.newConnection.connect(SigC::slot(*this,&Server::handleNewConnection));
     listener.dataAvailable.connect(SigC::slot(*this,&Server::handleDataAvailable));
     listener.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
-    while (!m_quit)
-      listener.select();
+    TimeStamp start;
+    start.now();
+    TimeStamp oldTime;
+    TimeStamp newTime;
+    TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less because of the min sleep problem
+    TimeStamp dt;
+    TimeStamp null;
+    oldTime.now();
+    unsigned frames=0;
+    while (!m_quit) {
+      // todo - should it be a loop while(dataAvailable?)
+      listener.select(&null); // test for input and emit signals if input is available
+      newTime.now();
+      dt=newTime-oldTime;
+      while(dt<minStep) {
+	(minStep-dt).sleep();
+	newTime.now();
+	dt=newTime-oldTime;
+      }
+      m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
+      oldTime=newTime;
+      ++frames;
+      dt=newTime-start;
+      R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
+      std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime << " FPS: " << std::setw(10) << R(frames)/uptime << " Frame: " << std::setw(20) << frames;
+    }
     connections.clear();
     return 0;
   }
@@ -173,7 +202,7 @@ int main(int argc,char *argv[])
     ServerConfig config;
     parser.simple(config,NULL);
     // exit if parser printed the help message
-    if (parser.gotHelpArg()) return 1;
+    if (parser.shouldExit()) return 1;
     Server server(config);
     return server.main();
   }
