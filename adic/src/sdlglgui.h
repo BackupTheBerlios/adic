@@ -68,6 +68,7 @@ public:
   void handleQuit();
   void handleChatInput(const std::string &msg);
   void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
+  void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr);
   
   //! load a texture (or fetch it from the cache)
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
@@ -189,6 +190,9 @@ protected:
 
   //! room polygons
   std::vector<DOPE_SMARTPTR<GLPoly> > m_polys;
+
+  //! have world
+  bool m_haveWorld;
 };
 
 #endif

@@ -29,7 +29,10 @@
     <h2><a name="news">News/Changelog:</a></h2>
     <h3>2003-05-10: Not yet released (in CVS)</h3>
     <UL>
-      <LI>added music by Éric Tremblay</LI>
+      <LI>added music by Éric Tremblay (one song for the startup menu and one for the game)</LI>
+      <LI>server now has a list of available levels and after one game ends automatically selects the next level (--meshURI switch was removed)</LI>
+      <LI>client sets camera on level startup</LI>
+      <LI>client changes music on each level start</LI>
     </UL>
     <h3>2003-05-09: Perhaps the last beta ? ;-) (Version 0.9.2)</h3>
     <UL>
@@ -104,7 +107,7 @@
     <h2><a name="running">Running</a></h2>
     <UL>
       <LI>Take a look at the <a href="http://adic.berlios.de/metaserver/">meta-server</a> to find a running server</LI>
-      <LI>if the list is empty start your own server. Run <code>adicserver</code> (perhaps you want to enable the metaserver and choose another map. f.e: <code>adicserver --useMetaServer=1 --meshURI=data:mesh.xml</code>, see <code>adicserver --help</code> for more info)</LI>
+      <LI>if the list is empty start your own server. Run <code>adicserver</code> (perhaps you want to enable the metaserver: <code>adicserver --useMetaServer=1</code> - see <code>adicserver --help</code> for more info)</LI>
       <LI>run <code>./adicclient</code> (perhaps you need to set <code>--libGL</code> and perhaps you want to set <code>--quality=3</code> if you have hardware accelerated OpenGL, run <code>adicclient --help</code> for more info)</LI>
       <LI>to start a bot team run <code>adicbot --implementation=i</code> (Where i is currently "KarmeBot" or "BlackBot")</LI>
     </UL>
@@ -179,7 +182,7 @@
     <address><a href="mailto:karme@berlios.de">Jens Thiele</a></address>
     <p>
       <!-- Created: Sun May 26 11:16:13 CEST 2002 -->
-<!-- hhmts start --> Last modified: Sat May 10 02:43:25 CEST 2003 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Sat May 10 21:59:37 CEST 2003 <!-- hhmts end -->
     </p>
     <p>
       <a href="http://validator.w3.org/check/referer">

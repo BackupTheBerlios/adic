@@ -47,10 +47,14 @@
 //! server configuration
 struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_meshURI("data:adic.xml"), m_broadcastFreq(90)
-  {}
+  ServerConfig() : m_broadcastFreq(90)
+  {
+    m_meshURIs.push_back("data:adic.xml");
+    m_meshURIs.push_back("data:bigworld.xml");
+    m_meshURIs.push_back("data:mesh.xml");
+  }
   
-  std::string m_meshURI;
+  std::vector<std::string> m_meshURIs;
   unsigned m_broadcastFreq;
   std::string m_myAddress;
 };
@@ -60,7 +64,7 @@ template <typename Layer2>
 inline void composite(Layer2 &layer2, ServerConfig &c)
 {
   composite(layer2,static_cast<CommonConfig &>(c));
-  layer2.simple(c.m_meshURI,"meshURI")
+  layer2.simple(c.m_meshURIs,"meshURIs")
     .simple(c.m_broadcastFreq,"broadcastFreq")
     .simple(c.m_myAddress,"myAddress");
 }
@@ -188,7 +192,9 @@ protected:
   std::string m_msecret;
   //! address we report to metaSever
   Host m_maddr;
-
+  //! the current mesh
+  unsigned m_cmesh;
+  
   static const NetStreamBufServer::ID m_allFilter=-1;
 public:
   Server(ServerConfig &config);

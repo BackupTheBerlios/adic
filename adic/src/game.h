@@ -96,11 +96,12 @@ public:
 
   Game() 
   {init();}
-  Game(const std::string &meshURI);
   
   ~Game(){}
 
   void init();
+
+  void loadMesh(const std::string &meshUri);
   
   //! step dt seconds forward in time
   bool step(R dt);

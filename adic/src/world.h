@@ -126,6 +126,16 @@ protected:
   DOPE_SMARTPTR<Mesh> m_meshptr;
   //! stack depth counter for composite
   int m_stackDepth;
+  //! top left corner of bounding box
+  /*
+    \note we use a mathematical coordinate system => left to right and bottom to up coordinates
+  */
+  V2D m_topLeft;
+  //! bottom right corner
+  /*
+    \note we use a mathematical coordinate system => left to right and bottom to up coordinates
+  */
+  V2D m_bottomRight;
 
   //! common to call constructors
   void init()
@@ -223,6 +233,16 @@ public:
   const std::vector<V2D> &getVertices() const
   {
     return m_vertices;
+  }
+
+  const V2D &getTopLeft() const
+  {
+    return m_topLeft;
+  }
+
+  const V2D &getBottomRight() const
+  {
+    return m_bottomRight;
   }
   
   void setFromMesh(const Mesh &mesh);

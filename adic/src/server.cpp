@@ -136,8 +136,10 @@ Connection::singleTeam() const
 }
 
 Server::Server(ServerConfig &config) 
-  : m_config(config), m_game(config.m_meshURI), m_emitFilter(m_allFilter)
+  : m_config(config), m_emitFilter(m_allFilter), m_cmesh(0)
 {
+  DOPE_CHECK(m_config.m_meshURIs.size());
+  m_game.loadMesh(m_config.m_meshURIs[0]);
   addStartObjects();
 }
 
@@ -463,6 +465,9 @@ void
 Server::restart()
 {
   m_game.restart();
+  m_cmesh++;
+  if (m_cmesh>=m_config.m_meshURIs.size()) m_cmesh=0;
+  m_game.loadMesh(m_config.m_meshURIs[m_cmesh]);
   Connections::iterator it(connections.begin());
   while (it!=connections.end()) {
     it->second->restart();
@@ -490,7 +495,8 @@ Server::updateMetaserver()
     MetaServer metaServer(m_config.m_metaServer.c_str());
     ServerStatus status;
     status.host=m_maddr;
-    status.level=m_config.m_meshURI;
+    assert(m_cmesh<m_config.m_meshURIs.size());
+    status.level=m_config.m_meshURIs[m_cmesh];
     status.clients=connections.size();
     
     const Game::Players &p(m_game.getPlayers());

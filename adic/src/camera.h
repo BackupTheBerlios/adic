@@ -31,6 +31,8 @@ class Camera
 {
 public:
   Camera();
+  Camera(const V2D &pos, R zoom, R rotate);
+
   ~Camera();
 
   const V2D& getPos() const

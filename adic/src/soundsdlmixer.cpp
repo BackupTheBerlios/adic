@@ -92,7 +92,7 @@ void SoundSDLMixer::deinit()
 }
 
 void
-SoundSDLMixer::playMusic(const char *uri, R volume, unsigned repeat) 
+SoundSDLMixer::playMusic(const char *uri, R volume, int repeat) 
 {
   if (music) Mix_FreeMusic(music);
   assert(uri);
@@ -102,7 +102,7 @@ SoundSDLMixer::playMusic(const char *uri, R volume, unsigned repeat)
     DOPE_WARN(std::string("Couldn't load ")+uri+" "+SDL_GetError());
     return;
   }
-  Mix_FadeInMusic(music,0,2000);
+  Mix_FadeInMusic(music,repeat,2000);
 }
   
 void
@@ -122,8 +122,9 @@ void
 SoundSDLMixer::step(R dt) 
 {
   int playing=Mix_PlayingMusic();
-  if ((!playing)&&(oldPlaying))
-    musicFinished.emit();
+  if ((!playing)&&(oldPlaying)) {
+    DOPE_MSG("info","reached");
+  }
 }
   
 void
@@ -161,4 +162,3 @@ SoundSDLMixer::unloadSample(const char * uri)
   if (it!=samples.end())
     Mix_FreeChunk(it->second);
 }
-

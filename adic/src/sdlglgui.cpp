@@ -418,6 +418,14 @@ SDLGLGUI::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
   m_menuPtr->handleNewClient(mPtr);
 }
 
+void
+SDLGLGUI::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
+{
+  // prepare for next level - reset all internal data structures
+  m_animations.clear();
+  m_polys.clear();
+}
+
 bool
 SDLGLGUI::step(R dt)
 {
@@ -440,13 +448,28 @@ SDLGLGUI::step(R dt)
   // paint world (if possible)
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
   if (worldPtr.get()) {
+    if (!m_haveWorld) {
+      // got new world => set up camera
+      const V2D& tl(worldPtr->getTopLeft());
+      const V2D& br(worldPtr->getBottomRight());
+      V2D p(tl+br);
+      p*=0.5;
+      R xzoom=double(m_width)/(br[0]-tl[0]);
+      R yzoom=double(m_height)/(tl[1]-br[1]);
+      m_camera=Camera(p,std::min(std::min(xzoom,yzoom)*R(0.9),R(2.0)),10);
+      m_camera.setZoom(1);
+    }
+    m_haveWorld=true;
+    
     if (m_toggles&(1<<8)) drawPolys();
     if (m_toggles&(1<<3)) drawWalls();
     if (m_toggles&(1<<4)) drawDoors();
     if (m_toggles&(1<<5)) drawPillars();
     if (m_toggles&(1<<6)) drawPlayers(dt);
     if (m_toggles&(1<<7)) drawTeamStat();
-  }
+  }else
+    m_haveWorld=false;
+  
   
   // paint texture
   /* left here for testing purposes

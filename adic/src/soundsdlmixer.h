@@ -39,16 +39,17 @@ protected:
   int audio_open;
   Mix_Music *music;
   bool oldPlaying;
-
+  
   typedef std::map<std::string, Mix_Chunk *> Samples;
   Samples samples;
+
 public:
   
   SoundSDLMixer(SoundConfig &sc);
   
   ~SoundSDLMixer();
 
-  void playMusic(const char *uri, R volume=R(1), unsigned repeat=0);
+  void playMusic(const char *uri, R volume=R(1), int repeat=0);
   void stopMusic(const char *uri);
   
   void step(R dt);

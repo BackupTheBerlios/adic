@@ -32,18 +32,19 @@ RealDoor::applyImpuls(R dist, V2D impuls)
   d.addSpeed(m/(dist*2*M_PI*mass));
 }
 
-Game::Game(const std::string &meshURI) 
-  : m_meshPtr(meshURI)
-{
-  init();
-}
-
 void
 Game::init()
 {
   m_stepFault=0;
   m_replaceDropped=false;
   m_frame=0;
+}
+
+void
+Game::loadMesh(const std::string &meshURI)
+{
+  m_meshPtr=MeshPtr(meshURI);
+  DOPE_MSG("Info:","Loaded Mesh: \""<<meshURI<<"\"");
 }
 
 /*
@@ -316,7 +317,7 @@ void
 Game::replace(Game &o, bool lagCompensation)
 {
   //  std::cerr << "\nLag: "<<(m_frame-o.m_frame)<<" frames\n";
-  if (lagCompensation) {
+  //  if (lagCompensation) {
     /*
     TimeStamp myTime(getTimeStamp());
     TimeStamp serverTime(o.getTimeStamp());
@@ -356,14 +357,8 @@ Game::replace(Game &o, bool lagCompensation)
       R dt=lag.getSec()+R(lag.getUSec())/1000000;
       std::cerr << "\nAnti-Lag: "<<dt<<" sec.";
       }*/
-  }
+  //  }
   
-  // m_players
-  m_players=o.m_players;
-  for (unsigned p=0;p<m_players.size();++p) {
-    m_players[p].commit();
-    calcPlayerInRoom(p);
-  }
   
   /*
     DOPE_CHECK(m_players.size()<=o.m_players.size());
@@ -389,9 +384,18 @@ Game::replace(Game &o, bool lagCompensation)
     }
     }*/
 
+  // it is important to do this at first
+  m_meshPtr=o.m_meshPtr;
+
+  // m_players
+  m_players=o.m_players;
+  for (unsigned p=0;p<m_players.size();++p) {
+    m_players[p].commit();
+    calcPlayerInRoom(p);
+  }
+
   m_doors=o.m_doors;
   calcClosedRooms();
-  m_meshPtr=o.m_meshPtr;
   m_timeStamp=o.m_timeStamp;
   m_frame=o.m_frame;
 }
@@ -594,4 +598,5 @@ Game::restart()
   m_playerNames.clear();
   m_teams.clear();
   setWorldPtr(WorldPtr());
+  m_meshPtr=MeshPtr();
 }

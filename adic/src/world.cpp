@@ -50,6 +50,18 @@ World::setFromMesh(const Mesh &mesh)
   m_vertices=mesh.vertices;
   m_startPoints=mesh.startPoints;
   m_startObjects=mesh.startObjects;
+
+  // calculate bounding box
+  R big=999999999999; // todo
+  m_topLeft=V2D(big,-big); 
+  m_bottomRight=V2D(-big,big);
+  for (unsigned i=0;i<m_vertices.size();++i){
+    m_topLeft=V2D(std::min(m_topLeft[0],m_vertices[i][0]),
+		  std::max(m_topLeft[1],m_vertices[i][1]));
+    m_bottomRight=V2D(std::max(m_bottomRight[0],m_vertices[i][0]),
+		      std::min(m_bottomRight[1],m_vertices[i][1]));
+  }
+
   // constuct our new edge-list
 
   typedef std::pair<Edge::VID,Edge::VID> Key;

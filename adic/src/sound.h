@@ -53,9 +53,9 @@ public:
     (a nice implementation will fade out) and the new song ist started)
 
     \param volume (0<=volume<=1 with 0=silent 1=maximum)
-    \param repeat how often we should play this file
+    \param repeat how often we should repeat this file (0=play only once -1=play endless)
   */
-  virtual void playMusic(const char *uri, R volume=R(1), unsigned repeat=0)=0;
+  virtual void playMusic(const char *uri, R volume=R(1), int repeat=0)=0;
   
   virtual void stopMusic(const char *uri)=0;
 

@@ -38,11 +38,8 @@ Client::Client(GUIClientConfig &config)
   : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
+  m_songs.push_back("music-eric2.s3m");
   m_songs.push_back("music-eric.s3m");
-  m_songs.push_back("music-eric.s3m");
-  m_songs.push_back("music-eric.s3m");
-  m_songs.push_back("music1.xm");
-  m_songs.push_back("music1.xm");
   m_songs.push_back("music1.xm");
   // todo add some songs here - or better put the list into clientconfig
 }
@@ -73,6 +70,7 @@ Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
   std::cout << "I found "<<devs<<" input devices\n";
   if ((req>0)&&(!got))
     std::cout << "The server is full.\n";
+  playNextSong();
 }
 
 void 
@@ -140,7 +138,7 @@ Client::playNextSong()
   if (!m_soundPtr.get())
     return;
   if (m_csong<m_songs.size()) {
-    m_soundPtr->playMusic(m_songs[m_csong].c_str(),0.8);
+    m_soundPtr->playMusic(m_songs[m_csong].c_str(),0.8,-1);
     ++m_csong;
     if (m_csong>=m_songs.size())
       m_csong=0;
@@ -200,6 +198,11 @@ Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   // restart
   m_game.restart();
   m_playerIDs.clear();
+
+  assert(m_guiPtr.get());
+  m_guiPtr->handleEndGame(egPtr);
+
+  // send greeting again
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
   assert(m_streamPtr.get());
@@ -242,6 +245,10 @@ Client::connect()
   assert(m_guiPtr.get());
   m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
   m_guiPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
+
+  // todo: in the moment dope - does not allow to connect twice
+  //  m_streamPtr->si.connect(SigC::slot(*m_guiPtr,&GUI::handleEndGame));
+
   return true;
 }
 
