@@ -37,6 +37,8 @@
 #endif
 
 typedef float R;
+typedef uint16_t PlayerID;
+typedef uint16_t TeamID;
 
 // std::streambuf
 #include <iostream>

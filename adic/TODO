@@ -1,42 +1,46 @@
-team list
-user list
-standings
+- kollision in räume unterteilen
+  da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
+  daß ich erst schaue in welchem raum ist der spieler und dann schaue ob der spieler mit
+  einer türkante kollidiert falls ja ist er auch im benachbarten raum
+- bewegbare nicht-spieler objekte kisten/fässer (rechtecke)
+- ist es wirklich sinnvoll dass alle spieler an einem rechner in einem team spielen müssen ?
+- kollisions-sound geht nicht mehr (nur nicht beim statisch linken)
+- suche oder schreibe opengl c++ stream also glcin und glcout bzw. eigentlich einen
+  glstreambuf
+- mesh wird immer wieder geladen - da kein cache benutzt wird (dope todo: darüber nachdenken
+  ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
+  können verändert werden
+- game over
+- locked anzeigen
+- ersetze DOPE_CHECK durch assert wo sinnvoll
+- mesa noch schnell genug ? ist noch erstaunlich schnell aber muß schon noch schneller werden
+- zoom (perhaps rotate)
+- compile with -O9 and check the warnings about uninitialized usage
 
+- generic_pointer funktioniert ?
+	ich denke nicht wegen xmlsaxinstream
+	=> entweder schreibe xmldominstream oder neuen xmlsaxinstream
 
+- guikram wird langsam fett
+	besser modularisieren
+	v.a. opengl lader sollte wohl doch nicht direkt im sdlglgui.cpp sein
 
-- mehrere spieler an einem client
 - AI gegner
-
 - a thanks file
-  thanks for the unknown creator of the mod file
-  thanks for the xemacs people for the wav file
-
+  thanks to the unknown creator of the mod file
+  thanks to the xemacs people for the wav file
 - startplatz aussuchen
-
 - skaliert schlecht zumindest der client
-
-- teams fehlen
-
 - profiling (especially the client)
   i think the most time is consumed in the client
-  for the lag compensation
-
-collision is good but still not perfect
-think about the right point for a commit
-
-habe fehler bei -O3
-
-jetzt serialisiere ich auch die old values
-besser wäre nach dem lesen die alten werte auf die neuen zu setzen
-allerings macht das ja evtl. probleme mit dem XMLSAXInStream
-also eigentlich ein dope problem
-
-libefence does not work with -lGL - is there a bug in nvidia's libGL ?
-perhaps update NVIDIA driver
-
-server closes connection
-client doesn't detect it
-
-der genericpointer ist gut fuer dope - nicht loeschen
-
-i18n (localization)
+  for the lag compensation (is disabled now)
+- collision is good but still not perfect
+  think about the right point for a commit
+- jetzt serialisiere ich auch die old values
+	besser wäre nach dem lesen die alten werte auf die neuen zu setzen
+	allerings macht das ja evtl. probleme mit dem XMLSAXInStream
+	also eigentlich ein dope problem
+- server closes connection, client doesn't detect it
+- der genericpointer ist gut fuer dope - nicht loeschen
+- i18n (localization)
+- clean up

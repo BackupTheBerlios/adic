@@ -45,17 +45,24 @@
 struct ClientConfig
 {
   ClientConfig() : m_port(40700), m_server("localhost")
+  {}
+  
+  void setDefaults() 
   {
-    const char *tmp=getenv("USER");
-    if (tmp)
-      m_users.users.push_back(User(tmp));
-    else
-      m_users.users.push_back(User("Player 1"));
-    tmp=getenv("HOSTNAME");
-    if (tmp)
-      m_users.team=tmp;
-    else
-      m_users.team="Unkown";
+    if (m_users.users.empty()) {
+      const char *tmp=getenv("USER");
+      if (tmp)
+	m_users.users.push_back(User(tmp));
+      else
+	m_users.users.push_back(User("Player 1"));
+      /*
+	tmp=getenv("HOSTNAME");
+	if (tmp)
+	m_users.team=tmp;
+	else
+	m_users.team="Unkown";
+      */
+    }
   }
   
   unsigned short int m_port;
@@ -72,25 +79,32 @@ inline void composite(Layer2 &layer2, ClientConfig &c)
     .simple(c.m_gui,"gui").simple(c.m_sc,"sound").simple(c.m_users,"users");
 }
 
+class GUI;
+
 class Client : public SigC::Object
 {
 protected:
   ClientConfig &m_config;
   Game m_game;
   bool m_quit;
-  std::vector<uint16_t> m_playerIDs;
+  std::vector<PlayerID> m_playerIDs;
   Sound* m_soundPtr;
+  GUI* m_guiPtr;
 public:
   Client(ClientConfig &config) 
-    : m_config(config), m_quit(false), m_soundPtr(NULL)
+    : m_config(config), m_quit(false), m_soundPtr(NULL), m_guiPtr(NULL)
   {}
-  ~Client(){}
+  ~Client()
+  {
+    DOPE_CHECK(m_guiPtr==NULL);
+  }
 
   void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
   void handleGame(DOPE_SMARTPTR<Game> gPtr);
   void handleCollision(V2D pos, R strength);
   void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr);
-
+  void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
+  
   int main();
 
   Game::WorldPtr getWorldPtr()
@@ -107,10 +121,12 @@ public:
   {
     return m_game.getPlayers();
   }
-  const std::vector<uint16_t> &getMyIDs() const
+  const std::vector<PlayerID> &getMyIDs() const
   {
     return m_playerIDs;
   }
+
+  std::string getPlayerName(PlayerID id) const;
 protected:
 };
 

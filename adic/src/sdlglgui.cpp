@@ -17,15 +17,11 @@
 #define LOOKUP(m,t) m##P=&m;DOPE_CHECK(m##P)
 #endif
 
-SDLGLGUI::Player::Player(SDLGLGUI &gui)
+SDLGLGUI::Player::Player(SDLGLGUI &gui, const std::vector<std::string> &uris)
   : time(0)
 {
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0001.png")));
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0002.png")));
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0003.png")));
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0004.png")));
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0005.png")));
-  textures.push_back(DOPE_SMARTPTR<Texture>(new Texture(gui,"data/girl_yellow_0006.png")));
+  for (unsigned i=0;i<uris.size();++i)
+    textures.push_back(gui.getTexture(uris[i]));
 }
 
 void 
@@ -61,6 +57,7 @@ SDLGLGUI::init()
   LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
+  LOOKUP(glVertex2i,ivec2Func);
   LOOKUP(glVertex2f,fvec2Func);
   LOOKUP(glEnd,voidFunc);
   LOOKUP(glViewport,ivec4Func);
@@ -83,7 +80,9 @@ SDLGLGUI::init()
   LOOKUP(glRotatef,fvec4Func);
 
   createWindow();
+  i[0].devno=0;
   i[1].devno=1;
+  i[2].devno=2;
   return true;
 }
 
@@ -96,6 +95,7 @@ SDLGLGUI::createWindow()
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
   resize(m_config.width, m_config.height);
   m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(*this,"data/textures.png"));
+  m_fontPtr=DOPE_SMARTPTR<Texture>(new Texture(*this,"data/font.png"));
   glDisableP(GL_NORMALIZE);
   glDisableP(GL_LIGHTING);
   glDisableP(GL_CULL_FACE);
@@ -136,11 +136,22 @@ SDLGLGUI::killWindow()
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+DOPE_SMARTPTR<Texture> 
+SDLGLGUI::getTexture(const std::string &uri)
+{
+  Textures::iterator it(m_textures.find(uri));
+  if (it!=m_textures.end())
+    return it->second;
+  DOPE_SMARTPTR<Texture> r(new Texture(*this,uri.c_str()));
+  m_textures[uri]=r;
+  return r;
+}
+
 bool
 SDLGLGUI::step(R dt)
 {
   SDL_Event event;
-  bool ichanged[2]={false,false};
+  bool ichanged[3]={false,false,false};
   while ( SDL_PollEvent(&event) ) {
     switch (event.type) {
     case SDL_QUIT:
@@ -167,6 +178,38 @@ SDLGLGUI::step(R dt)
       case SDLK_DOWN:
 	i[0].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
 	ichanged[0]=true;
+	break;
+      case SDLK_a:
+	i[1].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[1]=true;
+	break;
+      case SDLK_d:
+	i[1].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[1]=true;
+	break;
+      case SDLK_w:
+	i[1].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[1]=true;
+	break;
+      case SDLK_s:
+	i[1].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[1]=true;
+	break;
+      case SDLK_KP4:
+	i[2].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[2]=true;
+	break;
+      case SDLK_KP6:
+	i[2].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[2]=true;
+	break;
+      case SDLK_KP8:
+	i[2].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	ichanged[2]=true;
+	break;
+      case SDLK_KP2:
+	i[2].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	ichanged[2]=true;
 	break;
       case SDLK_ESCAPE:
       case SDLK_q:
@@ -210,7 +253,7 @@ SDLGLGUI::step(R dt)
       break;
       }*/
   }
-  for (unsigned c=0;c<2;++c)
+  for (unsigned c=0;c<3;++c)
     if (ichanged[c])
       input.emit(i[c]);
 
@@ -225,7 +268,7 @@ SDLGLGUI::step(R dt)
   // keep myself in the middle
   const Game::Players &players(m_client.getPlayers());
 
-  const std::vector<uint16_t> &myIDs(m_client.getMyIDs());
+  const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
   if (!myIDs.empty()) {
     V2D pos;
     unsigned c=0;
@@ -239,6 +282,10 @@ SDLGLGUI::step(R dt)
       }
     if (c) {
       pos/=R(c);
+      m_pos=pos;
+      // don't use sub-pixels
+      pos[0]=int(pos[0]);
+      pos[1]=int(pos[1]);
       glTranslatefP(-pos[0]+m_width/2,-pos[1]+m_height/2,0);
     }
   }
@@ -304,7 +351,24 @@ SDLGLGUI::step(R dt)
     while (players.size()<m_players.size())
       m_players.pop_back();
     while (m_players.size()<players.size())
-      m_players.push_back(Player(*this));
+      {
+	// find team this player is in
+	PlayerID id=m_players.size();
+	unsigned tid=~0U;
+	const std::vector<Team> &teams(m_client.getGame().getTeams());
+	unsigned i=0;
+	for (;i<teams.size();++i) {
+	  std::vector<PlayerID>::const_iterator it(std::find(teams[i].playerIDs.begin(),teams[i].playerIDs.end(),id));
+	  if (it!=teams[i].playerIDs.end()) {
+	    tid=it-teams[i].playerIDs.begin();
+	    break;
+	  }
+	}
+	DOPE_CHECK(i<teams.size());
+	DOPE_CHECK(tid!=~0U);
+	DOPE_CHECK(tid<teams[i].textures.size());
+	m_players.push_back(Player(*this,teams[i].textures[tid]));
+      }
   }
   for (unsigned p=0;p<players.size();++p)
     {
@@ -315,6 +379,10 @@ SDLGLGUI::step(R dt)
       //      drawCircle(players[p].m_pos,players[p].m_r);
       m_players[p].step(players[p],dt);
       drawTexture(m_players[p].getTexture(),players[p].m_pos,players[p].getDirection());
+      glPushMatrixP();
+      glTranslatefP(int(players[p].m_pos[0]), int(players[p].m_pos[1])+players[p].m_r, 0);
+      drawText(m_client.getPlayerName(p),true);
+      glPopMatrixP();
       /*      V2D dv(V2D(0,100).rot(players[p].getDirection()));
       glColor3fP(1.0,1.0,0.0);
       glBeginP(GL_LINES);
@@ -324,6 +392,36 @@ SDLGLGUI::step(R dt)
       glEndP(); 
       glColor3fP(1.0,1.0,1.0); */
     }
+  // paint team statistics
+  const std::vector<Team> &teams(m_client.getGame().getTeams());
+  if (teams.size()) {
+    std::vector<unsigned> numPlayers(teams.size());
+    std::vector<unsigned> locked(teams.size());
+    for (unsigned i=0;i<teams.size();++i) {
+      numPlayers[i]=teams[i].playerIDs.size();
+      for (unsigned j=0;j<numPlayers[i];++j) {
+	PlayerID id=teams[i].playerIDs[j];
+	// perhaps we did not receive this player yet
+	if (id<players.size()&&m_client.getGame().playerIsLocked(id))
+	  ++locked[i];
+      }
+    }
+    int dx=m_width/(teams.size()+1);
+    glPushMatrixP();
+    for (unsigned i=0;i<teams.size();++i) {
+      glColor3fP(teams[i].color[0],teams[i].color[1],teams[i].color[2]);
+      glLoadIdentityP();
+      glTranslatefP(dx*(i+1),40,0);
+      drawText(teams[i].name,true);
+      glLoadIdentityP();
+      glTranslatefP(dx*(i+1),10,0);
+      drawText(anyToString(numPlayers[i]-locked[i])+"/"+anyToString(numPlayers[i]),true);
+      glFlushP();
+    }
+    glPopMatrixP();
+  }
+  
+  
   // paint texture
   if (m_textureTime>0) {
     glLoadIdentityP();
@@ -353,8 +451,11 @@ SDLGLGUI::step(R dt)
   return true;
 }
 
-
-
+V2D 
+SDLGLGUI::getPos() const
+{
+  return m_pos;
+}
 
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
@@ -404,10 +505,8 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   int h2=h>>1;
   glPushMatrixP();
   glTranslatefP(p[0], p[1], 0);
-  if (rot!=0) {
-    rot=-rot*180/M_PI;
-    glRotatefP(rot+90,0,0,1);
-  }
+  rot=-rot*180/M_PI;
+  glRotatefP(rot+90,0,0,1);
   glColor3fP(1.0,1.0,1.0);
   glEnableP(GL_TEXTURE_2D);
   glEnableP(GL_BLEND);
@@ -428,3 +527,37 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   glPopMatrixP();
 }
 
+void 
+SDLGLGUI::drawText(const std::string &text, bool centered)
+{
+  int xtiles=16,ytiles=16;
+  int w=m_fontPtr->getWidth(),h=m_fontPtr->getHeight();
+  float fw=w,fh=h;
+  int dx=w/xtiles;
+  int dy=h/ytiles;
+  float fdx=1.0f/xtiles;
+  float fdy=1.0f/ytiles;
+  int offset=0;
+  if (centered) offset=-int(text.size())*dx/2;
+  glEnableP(GL_TEXTURE_2D);
+  glEnableP(GL_BLEND);
+  glBlendFuncP(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTextureP(GL_TEXTURE_2D, m_fontPtr->getTextureID());
+  glBeginP(GL_QUADS);
+  for (unsigned i=0;i<text.size();++i){
+    float cx=float((int(text[i]-32)%xtiles)*dx)/fw;
+    float cy=float((int(text[i]-32)/xtiles)*dy)/fh;
+    int x=i*dx+offset;
+    glTexCoord2fP(cx,cy);
+    glVertex2iP(x,dy);
+    glTexCoord2fP(cx+fdx,cy);
+    glVertex2iP(x+dx,dy);
+    glTexCoord2fP(cx+fdx,cy+fdy);
+    glVertex2iP(x+dx,0);
+    glTexCoord2fP(cx,cy+fdy);
+    glVertex2iP(x,0);
+  }
+  glEndP();
+  glDisableP(GL_BLEND);
+  glDisableP(GL_TEXTURE_2D);
+}

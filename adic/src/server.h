@@ -139,7 +139,7 @@ protected:
   //! class to emit objects to the network stream
   SignalOutAdapter<OutProto> emitter;
   //! client player IDs
-  std::vector<Game::PlayerID> playerIDs;
+  std::vector<PlayerID> playerIDs;
 };
 
 //! the server application
@@ -162,6 +162,19 @@ public:
   {}
   ~Server(){}
 
+  //! get team
+  /*!
+    \param tname the teamname or if empty find a suitable team
+    \return the team or NULL
+  */
+  Team *getTeam(const std::string &tname);
+
+  //! get weakest team to add a player
+  /*!
+    \return Team or NULL
+  */
+  Team *getWeakestTeam();
+  
   void handleNewConnection(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf> streamPtr)
   {
     std::cerr << "\nNew connection ("<<id<<")\n";
@@ -218,15 +231,18 @@ public:
     m_emitFilter=efbackup;
   }
   
-  Game::PlayerID addPlayer()
+  PlayerID addPlayer(const std::string &name)
   {
-    return m_game.addPlayer();
+    return m_game.addPlayer(name);
   }
 
   void setInput(const PlayerInput &i)
   {
     m_game.setInput(i);
   }
+
+  //! broaadcast NewClient message
+  void broadcastNewClient(Connection* c);
 };
 
 #endif

@@ -255,7 +255,7 @@ public:
     FWEdge::EID m_b;
   public:
     //! iterator which is already at the end
-    EdgeIterator(const World &world) : m_w(world), m_end(true)
+    EdgeIterator(const World &world) : m_w(world), m_end(true), m_c(FWEdge::noEdge), m_b(FWEdge::noEdge)
     {
     }
     

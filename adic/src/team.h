@@ -17,62 +17,42 @@
  */
 
 /*!
-   \file input.h
-   \brief input message
+   \file team.h
+   \brief class Team
    \author Jens Thiele
 */
 
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef TEAM_H
+#define TEAM_H
 
-#include "game.h"
+#include "typedefs.h"
 
-//! input control message
-struct Input
+struct Team
 {
-  Input() : x(0), y(0), devno(0)
-  {}
+  Team() {}
+  //! create team with default values
+  Team(const std::string &_name,unsigned tno);
   
-  int8_t x;
-  int8_t y;
-  int8_t devno;
-  
-  template <typename Layer2>
-  void composite(Layer2 &l2)
+  std::string name;
+  float color[3];
+  std::vector<std::vector<std::string> > textures;
+  std::vector<PlayerID> playerIDs;
+  bool operator==(const std::string &n) const
   {
-    l2.SIMPLE(x).SIMPLE(y).SIMPLE(devno);
+    return name==n;
+  }
+  void addPlayer(PlayerID id)
+  {
+    playerIDs.push_back(id);
   }
 };
-DOPE_CLASS(Input);
+DOPE_CLASS(Team);
 template <typename Layer2>
-inline void composite(Layer2 &layer2, Input &g)
+inline void composite(Layer2 &layer2, Team &t)
 {
-  g.composite(layer2);
-}
-
-struct PlayerInput
-{
-  PlayerInput(const Input &_i, PlayerID _id) 
-    : i(_i), id(_id)
-  {}
-  PlayerInput()
-    : id(~0U)
-  {}
-  
-  Input i;
-  PlayerID id;
-
-  template <typename Layer2>
-  void composite(Layer2 &l2)
-  {
-    l2.SIMPLE(i).SIMPLE(id);
-  }
-};
-DOPE_CLASS(PlayerInput);
-template <typename Layer2>
-inline void composite(Layer2 &layer2, PlayerInput &g)
-{
-  g.composite(layer2);
+  layer2.simple(t.name,"name").simple(t.playerIDs,"playerIDs")
+    .fixedCVector(t.color,3,"color")
+    .simple(t.textures,"textures");
 }
 
 #endif

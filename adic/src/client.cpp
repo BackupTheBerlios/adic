@@ -59,25 +59,30 @@ Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
     gPtr->step(dt);
     }*/
   // todo later we will perhaps need a replace method
-  // backup worldPtr - otherwise it would be verry time-consuming (build world from mesh ...)
-  Game::WorldPtr w=m_game.getWorldPtr();
-  //  std::cerr << "\nGot Game with "<<gPtr->getPlayers().size() << " players (was: "<<m_game.getPlayers().size()<<")\n";
+  // backup data - which isn't pickled
+  Game::WorldPtr wp(m_game.getWorldPtr());
+  gPtr->setWorldPtr(wp);
+  gPtr->setPlayerNames(m_game.getPlayerNames());
+  gPtr->setTeams(m_game.getTeams());
   m_game=*gPtr.get();
-  //  std::cerr << "after copy have "<<m_game.getPlayers().size()<<" players\n";
-  m_game.setWorldPtr(w);
+  //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
 }
 
 void 
 Client::handleCollision(V2D pos, R strength)
 {
-  if (!m_soundPtr)
-    return;
-  int c=m_soundPtr->playSample("data/collision.wav");
-  R volume=strength/40;
-  if (volume>1) volume=1;
-  m_soundPtr->modifyChannel(c,volume);
-  //  std::cerr << "\nPlay sample\n";
+  if (m_soundPtr) {
+    // collision sound 
+    R volume=strength/40;
+    if (m_guiPtr) volume-=(m_guiPtr->getPos()-pos).length()/R(200);
+    if (volume>0) {
+      if (volume>1) volume=1;
+      //  std::cerr << "\nPlay sample\n";
+      int c=m_soundPtr->playSample("data/collision.wav");
+      m_soundPtr->modifyChannel(c,volume);
+    }
+  }
 }
 
 void
@@ -86,6 +91,24 @@ Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
   DOPE_CHECK(iPtr.get());
   m_game.setInput(*iPtr.get());
     //    std::cerr << "\nGot Input\n";
+}
+
+void
+Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
+{
+  std::cerr << "\ngot player names:\n";
+  for (unsigned i=0;i<mPtr->playerNames.size();++i)
+    std::cerr << mPtr->playerNames[i] << std::endl;
+  m_game.setPlayerNames(mPtr->playerNames);
+  m_game.setTeams(mPtr->teams);
+}
+
+std::string
+Client::getPlayerName(PlayerID id) const
+{
+  if (id>=m_game.getPlayerNames().size()) return anyToString(id);
+  //else 
+  return m_game.getPlayerNames()[id];
 }
 
 int
@@ -106,6 +129,7 @@ Client::main()
   si.connect(SigC::slot(*this,&Client::handleGreeting));
   si.connect(SigC::slot(*this,&Client::handleGame));
   si.connect(SigC::slot(*this,&Client::handlePlayerInput));
+  si.connect(SigC::slot(*this,&Client::handleNewClient));
 
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
@@ -123,12 +147,12 @@ Client::main()
   unsigned frames=0;
 
   GUIFactory guif;
-  GUI* guiPtr=guif.create(*this,m_config.m_gui);
+  m_guiPtr=guif.create(*this,m_config.m_gui);
   m_soundPtr=Sound::create(m_config.m_sc);
   m_soundPtr->playMusic("data/music.mod");
 
-  DOPE_CHECK(guiPtr->init());
-  guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
+  DOPE_CHECK(m_guiPtr->init());
+  m_guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
   while (!m_quit) {
     newTime.now();
     dt=newTime-oldTime;
@@ -146,7 +170,7 @@ Client::main()
     // do main work
     R rdt=R(dt.getSec())+R(dt.getUSec())/1000000;
     m_game.step(rdt);
-    if (!guiPtr->step(rdt))
+    if (!m_guiPtr->step(rdt))
       m_quit=true;
     m_soundPtr->step(rdt);
     while (layer0.select(&null))
@@ -162,8 +186,8 @@ Client::main()
   }
   delete m_soundPtr;
   m_soundPtr=NULL;
-  delete guiPtr;
-  guiPtr=NULL;
+  delete m_guiPtr;
+  m_guiPtr=NULL;
   std::cout << std::endl;
   return 0;
 }
@@ -176,6 +200,7 @@ int main(int argc,char *argv[])
     parser.simple(config,NULL);
     // exit if parser printed the help message
     if (parser.shouldExit()) return 1;
+    config.setDefaults();
     Client client(config);
     return client.main();
 

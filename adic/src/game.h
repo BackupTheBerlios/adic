@@ -31,6 +31,7 @@
 #include "icon.h"
 #include "uriloader.h"
 #include "wall.h"
+#include "team.h"
 
 class PlayerInput;
 
@@ -115,7 +116,6 @@ public:
 class Game
 {
 public:
-  typedef uint16_t PlayerID;
   typedef std::vector<Player> Players;
   typedef std::vector<Icon> Icons;
   typedef std::vector<Door> Doors;
@@ -167,7 +167,7 @@ public:
     return m_players;
   }
   //! add a new player
-  PlayerID addPlayer();
+  PlayerID addPlayer(const std::string &name);
 
   void setInput(const PlayerInput &i);
 
@@ -223,6 +223,57 @@ public:
   {
     return roomIsClosed(playerInRoomCached(p));
   }
+  //! get team by name
+  /*!
+    \return Pointer to team or NULL if it doesn't exist
+  */
+  Team *getTeam(const std::string &t)
+  {
+    std::vector<Team>::iterator it(find(m_teams.begin(),m_teams.end(),t));
+    if (it!=m_teams.end())
+      return &(*it);
+    return NULL;
+  }
+  //! get team by ID
+  Team *getTeam(unsigned id)
+  {
+    DOPE_CHECK(id<m_teams.size());
+    return &m_teams[id];
+  }
+  
+  Team* addTeam(const std::string &t, unsigned tno)
+  {
+    m_teams.push_back(Team(t,tno));
+    return &m_teams.back();
+  }
+
+  unsigned numTeams() const
+  {
+    return m_teams.size();
+  }
+  const std::vector<Team> &getTeams() const
+  {
+    return m_teams;
+  }
+  void setTeams(const std::vector<Team> &teams)
+  {
+    m_teams=teams;
+  }
+
+  void setPlayerName(PlayerID id,const std::string &name)
+  {
+    if (id>=m_playerNames.size())
+      m_playerNames.resize(id+1);
+    m_playerNames[id]=name;
+  }
+  const std::vector<std::string> &getPlayerNames() const
+  {
+    return m_playerNames;
+  }
+  void setPlayerNames(const std::vector<std::string> &playerNames)
+  {
+    m_playerNames=playerNames;
+  }
 protected:
   bool miniStep(R dt);
   void calcClosedRooms();
@@ -243,6 +294,12 @@ protected:
 
   //! all closed rooms
   std::vector<FWEdge::RoomID> m_closedRooms;
+
+  // data not pickled
+  //! player names
+  std::vector<std::string> m_playerNames;
+  //! teams
+  std::vector<Team> m_teams;
 };
 DOPE_CLASS(Game);
 

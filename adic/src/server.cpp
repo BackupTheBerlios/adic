@@ -40,16 +40,26 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
 void 
 Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
 {
+  Team *t=server.getTeam(gPtr->m_userSetting.team);
+  if (!t) return;
   for (unsigned i=0;i<gPtr->m_userSetting.users.size();++i)
     {
-      uint16_t id=server.addPlayer();
-      if (id==uint16_t(~0U))
+      // todo - find unused player before adding a new one
+
+      // check if team is full
+      if (t->playerIDs.size()>=t->textures.size())
+	break;
+      // try to add player
+      PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_name);
+      if (id==PlayerID(~0U))
 	break;
       playerIDs.push_back(id);
+      t->addPlayer(id);
     }
   ServerGreeting g;
   g.m_players=playerIDs;
   emit(g);
+  server.broadcastNewClient(this);
 }
 
 
@@ -67,6 +77,56 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
+}
+
+Team *
+Server::getTeam(const std::string &tname)
+{
+  Team *t=NULL;
+  if (tname.empty()) {
+    // no special team requested => find team which needs a player
+    t=getWeakestTeam();
+    if (!t) return NULL;
+  }else{
+    // does this team already exist ?
+    t=m_game.getTeam(tname);
+    if (t) {
+      // yes 
+      // => todo: password needed and correct ?
+      // check if team is full
+    }else{    
+      // no => create new team 
+      // todo: if maximum number of teams isn't reached yet
+      t=m_game.addTeam(tname,m_game.numTeams());
+    }
+  }
+  return t;
+}
+
+Team *
+Server::getWeakestTeam()
+{
+  unsigned maxTeams=3;
+  unsigned numTeams=m_game.numTeams();
+  if (numTeams<maxTeams)
+    {
+      // create team
+      std::string tname("Team");
+      tname+=anyToString(numTeams+1);
+      return m_game.addTeam(tname,numTeams);
+    }
+  // todo: better alogrithm - check for max players
+  unsigned minp=~0U;
+  unsigned i=0;
+  const std::vector<Team> &teams(m_game.getTeams());
+  for (;i<numTeams;++i)
+    minp=std::min(teams[i].playerIDs.size(),minp);
+  for (i=0;i<numTeams;++i)
+    if (teams[i].playerIDs.size()==minp)
+      break;
+  if (i>=numTeams)
+    return NULL;
+  return m_game.getTeam(i);
 }
 
 int 
@@ -141,3 +201,14 @@ int main(int argc,char *argv[])
      }*/
   return 1;
 }
+
+
+void
+Server::broadcastNewClient(Connection* c)
+{
+  NewClient m;
+  m.playerNames=m_game.getPlayerNames();
+  m.teams=m_game.getTeams();
+  broadcast(m);
+}
+

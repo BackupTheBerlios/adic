@@ -38,6 +38,8 @@ public:
   
   virtual bool init()=0;
   virtual bool step(R dt)=0;
+  //! get world position
+  virtual V2D getPos() const=0;
 
   SigC::Signal1<void, Input &> input;
 protected:

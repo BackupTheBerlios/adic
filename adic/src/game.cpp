@@ -71,6 +71,7 @@ Game::calcPlayerInRoom(unsigned p)
 FWEdge::RoomID 
 Game::playerInRoomCached(unsigned pid)
 {
+  DOPE_CHECK(pid<m_players.size());
   PlayerRoomMap::iterator it(m_playerRoomMap.find(pid));
   if (it==m_playerRoomMap.end()) {
     calcPlayerInRoom(pid);
@@ -83,10 +84,9 @@ Game::playerInRoomCached(unsigned pid)
 FWEdge::RoomID
 Game::playerInRoom(Player &p)
 {
-  //  return 0; // todo
   WorldPtr w(getWorldPtr());
   if (!w.get()) {
-    DOPE_WARN("returned noRoom because I don't have the world yet");
+    DOPE_WARN("\nreturned noRoom because I don't have the world yet\n");
     return FWEdge::noRoom;
   }
   FWEdge::RoomID r=w->inRoom(p.m_pos);
@@ -207,15 +207,14 @@ void Game::calcClosedRooms()
     return;
   for (unsigned r=0;r<w->getNumRooms();++r)
     {
-      // select room color
       RealRoom room(*w.get(),m_doors,r);
       if (room.getADIC())
 	m_closedRooms.push_back(r);
     }
 }
 
-Game::PlayerID
-Game::addPlayer()
+PlayerID
+Game::addPlayer(const std::string &name)
 {
   PlayerID id=m_players.size();
   WorldPtr w(getWorldPtr());
@@ -225,8 +224,9 @@ Game::addPlayer()
     Player newp(s[p]);
     m_players.push_back(newp);
     if (!collidePlayer(id,true)) {
-	playerAdded.emit(id);
-	return id;
+      setPlayerName(id,name);
+      playerAdded.emit(id);
+      return id;
     }else{
       m_players.pop_back();
     }
@@ -303,10 +303,11 @@ Game::collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor)
   // of cv (no not really because of the pillars at the end of the door)
   // todo this is buggy
   V2D timp(cv.project(rd.getImpuls(dist)));
-  p.applyImpuls(timp-oimp);
-  rd.applyImpuls(dist,oimp-timp);
+  p.applyImpuls(timp*0.9-oimp);
+  rd.applyImpuls(dist,oimp*0.9-timp);
   p.commit();
   d.commit();
   collision.emit(p.m_pos,oimp.length()+timp.length());
   return true;
 }
+

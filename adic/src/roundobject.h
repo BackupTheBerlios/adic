@@ -37,7 +37,7 @@ struct RoundObject : public GameObject, public Circle
   RoundObject()
   {}
   
-  RoundObject(const V2D &pos,R r=22) : Circle(pos,r)
+  RoundObject(const V2D &pos,R r=15) : Circle(pos,r)
   {}
   
   void rollback()

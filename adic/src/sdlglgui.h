@@ -37,13 +37,16 @@ public:
   bool init();
   //! repaint
   bool step(R dt);
+
+  V2D getPos() const;
+  
   //! cleanup
-  ~SDLGLGUI(){killWindow();}
+  ~SDLGLGUI(){m_textures.clear();killWindow();}
 protected:
 
   struct Player
   {
-    Player(SDLGLGUI &gui);
+    Player(SDLGLGUI &gui, const std::vector<std::string> &uris);
     
     Texture &getTexture() const
     {
@@ -71,14 +74,22 @@ protected:
   void drawWall(const Wall &wall);
   void drawPolygon(const std::vector<V2D> &p);
   void drawTexture(const Texture &tex, const V2D &p, R rot=0);
+  void drawText(const std::string &text, bool centered=false);
   
-  Input i[2];
+  Input i[3];
   int m_width;
   int m_height;
   unsigned m_flags;
   DOPE_SMARTPTR<Texture> m_texturePtr;
   R m_textureTime;
+  DOPE_SMARTPTR<Texture> m_fontPtr;
   std::vector<Player> m_players;
+  V2D m_pos;
+
+
+  DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
+  typedef std::map<std::string, DOPE_SMARTPTR<Texture> > Textures;
+  Textures m_textures;
   
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);
@@ -93,6 +104,7 @@ protected:
   typedef void (*fvec5Func)(float,float,float,float,float);
   typedef void (*fvec6Func)(float,float,float,float,float,float);
   typedef void (*dvec6Func)(double,double,double,double,double,double);
+  typedef void (*ivec2Func)(int,int);
   typedef void (*ivec4Func)(int,int,int,int);
   typedef void (*uintfloatPFunc)(unsigned int, float *);
 
@@ -113,6 +125,7 @@ public:
   LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
+  LOOKUP(glVertex2i,ivec2Func);
   LOOKUP(glVertex2f,fvec2Func);
   LOOKUP(glEnd,voidFunc);
   LOOKUP(glViewport,ivec4Func);

@@ -24,6 +24,7 @@
 
 #include "typedefs.h"
 #include "version.h"
+#include "team.h"
 
 #define USE_RAW_PROTOCOL 1
 
@@ -75,7 +76,7 @@ inline void composite(Layer2 &layer2, Greeting &g)
 struct ServerGreeting : public Greeting
 {
   //! the player ID's the client got
-  std::vector<uint16_t> m_players;
+  std::vector<PlayerID> m_players;
 
   template <typename Layer2>
   void composite(Layer2 &l2)
@@ -159,4 +160,19 @@ template <typename Layer2>
 inline void composite(Layer2 &layer2, ChatMessage &c)
 {
   layer2.simple(c.m_message,"message").simple(c.m_global,"global");
+}
+
+//! new client connected
+struct NewClient
+{
+  //! all player names - in the game
+  std::vector<std::string> playerNames;
+  //! all teams - in the game
+  std::vector<Team> teams;
+};
+DOPE_CLASS(NewClient);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, NewClient &o)
+{
+  layer2.simple(o.playerNames,"playerNames").simple(o.teams,"teams");
 }
