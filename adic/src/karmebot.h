@@ -52,6 +52,11 @@ protected:
     CROSSLINE
   };
 
+  //! every time a collision occurs - this should be called
+  /*!
+    tries to stop stupid behaviour (f.e. always running against a blocked door)
+  */
+  void handleCollision();
   //! try to rotate to wished direction - by setting cinput as needed
   void reachDir();
   //! try to follow rabbit
@@ -74,6 +79,11 @@ protected:
   
   //! we accept a direction +-threshold
   static const R threshold;
+
+  //! last position with collision
+  V2D lastCollisionPos;
+  //! time of last collision
+  TimeStamp lastCollisionTime;
 
   static bool inFront(const Line &l, const V2D &v)
   {

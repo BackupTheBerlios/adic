@@ -3,7 +3,11 @@
 const R KarmeBot::threshold=5;
 
 KarmeBot::KarmeBot(BotClient &_client, PlayerID _pid, unsigned _inputID) 
-  : Bot(_client,_pid,_inputID), mode(DEFAULT)
+  : Bot(_client,_pid,_inputID),
+    mode(DEFAULT),
+    rabbit(0),
+    nextEdge(FWEdge::noEdge),
+    lastCollisionTime(client.getGame().getTimeStamp())
 {
 }
 
@@ -49,6 +53,7 @@ KarmeBot::playerCollision(PlayerID cp, const V2D &cv)
   }
   rabbit=cp;
   mode=FOLLOW;
+  handleCollision();
 }
 
 void 
@@ -56,12 +61,31 @@ KarmeBot::wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv)
 {
   assert(eids.size());
   followEdge(eids[0]);
+  handleCollision();
 }
 
 void
 KarmeBot::doorCollision(unsigned did, const V2D &cv)
 {
+  handleCollision();
 }
+
+void
+KarmeBot::handleCollision()
+{
+  const Player &me(client.getPlayers()[pid]);
+  if ((me.m_pos-lastCollisionPos).norm2()>me.m_r) {
+    lastCollisionPos=me.m_pos;
+    lastCollisionTime=client.getGame().getTimeStamp();
+    return;
+  }
+  if (client.getGame().getTimeStamp()-lastCollisionTime<10)
+    return;
+  mode=DEFAULT;
+  dir=R(rand()/(RAND_MAX/360))/R(180)*M_PI;
+  lastCollisionTime=client.getGame().getTimeStamp();
+}
+
   
 
 void
@@ -113,17 +137,23 @@ KarmeBot::followEdge(FWEdge::EID eid)
   // side of the edge
   FWEdge::RoomID r=client.getGame().playerInRoomCached(pid);
   bool cw=r==e.m_rcw;
-  if ((!cw)&&(r!=e.m_rccw)) DOPE_WARN(r<<eid);
-
+  if ((!cw)&&(r!=e.m_rccw)) {
+    DOPE_WARN(r<<eid);
+    mode=DEFAULT;
+    return;
+  }
   if (!e.isDoor()) {
     Line l(e.m_wall.getLine());
     if (cw) {
       nextEdge=e.m_ncw;
-      assert(nextEdge!=FWEdge::noEdge);
     }else{
       nextEdge=e.m_nccw;
-      assert(nextEdge!=FWEdge::noEdge);
       l=Line(l.m_b,l.m_a);
+    }
+    if (nextEdge==FWEdge::noEdge) {
+      mode=DEFAULT;
+      DOPE_WARN("disabled CROSSLINE mode");
+      return;
     }
     const FWEdge &e2(worldPtr->getEdge(nextEdge));
 
@@ -139,11 +169,14 @@ KarmeBot::followEdge(FWEdge::EID eid)
     Line l(e.m_wall.getLine());
     if (cw) {
       nextEdge=e.m_nccw;
-      assert(nextEdge!=FWEdge::noEdge);
     }else{
       nextEdge=e.m_ncw;
-      assert(nextEdge!=FWEdge::noEdge);
       l=Line(l.m_b,l.m_a);
+    }
+    if (nextEdge==FWEdge::noEdge) {
+      mode=DEFAULT;
+      DOPE_WARN("disabled CROSSLINE mode");
+      return;
     }
     V2D s(l.m_a-l.m_n*l.m_v.norm2());
     finishingLine=Line(s,s+l.m_v);
