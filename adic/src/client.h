@@ -89,11 +89,11 @@ protected:
   bool m_quit;
   std::vector<PlayerID> m_playerIDs;
   DOPE_SMARTPTR<Sound> m_soundPtr;
+  std::vector<std::string> m_songs;
+  unsigned m_csong;
   DOPE_SMARTPTR<GUI> m_guiPtr;
 public:
-  Client(ClientConfig &config) 
-    : m_config(config), m_quit(false), m_soundPtr(NULL), m_guiPtr(NULL)
-  {}
+  Client(ClientConfig &config);
   ~Client()
   {}
 
@@ -102,6 +102,7 @@ public:
   void handleCollision(V2D pos, R strength);
   void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr);
   void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
+  void playNextSong();
   
   int main();
 

@@ -31,6 +31,13 @@ void sigPipeHandler(int x){
 }
 
 
+Client::Client(ClientConfig &config) 
+  : m_config(config), m_quit(false), m_soundPtr(NULL), m_csong(0), m_guiPtr(NULL)
+{
+  m_songs.push_back("data/music.mod");
+  // todo add some songs here - or better put the list into clientconfig
+}
+
 void
 Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 {
@@ -57,8 +64,8 @@ Client::handleCollision(V2D pos, R strength)
 {
   if (m_soundPtr.get()) {
     // collision sound 
-    R volume=strength/40;
-    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(200);
+    R volume=strength/80;
+    if (m_guiPtr.get()) volume-=(m_guiPtr->getPos()-pos).length()/R(400);
     if (volume>0) {
       if (volume>1) volume=1;
       //  std::cerr << "\nPlay sample\n";
@@ -93,6 +100,20 @@ Client::getPlayerName(PlayerID id) const
   //else 
   return m_game.getPlayerNames()[id];
 }
+
+void 
+Client::playNextSong()
+{
+  if (!m_soundPtr.get())
+    return;
+  if (m_csong<m_songs.size()) {
+    m_soundPtr->playMusic(m_songs[m_csong].c_str());
+    ++m_csong;
+    if (m_csong>=m_songs.size())
+      m_csong=0;
+  }
+}
+
 
 int
 Client::main()
@@ -137,7 +158,8 @@ Client::main()
   GUIFactory guif;
   m_guiPtr=DOPE_SMARTPTR<GUI>(guif.create(*this,m_config.m_gui));
   m_soundPtr=DOPE_SMARTPTR<Sound>(Sound::create(m_config.m_sc));
-  m_soundPtr->playMusic("data/music.mod");
+  m_soundPtr->musicFinished.connect(SigC::slot(*this,&Client::playNextSong));
+  playNextSong();
   std::vector<int> soundChannel;
   
   DOPE_CHECK(m_guiPtr->init());
