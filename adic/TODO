@@ -1,0 +1,17 @@
+habe grad nen crash
+und zwar bei xmlsaxinstream
+src/gameserver --file=file:data/world.xml
+
+mit den eingabe devices nochmal ueberlegen
+der genericpointer ist gut fuer dope - nicht loeschen
+
+aber bei panzer habe ich das mit der eingabe irgendwie besser gemacht
+da nachschauen
+
+also bei panzer habe ich das so gemacht:
+die control daten (input device zustand) sind einfach in dem objekt und werden
+ganz normal mitgeschickt
+
+der client sendet spezielle control messages an den server sobald noetig
+
+i18n (localization)

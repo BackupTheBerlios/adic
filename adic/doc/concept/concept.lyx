@@ -1,0 +1,134 @@
+#LyX 1.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 218
+\textclass slides
+\begin_preamble
+% Uncomment to print out only slides and overlays
+%
+%\onlyslides{\slides}
+
+% Uncomment to print out only notes
+%
+%\onlynotes{\notes}
+\end_preamble
+\language english
+\inputencoding default
+\fontscheme default
+\graphics dvips
+\paperfontsize default
+\spacing single 
+\papersize Custom
+\paperpackage a4
+\use_geometry 1
+\use_amsmath 0
+\paperorientation portrait
+\paperwidth 28cm
+\paperheight 20cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\quotes_times 2
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+
+\layout Slide
+
+1
+\layout Description
+
+Ziele:
+\layout Itemize
+
+Multiplayer
+\layout Itemize
+
+Netzwerk
+\layout Itemize
+
+Teams
+\layout Itemize
+
+Unterschiedliche Clients (verschiedene Spielebenen)
+\layout Slide
+
+2
+\layout Description
+
+Spielidee:
+\layout Standard
+\added_space_top 0.3cm \added_space_bottom 0.3cm \align center 
+
+\begin_inset Figure size 357 238
+file fig.eps
+width 3 60
+flags 11
+
+\end_inset 
+
+
+\layout Standard
+
+Gegnerische Spieler in einem Raum einsperren.
+\layout Slide
+
+3
+\layout Description
+
+Spielelemente:
+\layout Itemize
+
+Türen
+\begin_deeper 
+\layout Itemize
+
+einseitig
+\layout Itemize
+
+mit Schlüssel
+\layout Itemize
+
+gehen kaputt
+\layout Itemize
+
+...
+\end_deeper 
+\layout Itemize
+
+Schlüssel (verschiedene Farben)
+\layout Slide
+
+4
+\layout Description
+
+Spielelemente:
+\layout Itemize
+
+Spieler
+\begin_deeper 
+\layout Itemize
+
+verschiedene Attribute (Ausdauer,...)
+\layout Itemize
+
+können sich gegenseitig treten und schieben
+\layout Itemize
+
+können (beschränkte Anzahl) Schlüssel tragen
+\end_deeper 
+\layout Itemize
+
+Optional Götter
+\begin_deeper 
+\layout Itemize
+
+kann Schlüssel verteilen
+\layout Itemize
+
+evtl.
+ Wände einreissen
+\layout Itemize
+
+einfach alles nur nicht immer ;-)
+\the_end
