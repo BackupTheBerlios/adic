@@ -1,3 +1,9 @@
+GAMEPLAY:
+- tueren schneller zu gehen
+- nicht gleich wieder auf
+- kisten "tragen"
+- sichtbarkeit einschränken
+
 TUNING:
 - ministep wegmachen bzw. step mit kleinen werten aufrufen um die latenz zu vermindern
 - stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
