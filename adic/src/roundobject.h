@@ -63,6 +63,7 @@ protected:
   inline void composite(Layer2 &layer2)
   {
     Circle::composite(layer2);
+    layer2.SIMPLE(m_oldCircle);
   }
 
   Circle m_oldCircle;

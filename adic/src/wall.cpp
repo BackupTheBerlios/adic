@@ -59,7 +59,7 @@ Wall::collide(const Circle &circle, V2D &cv) const
 }
 
 bool 
-Wall::collide(const Circle &circle, V2D &cv, R dist) const
+Wall::collide(const Circle &circle, V2D &cv, R &dist) const
 {
   dist=(m_l.m_b-m_l.m_a).length();
   return collide(circle,cv);

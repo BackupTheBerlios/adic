@@ -1,15 +1,21 @@
+- profiling (especially the client)
+  i think the most time is consumed in the client
+  for the lag compensation
+
+
+collision is good but still not perfect
+think about the right point for a commit
+
+
+habe fehler bei -O3
+
 jetzt serialisiere ich auch die old values
 besser wäre nach dem lesen die alten werte auf die neuen zu setzen
 allerings macht das ja evtl. probleme mit dem XMLSAXInStream
 also eigentlich ein dope problem
 
-libefence does not work with -lGL - is there a bug in libGL ?
+libefence does not work with -lGL - is there a bug in nvidia's libGL ?
 perhaps update NVIDIA driver
-
-
-collideDoorAndPlayer
-macht nen rollback fuer beide
-das kann zu fehlern fuehren
 
 server closes connection
 client doesn't detect it

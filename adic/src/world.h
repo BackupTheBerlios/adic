@@ -295,6 +295,10 @@ public:
       r=Wall(l);
       return true;
     }
+    FWEdge::EID getID() const
+    {
+      return m_c;
+    }
   };
 };
 

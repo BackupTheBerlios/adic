@@ -54,10 +54,7 @@ class Door
   
   static const R damping;
 public:
-  Door(FWEdge::EID _eid=FWEdge::noEdge)
-    : angle(0), angleSpeed(RAD(10)), maxAngle(RAD(90)), minAngle(RAD(-90)), eid(_eid), oldAngle(0), oldAngleSpeed(angleSpeed),
-      locked(false)
-  {}
+  Door(FWEdge::EID _eid=FWEdge::noEdge);
 
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
@@ -65,14 +62,7 @@ public:
     layer2.SIMPLE(angle).SIMPLE(angleSpeed).SIMPLE(maxAngle).SIMPLE(minAngle).SIMPLE(eid)
       .SIMPLE(oldAngle).SIMPLE(oldAngleSpeed);
   }
-  bool step(R dt)
-  {
-    angle+=angleSpeed*dt;
-    if (angle>maxAngle) {angle=maxAngle-(angle-maxAngle);angleSpeed*=-1;}
-    if (angle<minAngle) {angle=minAngle+(minAngle-angle);angleSpeed*=-1;}
-    angleSpeed-=angleSpeed*damping*dt;
-    return true;
-  }
+  bool step(R dt);
 
   //! is this door closed ?
   /*!

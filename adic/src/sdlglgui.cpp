@@ -38,6 +38,8 @@ SDLGLGUI::init()
   LOOKUP(glPopMatrix,voidFunc);
   LOOKUP(glGetFloatv,uintfloatPFunc);
   LOOKUP(glLineWidth,floatFunc);
+  LOOKUP(glFlush,voidFunc);
+  LOOKUP(glFinish,voidFunc);
 
   createWindow(m_config.title.c_str(),m_config.width,m_config.height,m_config.bits,m_config.fullscreen);
   return true;
@@ -124,9 +126,19 @@ SDLGLGUI::step(R dt)
   // paint world
   Game::WorldPtr worldPtr=m_client.getWorldPtr();
   if (worldPtr.get()) {
-    // paint walls
+    // paint rooms
     for (unsigned r=0;r<worldPtr->getNumRooms();++r)
       {
+	// select room color
+	RealRoom room(*worldPtr.get(),m_client.getGame().getDoors(),r);
+	bool adic=room.getADIC();
+	if (adic)
+	  glColor3fP(0.5,0.0,0.0);
+	else
+	  glColor3fP(0.0,0.5,0.0);
+	drawPolygon(worldPtr->getLineLoop(r));
+
+	// paint walls
 	World::EdgeIterator it(*worldPtr.get(),r);
 	Wall wall;
 	for (;it!=World::EdgeIterator(*worldPtr.get());++it) {
@@ -162,7 +174,8 @@ SDLGLGUI::step(R dt)
       glEndP();
       glColor3fP(1.0,1.0,1.0);
     }
-  
+  glFlushP();
+  //glFinishP();
   SDL_GL_SwapBuffers();
   return true;
 }
@@ -262,3 +275,11 @@ SDLGLGUI::drawWall(const Wall &w)
   glEndP();
   glLineWidthP(lw);
 }
+
+void
+SDLGLGUI::drawPolygon(const std::vector<V2D> &p)
+{
+  // todo - OpenGL only draws convex polygons => we have to do it ourselves
+  // this is a job for Jens Schwarz ;-)
+}
+

@@ -81,7 +81,7 @@ public:
 
     \return true if there is a collision otherwise false
   */
-  bool collide(const Circle &circle, V2D &cv, R dist) const;
+  bool collide(const Circle &circle, V2D &cv, R &dist) const;
 };
 
 #endif

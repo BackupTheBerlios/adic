@@ -46,6 +46,8 @@ protected:
 
   void drawCircle(const V2D &p, float r);
   void drawWall(const Wall &wall);
+  void drawPolygon(const std::vector<V2D> &p);
+  
   Input i;
   int m_width;
   int m_height;
@@ -62,6 +64,7 @@ protected:
   typedef void (*dvec6Func)(double,double,double,double,double,double);
   typedef void (*ivec4Func)(int,int,int,int);
   typedef void (*uintfloatPFunc)(unsigned int, float *);
+
 #define LOOKUP(m,t) t m##P
 
   LOOKUP(glClear,uintFunc);
@@ -79,7 +82,9 @@ protected:
   LOOKUP(glPopMatrix,voidFunc);
   LOOKUP(glGetFloatv,uintfloatPFunc);
   LOOKUP(glLineWidth,floatFunc);
-  
+  LOOKUP(glFlush,voidFunc);
+  LOOKUP(glFinish,voidFunc);
+
 #undef LOOKUP
 };
 

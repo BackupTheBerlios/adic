@@ -48,9 +48,8 @@ class RealDoor
   V2D e;
   R mass;
 public:
-  RealDoor(Door &_d, const V2D &_s, const V2D &_e)
-    : d(_d), s(_s), e(_e), mass(0.01)
-  {}
+  RealDoor(Door &_d, const V2D &_s, const V2D &_e);
+
   Wall asWall()
   {
     Wall r(Line(s,s+(e-s).rot(d.getAngle())));
@@ -60,29 +59,58 @@ public:
   /*!
     \todo in fact we want to get the momentum - and this should be /dist ?
   */
-  V2D getImpuls(R dist)
-  {
-    R tSpeed=d.getSpeed()*dist*2*M_PI*mass;
-    // calculate normal
-    V2D dv((e-s).rot(d.getAngle()));
-    dv.rot90();
-    dv.normalize();
-    dv*=tSpeed;
-    return dv;
-  }
+  V2D getImpuls(R dist);
+
   //! apply impuls at specific point of door
-  void applyImpuls(R dist, V2D impuls)
-  {
-    V2D n((e-s).rot(d.getAngle()));
-    n.rot90();
-    V2D i(n.project(impuls));
-    R m=i.length();
-    if (n.dot(i)<0)
-      m=-m;
-    d.addSpeed(m/(dist*2*M_PI*mass));
-  }
+  void applyImpuls(R dist, V2D impuls);
 };
 
+class RealRoom
+{
+  const World &w;
+  typedef std::map<FWEdge::EID,unsigned> Dmap;
+  Dmap dmap;
+  const std::vector<Door> &allDoors;
+  FWEdge::RoomID roomID;
+public:
+  RealRoom(const World& _w, const std::vector<Door> &_allDoors, FWEdge::RoomID _roomID)
+    : w(_w), allDoors(_allDoors), roomID(_roomID)
+  {
+    for (World::EdgeIterator i(w,roomID);i!=World::EdgeIterator(w);++i)
+      {
+	if ((*i).isDoor())
+	  {
+	    unsigned doorID=~0U;
+	    for (unsigned d=0;d<allDoors.size();++d)
+	      {
+		if (allDoors[d].getEdgeID()==i.getID()) {
+		  doorID=d;
+		  break;
+		}
+	      }
+	    DOPE_CHECK(doorID!=~0U);
+	    dmap[i.getID()]=doorID;
+	  }
+      }
+  }
+  
+  //! any door is closed ?
+  bool getADIC() const
+  {
+    for (World::EdgeIterator i(w,roomID);i!=World::EdgeIterator(w);++i)
+      {
+	if ((*i).isDoor())
+	  {
+	    Dmap::const_iterator it(dmap.find(i.getID()));
+	    DOPE_CHECK(it!=dmap.end());
+	    unsigned d=it->second;
+	    if (!allDoors[d].isClosed())
+	      return false;
+	  }
+      }
+    return true;
+  }
+};
 
 class Game
 {
@@ -149,7 +177,7 @@ public:
 
     \return true on collision otherwise false
   */
-  bool collideDoorAndPlayer(Door &d, Player &p);
+  bool collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor);
   
   //! return corresponding RealDoor to a door
   RealDoor doorInWorld(Door &d);
