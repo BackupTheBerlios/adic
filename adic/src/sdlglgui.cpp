@@ -299,7 +299,6 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       m_autoCenter=!m_autoCenter;
     return true;
   case SDLK_ESCAPE:
-  case SDLK_q:
     m_quit=true;
     return true;
   case SDLK_f:

@@ -52,6 +52,10 @@ FEATURES:
 - client should use metaserver
 - schlüssel
 - Türen kaputtbar
+- disconnected players should be removed
+- record movies 
+-  (time-travelling - portal gets you back in time and you have a limited amount of time to change
+   what happens)
 
 
 BUGS/QUESTIONS:
