@@ -197,7 +197,7 @@ public:
   //! get edge
   const FWEdge &getEdge(FWEdge::EID eid) const
   {
-    DOPE_CHECK(eid<m_edges.size());
+    assert(eid<m_edges.size());
     return m_edges[eid];
   }
   //! get roomids for one edge
@@ -210,10 +210,14 @@ public:
   //! get start point of edge
   const V2D &getPoint(FWEdge::VID v) const
   {
-    DOPE_CHECK(v<m_vertices.size());
+    assert(v<m_vertices.size());
     return m_vertices[v];
   }
-  
+
+  const std::vector<V2D> &getVertices() const
+  {
+    return m_vertices;
+  }
   
   void setFromMesh(const Mesh &mesh);
   
@@ -329,6 +333,11 @@ public:
     {
       return m_c;
     }
+    bool getCW() const
+    {
+      return m_cw;
+    }
+    
   };
 };
 

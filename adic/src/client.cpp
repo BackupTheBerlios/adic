@@ -231,14 +231,18 @@ Client::connect()
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleChatMessage));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleEndGame));
 
-  ClientGreeting g;
-  g.m_userSetting=m_config.m_users;
-  m_streamPtr->so.emit(g);
-
   DOPE_CHECK(m_guiPtr.get());
   m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
   m_guiPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
   return true;
+}
+
+void
+Client::sendGreeting()
+{
+  ClientGreeting g;
+  g.m_userSetting=m_config.m_users;
+  m_streamPtr->so.emit(g);
 }
 
 int
@@ -273,7 +277,7 @@ Client::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/200); // max. 200 Hz will be less because of the min sleep problem
+  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less (ca. 50) because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;

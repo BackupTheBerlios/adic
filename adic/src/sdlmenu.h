@@ -19,7 +19,7 @@
 /*!
    \file sdlmenu.h
    \brief class SDLMenu
-   \author Jens Thiele
+   \author Jens Schwarz, Jens Thiele
 */
 
 #ifndef SDLMENU_H
@@ -62,13 +62,11 @@ public:
   //! is called when input device has changed status
   void handleInput(Input &i);
 
-  //! is called when we received new server statistics
+  //! is called when a new client connected
   /*!
-    \todo this is not perfect because the menu has to assume
-    things like max player/team and max team which it should not
-  */
-  void handleServerStat(const std::vector<TeamStat> &stats);
-  
+    see messages.h for the NewClient struct
+   */
+  void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
 
   // signal output
 
@@ -96,6 +94,10 @@ protected:
 
   void handleServerName(const std::string &name);
   void handleServerPort(const std::string &name);
+  void handlePlayerName(const std::string &name);
+  void handleTeamName(const std::string &name);
+
+
 
 
   //! this is called when the menu is finished
@@ -114,6 +116,14 @@ protected:
   
   SDLInputField serverName;
   SDLInputField serverPort;
+  SDLInputField playerName;
+  SDLInputField teamName;
+
+  int m_screen, m_playerNum;
+  DOPE_SMARTPTR<Texture> m_hiPtr;
+
+  std::vector<DOPE_SMARTPTR<Texture> > m_screens;
+
 };
 
 #endif

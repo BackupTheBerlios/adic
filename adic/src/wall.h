@@ -44,7 +44,7 @@ protected:
   //! circle including everything
   Circle m_circle;
 public:
-  Wall(const Line &line=Line(), R pr=5, R wt=1) 
+  Wall(const Line &line=Line(), R pr=4, R wt=2.5) 
     : m_l(line), m_pr(pr), m_wt(wt), m_circle((m_l.m_a+m_l.m_b)/2,(m_l.m_b-m_l.m_a).length()/2+pr*3)
   {
   }

@@ -192,7 +192,7 @@ Server::main()
   start.now();
   TimeStamp oldTime;
   TimeStamp newTime;
-  TimeStamp minStep(0,1000000/200); // max. 200 Hz will be less because of the min sleep problem
+  TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less (ca. 50) because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
   TimeStamp timeOut;

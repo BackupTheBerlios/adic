@@ -77,6 +77,7 @@ public:
 
   void drawCircle(const V2D &p, float r);
   void drawWall(const Wall &wall, bool cwClosed=false, bool ccwClosed=false);
+  void drawDoor(const Wall &wall, bool closed=false);
   void drawTexture(const Texture &tex, const V2D &p, R rot=0);
 
   //! return width - Attention: may change during the game
@@ -97,7 +98,11 @@ public:
   }
 
   //! get current teams
-  const std::vector<Team> &getTeams() const;
+  const std::vector<Team> &getTeams() const
+  {
+    return m_client.getGame().getTeams();
+  }
+  
   //! get current team statistics
   const std::vector<TeamStat> &getTeamStats();
 
@@ -108,6 +113,13 @@ public:
     gl.Flush();
   }
 protected:
+  void drawPillars();
+  void setupCamera(R dt);
+  void drawWalls();
+  void drawDoors();
+  void drawPlayers(R dt);
+  void drawTeamStat();
+  
   //! \todo not yet implemented
   void drawPolygon(const std::vector<V2D> &p);
 
@@ -158,6 +170,9 @@ protected:
 
   //! line smoothing ?
   bool m_lineSmooth;
+
+  //! some toggles
+  unsigned m_toggles;
 };
 
 #endif

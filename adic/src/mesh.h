@@ -127,7 +127,7 @@ public:
 
   bool noEdge(EID e) const
   {
-    return (e<0)||(e>=edgelist.size())||(edgelist[e].vid==Edge::noVertice);
+    return (e<0)||(e>=(int)edgelist.size())||(edgelist[e].vid==Edge::noVertice);
   }
   bool isEdge(EID e) const 
   {

@@ -63,12 +63,13 @@ SDLInputField::handleKey(SDL_KeyboardEvent e)
     if (ch>=32) {
       m_content+=ch;
       printed.emit(ch);
+      return true;
     }
   }
   else {
     std::cerr << "An International Character.\n";
   }
-  return true;
+  return false;
 }
 
 void

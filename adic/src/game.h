@@ -159,7 +159,13 @@ public:
   FWEdge::RoomID calcPlayerInRoom(unsigned pid);
   
   //! in which room is this player ?
-  FWEdge::RoomID playerInRoomCached(unsigned pid);
+  inline FWEdge::RoomID playerInRoomCached(unsigned pid)
+  {
+    assert(pid<m_players.size());
+    if (pid<m_playerRoomMap.size())
+      return m_playerRoomMap[pid];
+    return calcPlayerInRoom(pid);
+  }
   
   //! in which room is this player ?
   /*!
@@ -168,13 +174,11 @@ public:
   */
   FWEdge::RoomID playerInRoom(Player &p);
 
-  const std::vector<FWEdge::RoomID> &getClosedRooms() const
-  {
-    return m_closedRooms;
-  }
   bool roomIsClosed(FWEdge::RoomID r) const
   {
-    return (find(m_closedRooms.begin(),m_closedRooms.end(),r)!=m_closedRooms.end());
+    if (r<m_closedRooms.size())
+      return m_closedRooms[r];
+    return false;
   }
   bool playerIsLocked(unsigned p)
   {
@@ -289,8 +293,8 @@ protected:
 
   std::vector<std::vector<unsigned> > m_roomDoors;
   
-  //! all closed rooms
-  std::vector<FWEdge::RoomID> m_closedRooms;
+  //! room closed ?
+  std::vector<bool> m_closedRooms;
 
   // data not pickled
   //! player names

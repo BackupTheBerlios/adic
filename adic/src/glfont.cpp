@@ -39,7 +39,9 @@ GLFont::drawTextRow(const std::string &text, bool centered)
       gl.TexCoord2f(cx,cy+fdy);
       gl.Vertex2i(x,0);
       ++col;
-    }else if ((text[i]>=11)&&(text[i]<32)&&colors.size()) {
+      continue;
+    }
+    if ((text[i]>=11)&&(text[i]<32)&&colors.size()) {
       unsigned t=text[i]-11;
       t%=colors.size();
       gl.Color3f(colors[t].c[0],colors[t].c[1],colors[t].c[2]);

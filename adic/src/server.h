@@ -203,7 +203,9 @@ public:
     std::cerr << "\nNew connection ("<<id<<")\n";
     assert(streamPtr.get());
     m_emitFilter=id;
-    connections[id]=DOPE_SMARTPTR<Connection>(new Connection(streamPtr,*this));
+    Connection *c(new Connection(streamPtr,*this));
+    connections[id]=DOPE_SMARTPTR<Connection>(c);
+    broadcastNewClient(c);
     emitGame();
   }
 
@@ -265,6 +267,9 @@ public:
   }
 
   //! broaadcast NewClient message
+  /*!
+    \note this message is broadcasted twice if a new client connects
+  */
   void broadcastNewClient(Connection* c);
 
   //! send non-global chat message

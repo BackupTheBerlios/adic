@@ -5,7 +5,17 @@ gamefiles_DATA = \
 	boy.xml girl.xml muetze.xml cowboy.xml \
 	music.mod collision.wav \
 	printer.wav newline.wav \
-	font.png textures.png barrel.png \
+	font.png \
+	gui_0001.png \
+	gui_0002.png \
+	gui_0003.png \
+	gui_0004.png \
+	gui_0005.png \
+	gui_0006.png \
+	gui_0007.png \
+	hi.png \
+	textures.png \
+	barrel.png \
 	pillar.png \
 	girl_blue_0001.png \
 	girl_blue_0002.png \

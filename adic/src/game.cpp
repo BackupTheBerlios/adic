@@ -46,7 +46,7 @@ bool
 Game::step(R dt)
 {
   dt+=m_stepFault;
-  R stepSize=0.01;
+  R stepSize=0.02;
   while (dt>stepSize)
     {
       bool r=miniStep(stepSize);
@@ -71,15 +71,6 @@ Game::calcPlayerInRoom(unsigned p)
   if ((r!=FWEdge::noRoom)&&(w->isInRoom(m_players[p].m_pos,r)))
     return r;
   return (m_playerRoomMap[p]=playerInRoom(m_players[p]));
-}
-
-FWEdge::RoomID 
-Game::playerInRoomCached(unsigned pid)
-{
-  assert(pid<m_players.size());
-  if (pid>=m_playerRoomMap.size())
-    return calcPlayerInRoom(pid);
-  return m_playerRoomMap[pid];
 }
 
 FWEdge::RoomID
@@ -219,7 +210,6 @@ Game::miniStep(R dt)
 
 void Game::calcClosedRooms()
 {
-  m_closedRooms.clear();
   const WorldPtr &w(getWorldPtr());
   if (!w.get())
     return;
@@ -246,6 +236,7 @@ void Game::calcClosedRooms()
 	}
     }
   }
+  if (m_closedRooms.size()!=nr) m_closedRooms.resize(nr);
   for (unsigned r=0;r<nr;++r) {
     unsigned nd=m_roomDoors[r].size();
     unsigned d=0;
@@ -253,7 +244,7 @@ void Game::calcClosedRooms()
       if (!m_doors[m_roomDoors[r][d]].isClosed())
 	break;
     }
-    if (d==nd) m_closedRooms.push_back(r);
+    m_closedRooms[r]=(d==nd);
   }
 }
 

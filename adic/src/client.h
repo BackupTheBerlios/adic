@@ -98,6 +98,8 @@ public:
   */
   bool connect();
   
+  void sendGreeting();
+
   int main();
 
   Game::WorldPtr getWorldPtr()

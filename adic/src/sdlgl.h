@@ -59,6 +59,7 @@ public:
   typedef void (*dvec6Func)(double,double,double,double,double,double);
   typedef void (*ivec2Func)(int,int);
   typedef void (*ivec4Func)(int,int,int,int);
+  typedef void (*ivec4voidPFunc)(int,int,int,int, void *);
   typedef void (*uintfloatPFunc)(unsigned int, float *);
 
 
@@ -100,6 +101,10 @@ public:
   LOOKUP(TexImage2D,glTexImage2DFunc);
   LOOKUP(Rotatef,fvec4Func);
   LOOKUP(ShadeModel, uintFunc);
+  LOOKUP(RasterPos2i, ivec2Func);
+  LOOKUP(PixelStorei, uint2Func);
+  LOOKUP(DrawPixels, ivec4voidPFunc);
+  LOOKUP(PixelZoom, fvec2Func);
 #undef LOOKUP
 };
 

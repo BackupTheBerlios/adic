@@ -8,7 +8,7 @@ SDLGLGUI::SDLGLGUI(Client &client)
     m_zoom(1), m_zoomOp(0), m_autoZoom(true),
     m_showNames(true),
     m_quit(false), m_frames(0),
-    m_chatMode(0), m_lineSmooth(false)
+    m_chatMode(0), m_lineSmooth(getGUIConfig().quality>0), m_toggles(~0)
 {
   m_scrollOp[0]=m_scrollOp[1]=0;
   sf.quitSignal.connect(SigC::slot(*this,&SDLGLGUI::handleQuit));
@@ -70,9 +70,10 @@ SDLGLGUI::init()
   m_menuPtr=DOPE_SMARTPTR<SDLMenu>(new SDLMenu(*this));
   assert(m_inputDevices.size());
   assert(m_menuPtr.get());
-  m_inputDevices[0]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
+  for (unsigned i=0;i<m_inputDevices.size();++i)
+    m_inputDevices[i]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
   m_menuPtr->serverSelected.connect(SigC::slot(m_client,&Client::connect));
-
+  m_menuPtr->configured.connect(SigC::slot(m_client,&Client::sendGreeting));
   return true;
 }
 
@@ -97,7 +98,13 @@ SDLGLGUI::createWindow()
   gl.Disable(GL_NORMALIZE);
   gl.Disable(GL_LIGHTING);
   gl.Disable(GL_CULL_FACE);
-  gl.Disable(GL_LINE_SMOOTH);
+  float range[2];
+  gl.GetFloatv(GL_LINE_WIDTH_RANGE,range);
+  std::cerr << range[0] << "<LINE_WIDTH<"<<range[1]<<"\n";
+  if (!m_lineSmooth)
+    gl.Disable(GL_LINE_SMOOTH);
+  else
+    gl.Enable(GL_LINE_SMOOTH);
   gl.ShadeModel(GL_FLAT);
   if (getGUIConfig().quality<=0)
     gl.Disable(GL_DITHER);
@@ -222,11 +229,18 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
     m_chatMode=2;
     return true;
   case SDLK_RETURN:
-    if (!pressed)
+    if (m_menuPtr.get()) {
+      if (!pressed) return true;
+      // synthesize right pressed event for menu
+      Input i;
+      i.x=1;
+      m_menuPtr->handleInput(i);
       return true;
+    }
     break;
   case SDLK_c:
     if (pressed) m_texCircle=!m_texCircle;
+    return true;
     break;
   case SDLK_l:
     if (pressed) {
@@ -234,55 +248,32 @@ SDLGLGUI::handleKey(SDL_KeyboardEvent e)
       if (!m_lineSmooth) gl.Disable(GL_LINE_SMOOTH);
       else gl.Enable(GL_LINE_SMOOTH);
     }
+    return true;
+    break;
+  case SDLK_3:
+  case SDLK_4:
+  case SDLK_5:
+  case SDLK_6:
+  case SDLK_7:
+  case SDLK_8:
+  case SDLK_9:
+    {
+      if (!pressed)
+	return true;
+      Uint8 bit=((Uint8)k-(Uint8)SDLK_0);
+      unsigned mask=1<<bit;
+      bool on=(m_toggles&mask);
+      if (on) m_toggles&=~mask;
+      else m_toggles|=mask;
+      return true;
+    }
+    break;
+  case SDLK_m:
+    m_textureTime=5;
+    return true;
     break;
   }
   return false;
-
-  /*
-    // else chatMode
-    if (!pressed) return true;
-    
-    // check for special keys
-    switch (k) {
-    case SDLK_RETURN:
-    {
-    SDL_EnableUNICODE(0);
-    // we only fill the message and public field 
-    // the server fills the other fields
-    ChatMessage m;
-    m.message=m_chatLine;
-    m.global=(m_chatMode==1);
-    chatMessage.emit(m);
-    m_chatMode=0;
-    m_chatLine.clear();
-    printed.emit('\n');
-    return true;
-    }
-    break;
-    case SDLK_DELETE:
-    case SDLK_BACKSPACE:
-    case SDLK_LEFT:
-    unsigned s=m_chatLine.size();
-    if (s)
-    m_chatLine.resize(s-1);
-    printed.emit(k);
-    return true;
-    }
-
-    Uint16 unicode(e.keysym.unicode);
-    char ch;
-    if ( (unicode & 0xFF80) == 0 ) {
-    ch = unicode & 0x7F;
-    if (ch>=32) {
-    m_chatLine+=ch;
-    printed.emit(ch);
-    }
-    }
-    else {
-    std::cerr << "An International Character.\n";
-    }
-    return true;
-  */
 }
 
 void
@@ -319,6 +310,8 @@ SDLGLGUI::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 bool
 SDLGLGUI::step(R dt)
 {
+  static SDL_Surface* test=NULL;
+  
   if (m_quit) return false;
   sf.produce();
 
@@ -331,221 +324,81 @@ SDLGLGUI::step(R dt)
   gl.Color3f(1.0,1.0,1.0);
 
   // set up camera
-  const Game::Players &players(m_client.getPlayers());
-
-  const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
-  if (m_autoCenter||m_autoZoom&&(!myIDs.empty())) {
-    V2D pos;
-    R big=10000000000.0;
-    V2D minp(big,big);
-    V2D maxp;
-    R maxr=0;
-    unsigned c=0;
-    for (unsigned i=0;i<myIDs.size();++i)
-      {
-	unsigned id=myIDs[i];
-	// perhaps we did not receive all our players yet
-	if (id<m_client.getPlayers().size()) {
-	  pos+=m_client.getPlayers()[id].m_pos;
-	  minp[0]=std::min(minp[0],m_client.getPlayers()[id].m_pos[0]);
-	  minp[1]=std::min(minp[1],m_client.getPlayers()[id].m_pos[1]);
-	  maxp[0]=std::max(maxp[0],m_client.getPlayers()[id].m_pos[0]);
-	  maxp[1]=std::max(maxp[1],m_client.getPlayers()[id].m_pos[1]);
-	  maxr=std::max(maxr,m_client.getPlayers()[id].m_r);
-	  ++c;
-	}
-      }
-    if (c) {
-      if (m_autoCenter) {
-	pos=(maxp+minp)/2;
-	pos[0]=int(pos[0]);
-	pos[1]=int(pos[1]);
-	m_pos=pos;
-      }
-      if ((c>1)&&m_autoZoom) {
-	maxp-=minp;
-	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+300.0);
-	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+300.0);
-	m_zoom=std::min(xzoom,yzoom);
-	m_zoom=std::min(R(2.0),m_zoom);
-      }
-    }
-  }
-  if (m_scrollOp[0])
-    m_pos[0]+=dt*R(m_scrollOp[0]*100)/m_zoom;
-  if (m_scrollOp[1])
-    m_pos[1]+=dt*R(m_scrollOp[1]*100)/m_zoom;
-  if (m_zoomOp) {
-    m_zoom*=1.0+0.1*dt*R(m_zoomOp);
-    m_zoom=std::max(m_zoom,R(0.1));
-  }
-  gl.Translatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
-  gl.Scalef(m_zoom,m_zoom,1);
-
-  // paint world (if possible)
-  Game::WorldPtr worldPtr=m_client.getWorldPtr();
-  if (worldPtr.get()) {
-    /*
-    // paint rooms
-    for (unsigned r=0;r<worldPtr->getNumRooms();++r)
-      {
-	// select room color
-	bool adic=m_client.getGame().roomIsClosed(r);
-	if (adic)
-	  gl.Color3f(0.5,0.0,0.0);
-	else
-	  gl.Color3f(0.0,0.5,0.0);
-	drawPolygon(worldPtr->getLineLoop(r));
-      }
-    */
-    // paint walls
-    unsigned wc=worldPtr->getNumWalls();
-    for (unsigned wid=0;wid<wc;++wid)
-      {
-	Wall w;
-	if (worldPtr->getWall(wid,w)) {
-	  const FWEdge &e=worldPtr->getEdge(wid);
-	  bool cwClosed=m_client.getGame().roomIsClosed(e.m_rcw);
-	  bool ccwClosed=m_client.getGame().roomIsClosed(e.m_rccw);
-	  drawWall(w,cwClosed,ccwClosed);
-	}
-      }
-    // paint doors
-    std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
-    Game::Doors &doors(m_client.getGame().getDoors());
-    for (unsigned d=0;d<doors.size();++d) {
-      bool closed=(doors[d].isClosed());
-      RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
-      Wall w(rd.asWall());
-      drawWall(w,closed,closed);
-    }
-    gl.Color3f(1.0,1.0,1.0);    
-  }
-
-  // paint players
-  if (m_animations.size()!=players.size()) {
-    while (players.size()<m_animations.size())
-      m_animations.pop_back();
-    while (m_animations.size()<players.size())
-      {
-	PlayerID id=m_animations.size();
-	if (players[id].isPlayer()) {
-	  // find team this player is in todo: similar code in game.cpp
-	  unsigned tid=~0U;
-	  const std::vector<Team> &teams(getTeams());
-	  unsigned i=0;
-	  for (;i<teams.size();++i) {
-	    std::vector<PlayerID>::const_iterator it(std::find(teams[i].playerIDs.begin(),teams[i].playerIDs.end(),id));
-	    if (it!=teams[i].playerIDs.end()) {
-	      tid=it-teams[i].playerIDs.begin();
-	      break;
-	    }
-	  }
-	  DOPE_CHECK(i<teams.size());
-	  DOPE_CHECK(tid!=~0U);
-	  DOPE_CHECK(tid<teams[i].textures.size());
-	  m_animations.push_back(Animation(*this,teams[i].textures[tid]));
-	}else{
-	  std::vector<std::string> uris;
-	  switch (players[id].getType()) {
-	  case 10:
-	    uris.push_back("data/barrel.png");
-	    break;
-	  case 11:
-	    for (unsigned i=1;i<=13;++i) {
-	      std::ostringstream o;
-	      o << std::setw(2) << std::setfill('0') << i;
-	      uris.push_back(std::string("data/erfrischung_00")+o.str()+".png");
-	    }
-	    break;
-	  default:
-	    DOPE_WARN("Unknown type => no texture");
-	  }
-	  m_animations.push_back(Animation(*this,uris));
-	}
-      }
-  }
-  for (unsigned p=0;p<players.size();++p)
-    {
-      const Player &cp(players[p]);
-      if (m_client.getGame().playerIsLocked(p))
-	gl.Color3f(1.0,0.0,0.0);
-      else
-	gl.Color3f(0.0,1.0,0.0);
-      //      drawCircle(cp.m_pos,cp.m_r);
-      if (players[p].isPlayer())
-	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
-      else
-	m_animations[p].step(dt*20);
-      drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
-      if (cp.isPlayer()&&m_showNames) {
-	gl.PushMatrix();
-	gl.Translatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
-	float s=1.0f/m_zoom;
-	gl.Scalef(s,s,1);
-	m_fontPtr->drawText(m_client.getPlayerName(p),true);
-	gl.PopMatrix();
-      }
-      /*      V2D dv(V2D(0,100).rot(cp.getDirection()));
-      gl.Color3f(1.0,1.0,0.0);
-      gl.Begin(GL_LINES);
-      gl.Vertex2f(cp.m_pos[0],cp.m_pos[1]);
-      dv+=cp.m_pos;
-      gl.Vertex2f(dv[0],dv[1]);
-      gl.End(); 
-      gl.Color3f(1.0,1.0,1.0); */
-    }
-  // paint team statistics
-  const std::vector<Team> &teams(getTeams());
-  if (teams.size()) {
-    const std::vector<TeamStat> &teamStat(getTeamStats());
-    assert(teams.size()==teamStat.size());
-    int dx=m_width/(teams.size()+1);
-    gl.PushMatrix();
-    if (teams.size()>m_fontPtr->numColors()) {
-      for (unsigned i=0;i<teams.size();++i)
-	m_fontPtr->setColor(i,teams[i].color);
-    }
-    for (unsigned i=0;i<teams.size();++i) {
-      gl.LoadIdentity();
-      gl.Translatef(dx*(i+1),30,0);
-      m_fontPtr->drawText(
-	       m_fontPtr->getColor(i)
-	       +teams[i].name+"\n"
-	       +anyToString(teamStat[i].numPlayers-teamStat[i].locked)+"/"
-	       +anyToString(teamStat[i].numPlayers),
-	       true);
-      flush();
-    }
-    gl.PopMatrix();
-  }
+  setupCamera(dt);
   
+  // paint world (if possible)
+  const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+  if (worldPtr.get()) {
+    if (m_toggles&(1<<3)) drawWalls();
+    if (m_toggles&(1<<4)) drawDoors();
+    if (m_toggles&(1<<5)) drawPillars();
+  }
+  if (m_toggles&(1<<6)) drawPlayers(dt);
+  if (m_toggles&(1<<7)) drawTeamStat();
   
   // paint texture
+  /* left here for testing purposes
   if (m_textureTime>0) {
-    gl.LoadIdentity();
-    float alpha=1.0-fabs(m_textureTime-2.5)/2.5;
-    if (getGUIConfig().quality<=0) alpha=(alpha > 0.1) ? 1.0 : 0.0;
-    gl.Color4f(1.0,1.0,1.0,alpha);
     m_textureTime-=dt;
-    gl.Enable(GL_TEXTURE_2D);
-    gl.Enable(GL_BLEND);
-    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    gl.BindTexture(GL_TEXTURE_2D,m_texturePtr->getTextureID());
-    gl.Begin(GL_QUADS);
-    gl.TexCoord2f(0,1);
-    gl.Vertex2f(0,0);
-    gl.TexCoord2f(1,1);
-    gl.Vertex2f(m_width,0);
-    gl.TexCoord2f(1,0);
-    gl.Vertex2f(m_width,m_height);
-    gl.TexCoord2f(0,0);
-    gl.Vertex2f(0,m_height);
-    gl.End();
-    gl.Disable(GL_BLEND);
-    gl.Disable(GL_TEXTURE_2D);
 
+    if (m_toggles&(1<<9)) {
+      gl.Enable(GL_BLEND);
+      gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      float alpha=1.0-fabs(m_textureTime-2.5)/2.5;
+      if (getGUIConfig().quality<=0) alpha=(alpha > 0.1) ? 1.0 : 0.0;
+      gl.Color4f(1.0,1.0,1.0,alpha);
+    }
+    if (m_toggles&(1<<8)) {
+      if (!test) {
+	test=IMG_Load("data/textures.png");
+	if (!test) DOPE_FATAL("Could not load image");
+	SDL_LockSurface(test);
+	char *p=(char *)(test->pixels);
+	// todo - we should do more checks
+	int bprow=test->w*test->format->BytesPerPixel;
+	DOPE_CHECK(bprow==int(test->pitch));
+	char *row=new char[bprow];
+	for (int r=0;r<test->h/2;++r) {
+	  char *src=p+r*bprow;
+	  char *dest=p+((test->h)-1-r)*bprow;
+	  memcpy((void *)row,(void *)src,bprow);
+	  memcpy((void *)src,(void *)dest, bprow);
+	  memcpy((void *)dest,(void *)row,bprow);
+	}
+	delete [] row;
+	SDL_UnlockSurface(test);
+	gl.PixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	gl.PixelZoom(1.0,1.0);
+      }
+      gl.LoadIdentity();
+      gl.RasterPos2i(0,0);
+      //      SDL_LockSurface(test);
+      gl.DrawPixels(test->w, test->h, GL_RGBA, GL_UNSIGNED_BYTE, test->pixels);
+      //      SDL_UnlockSurface(test);
+    }else{
+      gl.LoadIdentity();
+      gl.Enable(GL_TEXTURE_2D);
+      gl.BindTexture(GL_TEXTURE_2D,m_texturePtr->getTextureID());
+      float mx=m_width/2-0.375;
+      float my=m_height/2-0.375;
+      float dx=m_texturePtr->getWidth()/2;
+      float dy=m_texturePtr->getHeight()/2;
+      gl.Begin(GL_QUADS);
+      gl.TexCoord2f(0,1);
+      gl.Vertex2f(mx-dx,my-dy);
+      gl.TexCoord2f(1,1);
+      gl.Vertex2f(mx+dx,my-dy);
+      gl.TexCoord2f(1,0);
+      gl.Vertex2f(mx+dx,my+dy);
+      gl.TexCoord2f(0,0);
+      gl.Vertex2f(mx-dx,my+dy);
+      gl.End();
+      gl.Disable(GL_TEXTURE_2D);
+    }
+    gl.Disable(GL_BLEND);
   }
+  */
+
   // paint FPS
   TimeStamp ct;
   ct.now();
@@ -650,49 +503,55 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
 
   int q=getGUIConfig().quality;
   float nlw;
-  if (q<=0) {
-    // in low quality mode we only draw 2 lines
-    nlw=w.getWallWidth()*2*m_zoom;
-  }else{
-    nlw=w.getWallWidth()*m_zoom;
+  int numlines;
+  if (q<=0)
+    // in low quality mode we only draw 1 or 2 lines
+    numlines=(cwClosed==ccwClosed) ? 1 : 2;
+  else numlines=3;
+  float wt=w.getWallWidth();
+  nlw=wt*m_zoom/float(numlines);
+  if (m_lineSmooth) {
+    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gl.Enable(GL_BLEND);
   }
-  // if line smoothing is off we round up to the next int
-  if (!m_lineSmooth) nlw=ceil(nlw);
-  
   // now set the line width
   gl.LineWidth(nlw);
 
   Line l(w.getLine());
   const V2D &ln(l.normal());
-  // draw clockwise side
-  V2D a(l.m_a);
-  V2D b(l.m_b);
-  a+=ln*w.getWallWidth();
-  b+=ln*w.getWallWidth();
-  if (cwClosed) gl.Color3f(0.5,0.0,0.0);
-  else gl.Color3f(0.0,0.5,0.0);
-  gl.Begin(GL_LINES);
-  gl.Vertex2f(a[0],a[1]);
-  gl.Vertex2f(b[0],b[1]);
-  gl.End();
-  // draw counter clockwise side
-  a=l.m_a;
-  b=l.m_b;
-  a+=ln*-w.getWallWidth();
-  b+=ln*-w.getWallWidth();
-  if (ccwClosed) gl.Color3f(0.5,0.0,0.0);
-  else gl.Color3f(0.0,0.5,0.0);
-  gl.Begin(GL_LINES);
-  gl.Vertex2f(a[0],a[1]);
-  gl.Vertex2f(b[0],b[1]);
-  gl.End();
-  if (q>0) {
-    // draw middle    
-    if (cwClosed&&ccwClosed) gl.Color3f(0.8,0.0,0.0);
-    else if (cwClosed||ccwClosed) gl.Color3f(0.8,0.5,0.0);
-    else gl.Color3f(0.0,0.8,0.0);
+  if (numlines>1) {
+    // draw clockwise side
+    V2D a(l.m_a);
+    V2D b(l.m_b);
+    float o=wt/numlines;
+    a+=ln*o;
+    b+=ln*o;
+    if (cwClosed) gl.Color3f(0.5,0.0,0.0);
+    else gl.Color3f(0.0,0.5,0.0);
+    gl.Begin(GL_LINES);
+    gl.Vertex2f(a[0],a[1]);
+    gl.Vertex2f(b[0],b[1]);
+    gl.End();
+    // draw counter clockwise side
     a=l.m_a;
     b=l.m_b;
+    a+=ln*-o;
+    b+=ln*-o;
+    if (ccwClosed) gl.Color3f(0.5,0.0,0.0);
+    else gl.Color3f(0.0,0.5,0.0);
+    gl.Begin(GL_LINES);
+    gl.Vertex2f(a[0],a[1]);
+    gl.Vertex2f(b[0],b[1]);
+    gl.End();
+  }
+  if (numlines!=2) {
+    // draw middle    
+    float hs=(numlines<3) ? 0.5f : 0.7f;
+    if (cwClosed&&ccwClosed) gl.Color3f(hs,0.0,0.0);
+    else if (cwClosed||ccwClosed) gl.Color3f(hs,0.4,0.0);
+    else gl.Color3f(0.0,hs,0.0);
+    V2D a(l.m_a);
+    V2D b(l.m_b);
     gl.Begin(GL_LINES);
     gl.Vertex2f(a[0],a[1]);
     gl.Vertex2f(b[0],b[1]);
@@ -701,12 +560,38 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
 
   // restore linewidth
   gl.LineWidth(lw);
+  if (m_lineSmooth) gl.Disable(GL_BLEND);
+}
 
-  // draw pillars
+void
+SDLGLGUI::drawDoor(const Wall &w, bool closed)
+{
+  // backup line width
+  float lw;
+  gl.GetFloatv(GL_LINE_WIDTH,&lw);
+
+  // now set the line width
+  gl.LineWidth(w.getWallWidth()*m_zoom);
+
+  Line l(w.getLine());
+
+  // draw 
+  const V2D &a(l.m_a);
+  const V2D &b(l.m_b);
+  if (closed) gl.Color3f(0.5,0.0,0.0);
+  else gl.Color3f(0.0,0.0,0.5);
+  gl.Begin(GL_LINES);
+  gl.Vertex2f(a[0],a[1]);
+  gl.Vertex2f(b[0],b[1]);
+  gl.End();
+
+  // restore linewidth
+  gl.LineWidth(lw);
+
+  // draw pillar
   gl.Color3f(1.0,1.0,1.0);
-  drawCircle(l.m_a,w.getPillarRadius());
   drawCircle(l.m_b,w.getPillarRadius());
-  flush();
+  //  drawCircle(l.m_b,w.getPillarRadius());
 }
 
 void
@@ -728,8 +613,10 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   gl.Rotatef(rot+90,0,0,1);
   gl.Color3f(1.0,1.0,1.0);
   gl.Enable(GL_TEXTURE_2D);
-  gl.Enable(GL_BLEND);
-  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  if (tex.isTransparent()) {
+    gl.Enable(GL_BLEND);
+    gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
   gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
   gl.Begin(GL_QUADS);
   gl.TexCoord2f(0,1);
@@ -741,15 +628,11 @@ SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
   gl.TexCoord2f(0,0);
   gl.Vertex2f(-w2,h2);
   gl.End();
-  gl.Disable(GL_BLEND);
-  gl.Disable(GL_TEXTURE_2D);
+  if (tex.isTransparent()) {
+    gl.Disable(GL_BLEND);
+    gl.Disable(GL_TEXTURE_2D);
+  }
   gl.PopMatrix();
-}
-
-const std::vector<Team> &
-SDLGLGUI::getTeams() const
-{
-  return m_client.getGame().getTeams();
 }
 
 const std::vector<TeamStat> &
@@ -830,3 +713,276 @@ SDLGLGUI::drawText(const std::string &text, bool centered)
   drawTextRow(text,centered);
 }
 */
+
+void
+SDLGLGUI::drawPillars()
+{
+  gl.Color3f(1.0,1.0,1.0);
+  // hand crafted drawTexture
+  // drawTexture(*m_circlePtr,p);
+  const Texture &tex(*m_circlePtr.get());
+  int w=tex.getWidth();
+  int h=tex.getHeight();
+  int w2=w>>1;
+  int h2=h>>1;
+  
+  
+  gl.Enable(GL_TEXTURE_2D);
+  gl.Enable(GL_BLEND);
+  gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  gl.BindTexture(GL_TEXTURE_2D,tex.getTextureID());
+
+  gl.Begin(GL_QUADS);
+  const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+  unsigned np=worldPtr->getNumVertices();
+  const std::vector<V2D> &v(worldPtr->getVertices());
+  for (unsigned p=0;p<np;++p) {
+    float x=v[p][0];
+    float y=v[p][1];
+    gl.TexCoord2f(0,1);
+    gl.Vertex2f(x-w2,y-h2);
+    gl.TexCoord2f(1,1);
+    gl.Vertex2f(x+w2,y-h2);
+    gl.TexCoord2f(1,0);
+    gl.Vertex2f(x+w2,y+h2);
+    gl.TexCoord2f(0,0);
+    gl.Vertex2f(x-w2,y+h2);
+  }
+  gl.End();
+  gl.Disable(GL_BLEND);
+  gl.Disable(GL_TEXTURE_2D);
+  flush();
+}
+
+void
+SDLGLGUI::setupCamera(R dt)
+{
+  // set up camera
+  const Game::Players &players(m_client.getPlayers());
+  
+  const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
+  if (m_autoCenter||m_autoZoom&&(!myIDs.empty())) {
+    V2D pos;
+    R big=10000000000.0;
+    V2D minp(big,big);
+    V2D maxp;
+    R maxr=0;
+    unsigned c=0;
+    for (unsigned i=0;i<myIDs.size();++i)
+      {
+	unsigned id=myIDs[i];
+	// perhaps we did not receive all our players yet
+	if (id<players.size()) {
+	  pos+=players[id].m_pos;
+	  minp[0]=std::min(minp[0],players[id].m_pos[0]);
+	  minp[1]=std::min(minp[1],players[id].m_pos[1]);
+	  maxp[0]=std::max(maxp[0],players[id].m_pos[0]);
+	  maxp[1]=std::max(maxp[1],players[id].m_pos[1]);
+	  maxr=std::max(maxr,players[id].m_r);
+	  ++c;
+	}
+      }
+    if (c) {
+      if (m_autoCenter) {
+	pos=(maxp+minp)/2;
+	pos[0]=int(pos[0]);
+	pos[1]=int(pos[1]);
+	m_pos=pos+V2D(0.375f,0.375f);
+      }
+      if ((c>1)&&m_autoZoom) {
+	maxp-=minp;
+	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+300.0);
+	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+300.0);
+	m_zoom=std::min(xzoom,yzoom);
+	m_zoom=std::min(R(2.0),m_zoom);
+      }
+    }
+  }
+  if (m_scrollOp[0])
+    m_pos[0]+=dt*R(m_scrollOp[0]*100)/m_zoom;
+  if (m_scrollOp[1])
+    m_pos[1]+=dt*R(m_scrollOp[1]*100)/m_zoom;
+  if (m_zoomOp) {
+    m_zoom*=1.0+0.1*dt*R(m_zoomOp);
+    m_zoom=std::max(m_zoom,R(0.1));
+  }
+  gl.Translatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
+  gl.Scalef(m_zoom,m_zoom,1);
+}
+
+void
+SDLGLGUI::drawWalls()
+{
+  /* 
+     did not significantly improve performance and does not look good 
+     // backup line width
+     float lw;
+     gl.GetFloatv(GL_LINE_WIDTH,&lw);
+
+     // we assume all walls have the same thickness
+     Wall dummy;
+     R wt=dummy.getWallWidth();
+  
+     float nlw=wt*2*m_zoom;
+     if (!m_lineSmooth) nlw=ceil(nlw); // todo this is not enough
+     // now set the line width
+     gl.LineWidth(nlw);
+  
+     // for each wall we paint 2 lines
+     const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+     Game &game(m_client.getGame());
+
+     int oldtype=0;
+     gl.Color3f(0.0,0.5,0.0);
+     for (unsigned r=0;r<worldPtr->getNumRooms();++r) {
+     gl.Begin(GL_LINE_STRIP);
+     World::EdgeIterator it(*worldPtr.get(),r);
+     World::EdgeIterator end(*worldPtr.get());
+     while (it!=end) {
+     const FWEdge &e(it.getEdge());
+     int door=e.isDoor();
+     V2D a(it.getStartPoint());
+     V2D b(it.getEndPoint());
+     V2D n((b-a).normalize().rot90());
+     a+=n*wt;
+     b+=n*wt;
+     int closed=(it.getCW()) ? game.roomIsClosed(e.m_rcw) : game.roomIsClosed(e.m_rccw);
+     int type=closed;
+     type|=(door<<1);
+     if (type!=oldtype) {
+     float s=(door ? 0.3 : 0.6);
+     if (closed) gl.Color3f(s,0.0,0.0);
+     else gl.Color3f(0.0,s,0.0);
+     }
+     gl.Vertex2f(a[0],a[1]);
+     gl.Vertex2f(b[0],b[1]);
+     ++it;
+     }
+     gl.End();
+     }*/
+  
+  const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+  unsigned wc=worldPtr->getNumWalls();
+  for (unsigned wid=0;wid<wc;++wid)
+    {
+      Wall w;
+      if (worldPtr->getWall(wid,w)) {
+	const FWEdge &e=worldPtr->getEdge(wid);
+	bool cwClosed=m_client.getGame().roomIsClosed(e.m_rcw);
+	bool ccwClosed=m_client.getGame().roomIsClosed(e.m_rccw);
+	drawWall(w,cwClosed,ccwClosed);
+      }
+    }
+}
+
+void
+SDLGLGUI::drawDoors()
+{
+  const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+  std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
+  Game::Doors &doors(m_client.getGame().getDoors());
+  for (unsigned d=0;d<doors.size();++d) {
+    bool closed=(doors[d].isClosed());
+    RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
+    Wall w(rd.asWall());
+    drawDoor(w,closed);
+  }
+}
+
+void
+SDLGLGUI::drawPlayers(R dt)
+{
+  const Game::Players &players(m_client.getPlayers());
+  if (m_animations.size()!=players.size()) {
+    while (players.size()<m_animations.size())
+      m_animations.pop_back();
+    while (m_animations.size()<players.size())
+      {
+	PlayerID id=m_animations.size();
+	if (players[id].isPlayer()) {
+	  // find team this player is in todo: similar code in game.cpp
+	  unsigned tid=~0U;
+	  const std::vector<Team> &teams(getTeams());
+	  unsigned i=0;
+	  for (;i<teams.size();++i) {
+	    std::vector<PlayerID>::const_iterator it(std::find(teams[i].playerIDs.begin(),teams[i].playerIDs.end(),id));
+	    if (it!=teams[i].playerIDs.end()) {
+	      tid=it-teams[i].playerIDs.begin();
+	      break;
+	    }
+	  }
+	  DOPE_CHECK(i<teams.size());
+	  DOPE_CHECK(tid!=~0U);
+	  DOPE_CHECK(tid<teams[i].textures.size());
+	  m_animations.push_back(Animation(*this,teams[i].textures[tid]));
+	}else{
+	  std::vector<std::string> uris;
+	  switch (players[id].getType()) {
+	  case 10:
+	    uris.push_back("data/barrel.png");
+	    break;
+	  case 11:
+	    for (unsigned i=1;i<=13;++i) {
+	      std::ostringstream o;
+	      o << std::setw(2) << std::setfill('0') << i;
+	      uris.push_back(std::string("data/erfrischung_00")+o.str()+".png");
+	    }
+	    break;
+	  default:
+	    DOPE_WARN("Unknown type => no texture");
+	  }
+	  m_animations.push_back(Animation(*this,uris));
+	}
+      }
+  }
+  for (unsigned p=0;p<players.size();++p)
+    {
+      const Player &cp(players[p]);
+      if (m_client.getGame().playerIsLocked(p))
+	gl.Color3f(1.0,0.0,0.0);
+      else
+	gl.Color3f(0.0,1.0,0.0);
+      if (players[p].isPlayer())
+	m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
+      else
+	m_animations[p].step(dt*20);
+      drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
+      if (cp.isPlayer()&&m_showNames) {
+	gl.PushMatrix();
+	gl.Translatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
+	float s=1.0f/m_zoom;
+	gl.Scalef(s,s,1);
+	m_fontPtr->drawText(m_client.getPlayerName(p),true);
+	gl.PopMatrix();
+      }
+    }
+}
+
+void
+SDLGLGUI::drawTeamStat()
+{
+  // paint team statistics
+  const std::vector<Team> &teams(getTeams());
+  if (teams.size()) {
+    const std::vector<TeamStat> &teamStat(getTeamStats());
+    assert(teams.size()==teamStat.size());
+    int dx=m_width/(teams.size()+1);
+    gl.PushMatrix();
+    if (teams.size()>m_fontPtr->numColors()) {
+      for (unsigned i=0;i<teams.size();++i)
+	m_fontPtr->setColor(i,teams[i].color);
+    }
+    for (unsigned i=0;i<teams.size();++i) {
+      gl.LoadIdentity();
+      gl.Translatef(dx*(i+1),30,0);
+      m_fontPtr->drawText(
+	       m_fontPtr->getColor(i)
+	       +teams[i].name+"\n"
+	       +anyToString(teamStat[i].numPlayers-teamStat[i].locked)+"/"
+	       +anyToString(teamStat[i].numPlayers),
+	       true);
+      flush();
+    }
+    gl.PopMatrix();
+  }
+}

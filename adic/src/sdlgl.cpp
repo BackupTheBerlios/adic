@@ -43,5 +43,9 @@ SDLGL::init()
   LOOKUP(TexImage2D,glTexImage2DFunc);
   LOOKUP(Rotatef,fvec4Func);
   LOOKUP(ShadeModel, uintFunc);
+  LOOKUP(RasterPos2i, ivec2Func);
+  LOOKUP(PixelStorei, uint2Func);
+  LOOKUP(DrawPixels, ivec4voidPFunc);
+  LOOKUP(PixelZoom, fvec2Func);
 #undef LOOKUP
 }

@@ -90,7 +90,8 @@ GLTerminal::step(R dt)
       }
     }
   }
-  
+  if (rows.empty())
+    return;
   gl.PushMatrix();
   gl.LoadIdentity();
   gl.Translatef(x,y-int(gui.m_fontPtr->getHeight()*stimer/scrollspeed),0);

@@ -5,9 +5,15 @@ GAMEPLAY:
 - sichtbarkeit einschränken
 
 TUNING:
-- male alle pillars auf einmal
+- alpha-blending with mesa too slow - test alpha values of 0/1 with DrawPixels 
+  (i don't think this will help)
+  how do transparent sprites work in opengl / colorkeying
+  stencil buffer ? there should be an easy solution
+- malen neu organiesieren:
+	- male türen
+	- male alle pillars auf einmal (am besten mit display list)
+	- male wände (am besten linienzüge)
 - teste schnellsten bitblit (v.a. fuer software mesa)
-  evtl. direkt SDL
 - stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
 - tueren uebertragen viel zu viel (angle und anglespeed sollte genuegen)
 - uebertrage nur tueren/spieler die sich bewegt haben
@@ -28,8 +34,16 @@ TUNING:
   for the lag compensation (is disabled now)
 - collision is good but still not perfect
   think about the right point for a commit (the best would be before a step now?)
+- einfacher blit mit glDrawPixels fürs Menü und evtl sogar für andere sachen die nicht gedreht werden
+  (glDrawPixels ist bei mesa schneller als texturen
 
 FEATURES:
+- restrukturiere mesh
+  mesh hat sachen die da nicht reingehören
+  neue class level die eine uri auf die mesh hat
+  und ansonsten die startpos. und so
+- mesh/level muß vom server zum client übertragen werden
+- server muß levels in round-robin haben
 - wände 2 linien (pro raum die innere malen)
 - wände dicker
 - sound:
@@ -45,6 +59,7 @@ FEATURES:
 - Türen kaputtbar
 
 BUGS/QUESTIONS:
+- client crash in fullscreen mode => X schwer brauchbar da maus fehlt und auflösung falsch
 - zu viele sounds auf einmal v.a. beim crash
 - win codition wrong ? teamStat wrong ? 
   (spieler die noch garnicht bewegt wurden sind anscheinend nie gelockt - aber die räume
