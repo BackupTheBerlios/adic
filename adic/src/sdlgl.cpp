@@ -67,11 +67,11 @@ loadGLU(const std::string &libGLU)
 {
   assert(!gluHandle);
   std::string lib(libGLU);
-  if (lib.empty()) lib="/usr/lib/libGLU.so";
+  if (lib.empty()) lib="libGLU.so.1";
   gluHandle = dlopen (lib.c_str(), RTLD_LAZY);
   if (!gluHandle) {
     DEBUG_GL("failed to load glu library");
-    throw std::runtime_error(std::string("Could not load GLU lib: \"")+lib);
+    throw std::runtime_error(std::string("Could not load GLU lib: \"")+lib+"\". Try the --libGLU switch");
   }
 }
 
