@@ -93,10 +93,10 @@ SDLGLGUI::createWindow()
   e.h=getGUIConfig().height;
   sf.resize.emit(e);
   //  resize(getGUIConfig().width, getGUIConfig().height);
-  m_texturePtr=getTexture("data/textures.png");
-  m_fontTexPtr=getTexture("data/font.png");
+  m_texturePtr=getTexture("data:textures.png");
+  m_fontTexPtr=getTexture("data:font.png");
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
-  m_circlePtr=getTexture("data/pillar.png");
+  m_circlePtr=getTexture("data:pillar.png");
   m_texCircle=true;
   gl.Disable(GL_NORMALIZE);
   gl.Disable(GL_LIGHTING);
@@ -155,9 +155,24 @@ SDLGLGUI::getTexture(const std::string &uri)
   Textures::iterator it(m_textures.find(uri));
   if (it!=m_textures.end())
     return it->second;
-  DOPE_SMARTPTR<Texture> r(new Texture(gl,uri.c_str(),getGUIConfig().quality));
-  m_textures[uri]=r;
-  return r;
+  // todo this is nearly the same as in the uriloader class
+  // there should be one central location for the vfs stuff
+  // the problem is with c-libraries either expecting a file name
+  // or at least a fd
+  if (uri.length()>5) {
+    std::string scheme(uri,0,5); 
+    if (scheme=="data:") {
+      std::string dataFile(uri,5);
+      std::string fname(findDataFile(dataFile));
+      if (fname.empty())
+	throw ResourceNotFound(uri,std::string("Data file \"")+dataFile+"\" does not exist in path");
+      DOPE_SMARTPTR<Texture> r(new Texture(gl,fname.c_str(),getGUIConfig().quality));
+      m_textures[uri]=r;
+      return r;
+    }
+    throw ResourceNotFound(uri,std::string("Unsupported scheme: \"")+scheme+"\"");
+  }
+  throw ResourceNotFound(uri,std::string("Unsupported URI: \"")+uri+"\"");
 }
 
 bool
@@ -387,7 +402,7 @@ SDLGLGUI::step(R dt)
     }
     if (m_toggles&(1<<8)) {
       if (!test) {
-	test=IMG_Load("data/textures.png");
+	test=IMG_Load("data:textures.png");
 	if (!test) DOPE_FATAL("Could not load image");
 	SDL_LockSurface(test);
 	char *p=(char *)(test->pixels);
@@ -956,13 +971,13 @@ SDLGLGUI::drawPlayers(R dt)
 	  std::vector<std::string> uris;
 	  switch (players[id].getType()) {
 	  case 10:
-	    uris.push_back("data/barrel.png");
+	    uris.push_back("data:barrel.png");
 	    break;
 	  case 11:
 	    for (unsigned i=1;i<=13;++i) {
 	      std::ostringstream o;
 	      o << std::setw(2) << std::setfill('0') << i;
-	      uris.push_back(std::string("data/erfrischung_00")+o.str()+".png");
+	      uris.push_back(std::string("data:erfrischung_00")+o.str()+".png");
 	    }
 	    break;
 	  default:

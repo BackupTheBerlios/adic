@@ -1,4 +1,4 @@
-INCLUDES = @DOPE_CFLAGS@ @SDL_CFLAGS@ @GL_CFLAGS@
+INCLUDES = @DOPE_CFLAGS@ @SDL_CFLAGS@ @GL_CFLAGS@ -DDATADIR=\"$(pkgdatadir):data\"
 
 # automatic tests - are build and run by make check
 TESTS =
@@ -15,7 +15,7 @@ check_PROGRAMS = \
 	$(manualtests)
 
 bin_PROGRAMS = \
-	@PACKAGE@server @PACKAGE@client
+	adicserver adicclient
 
 # all programs have in common
 allcommon = \
@@ -50,7 +50,9 @@ gamecommon = \
 	version.h messages.h \
 	input.h \
 	team.h team.cpp \
-	metaserver.h
+	metaserver.h \
+	commonconfig.h \
+	utils.h utils.cpp
 
 test_line_SOURCES = test-line.cpp $(allcommon)
 test_vector2d_SOURCES = test-vector2d.cpp $(allcommon)
@@ -62,10 +64,10 @@ test_world_LDADD = @DOPE_LIBS@
 
 test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 
-@PACKAGE@server_SOURCES = $(gamecommon) server.h server.cpp
-@PACKAGE@server_LDADD = @DOPE_LIBS@
+adicserver_SOURCES = $(gamecommon) server.h server.cpp
+adicserver_LDADD = @DOPE_LIBS@
 
-@PACKAGE@client_SOURCES = $(gamecommon) \
+adicclient_SOURCES = $(gamecommon) \
 	clientconfig.h \
 	client.h client.cpp \
 	guiconfig.h \
@@ -89,7 +91,7 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer
-@PACKAGE@client_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer
+adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer
 
 
 

@@ -57,6 +57,11 @@ FEATURES:
 - metaserver
 - schlüssel
 - Türen kaputtbar
+- make install - sollte nicht zum zwang werden
+  => wo soll nach data files geschaut werden (ich hasse hardcoded pfade v.a. bei spielen)
+  => uriloader muss besser werden
+  => uriloader sollte immer verwendet werden
+  => eine gescheite uri klasse
 
 BUGS/QUESTIONS:
 - spieler auf teams verteilen scheint nicht immer zu klappen

@@ -113,6 +113,7 @@ dnl
 
       rm -f conf.dopetest
       AC_TRY_RUN([
+#include <stdio.h>
 #include <dope/dope.h>
 
 int main(int argc,char *argv[])

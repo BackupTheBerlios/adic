@@ -31,10 +31,11 @@
 #include "messages.h"
 #include "guiconfig.h"
 #include "soundconfig.h"
+#include "commonconfig.h"
 
-struct ClientConfig
+struct ClientConfig : public CommonConfig
 {
-  ClientConfig() : m_port(ADIC_PORT), m_server("localhost")
+  ClientConfig() : m_server("localhost")
   {}
   
   void setDefaults() 
@@ -55,7 +56,6 @@ struct ClientConfig
     }
   }
   
-  unsigned short int m_port;
   std::string m_server;
   GUIConfig m_gui;
   SoundConfig m_sc;
@@ -65,7 +65,8 @@ DOPE_CLASS(ClientConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ClientConfig &c)
 {
-  layer2.simple(c.m_port,"port").simple(c.m_server,"server")
+  composite(layer2,static_cast<CommonConfig &>(c));
+  layer2.simple(c.m_server,"server")
     .simple(c.m_gui,"gui").simple(c.m_sc,"sound").simple(c.m_users,"users");
 }
 

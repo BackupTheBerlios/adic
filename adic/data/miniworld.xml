@@ -48,22 +48,22 @@
 <stdpairOfV2DAndfloat second="0"><V2D this.name="first" x="800" y="840" /></stdpairOfV2DAndfloat>
 </stdvectorOfstdpairOfV2DAndfloat>
 <stdvectorOfObject this.name="startObjects">
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="300" y="100" />
   </Object>
-  <Object dir="20" URI="file:data/barrel.xml">
+  <Object dir="20" URI="data:barrel.xml">
     <V2D this.name="pos" x="350" y="150" />
   </Object>
-  <Object dir="40" URI="file:data/barrel.xml">
+  <Object dir="40" URI="data:barrel.xml">
     <V2D this.name="pos" x="400" y="800" />
   </Object>
-  <Object dir="90" URI="file:data/barrel.xml">
+  <Object dir="90" URI="data:barrel.xml">
     <V2D this.name="pos" x="750" y="700" />
   </Object>
-  <Object dir="45" URI="file:data/barrel.xml">
+  <Object dir="45" URI="data:barrel.xml">
     <V2D this.name="pos" x="700" y="650" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="650" y="600" />
   </Object>
 </stdvectorOfObject>

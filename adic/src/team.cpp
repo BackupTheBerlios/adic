@@ -48,9 +48,9 @@ Team::Team(const std::string &_name,unsigned tno)
       mdl="cowboy";
       break;
     }
-    dataURIs[i]=std::string("file:data/")+mdl+".xml";
+    dataURIs[i]=std::string("data:")+mdl+".xml";
     for (unsigned f=1;f<7;++f) {
-      textures[i].push_back(std::string("data/")+mdl+colorname+anyToString(f)+".png");
+      textures[i].push_back(std::string("data:")+mdl+colorname+anyToString(f)+".png");
     }
   }
 }

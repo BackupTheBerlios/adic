@@ -3,8 +3,8 @@
 # it is not checked for doxygen in the configure script 
 docs = index.html COPYING
 
-DOPE_helpdir = $(datadir)/doc/dope/
-DOPE_help_DATA = $(docs)
+ADIC_helpdir = $(datadir)/doc/adic/
+ADIC_help_DATA = $(docs)
 EXTRA_DIST = $(docs) doxygen concept
 
 doxygen:

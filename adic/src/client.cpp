@@ -46,7 +46,7 @@ Client::Client(ClientConfig &config)
   : m_config(config), m_quit(false), m_csong(0),
     m_cerrbuf(NULL), m_coutbuf(NULL)
 {
-  m_songs.push_back("data/music.mod");
+  m_songs.push_back("music.mod");
   // todo add some songs here - or better put the list into clientconfig
 }
 Client::~Client() 
@@ -102,7 +102,7 @@ Client::handleCollision(V2D pos, R strength)
     if (volume>0) {
       if (volume>1) volume=1;
       //  std::cerr << "\nPlay sample\n";
-      int c=m_soundPtr->playSample("data/collision.wav");
+      int c=m_soundPtr->playSample("collision.wav");
       m_soundPtr->modifyChannel(c,volume);
     }
   }
@@ -156,10 +156,10 @@ Client::printed(char c)
   switch (c) {
   case '\n':
   case ' ':
-    m_soundPtr->playSample("data/newline.wav");
+    m_soundPtr->playSample("newline.wav");
     break;
   default:
-    int ch=m_soundPtr->playSample("data/printer.wav");
+    int ch=m_soundPtr->playSample("printer.wav");
     R volume=1.0-R(c%6)/7;
     m_soundPtr->modifyChannel(ch,volume);
     break;
@@ -350,7 +350,7 @@ Client::main()
 	  if (volume>1) volume=1;
 	  //  std::cerr << "\nPlay sample\n";
 	  if (c==-1)
-	    c=m_soundPtr->playSample("data/Footsteps.wav",-1);
+	    c=m_soundPtr->playSample("Footsteps.wav",-1);
 	  m_soundPtr->modifyChannel(c,volume);
 	}else if (c!=-1)
 	  m_soundPtr->stopChannel(c);

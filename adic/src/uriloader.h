@@ -31,6 +31,7 @@
 #include <string>
 #include <fstream>
 #include <dope/dopeexcept.h>
+#include "utils.h"
 
 class CacheConcept
 {
@@ -41,7 +42,7 @@ public:
   template <class X>
   void add(const std::string &uri, DOPE_SMARTPTR<X> &dest)
   {}
-  int foo;
+  //  int foo;
 };
   
 template <class Cache=CacheConcept>
@@ -58,23 +59,41 @@ public:
       if (dest.get())
 	return;
     }
-    std::string scheme(uri,0,5); // todo i think it is a bug if the std::string isn't > 5
-    if (scheme=="file:") {
-      std::ifstream file(std::string(uri,5).c_str()); // todo i think it is a bug if the std::string isn't > 5
-      X* x=new X();
-      // todo in the moment we assume the format is always XML
-      typedef XMLSAXInStream<std::streambuf> InStream;
-      InStream is(*file.rdbuf());
-      is.simple(*x,NULL);
-      dest=DOPE_SMARTPTR<X>(x);
-      if (cache)
-	cache->add(uri,dest);
-      return;
+    if (uri.length()>5) {
+      std::string scheme(uri,0,5); 
+      if (scheme=="file:") {
+	dest=loadFromFile<X>(std::string(uri,5).c_str());
+	if (cache) cache->add(uri,dest);
+	return;
+      }
+      if (scheme=="data:") {
+	std::string dataFile(uri,5);
+	std::string fname(findDataFile(dataFile));
+	if (fname.empty())
+	  throw ResourceNotFound(uri,std::string("Data file \"")+dataFile+"\" does not exist in path");
+	dest=loadFromFile<X>(fname.c_str());
+	if (cache) cache->add(uri,dest);
+	return;
+      }
+      throw ResourceNotFound(uri,std::string("Unsupported scheme: \"")+scheme+"\"");
     }
-    throw ResourceNotFound(uri,std::string("Unsupported scheme: \"")+scheme+"\"");
+    throw ResourceNotFound(uri,std::string("Unsupported URI: \"")+uri+"\"");
   }
   static Cache* cache;
 protected:
+  template <typename X>
+  DOPE_SMARTPTR<X> loadFromFile(const char *fname)
+  {
+    std::ifstream file(fname);
+    if (!file.good())
+      throw ResourceNotFound(fname,std::string("Could not open file"));
+    DOPE_SMARTPTR<X> x(new X());
+    // todo in the moment we assume the format is always XML
+    typedef XMLSAXInStream<std::streambuf> InStream;
+    InStream is(*file.rdbuf());
+    is.simple(*x.get(),NULL);
+    return x;
+  }
 };
 template <class Cache> Cache* URILoader<Cache>::cache=NULL;
 

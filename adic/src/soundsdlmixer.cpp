@@ -23,6 +23,7 @@
 */
 
 #include "soundsdlmixer.h"
+#include "utils.h"
 
 // hack needed for c callback
 SoundSDLMixer *thisptr=NULL;
@@ -92,7 +93,9 @@ void
 SoundSDLMixer::playMusic(const char *uri, R volume, unsigned repeat) 
 {
   if (music) Mix_FreeMusic(music);
-  music = Mix_LoadMUS(uri);
+  assert(uri);
+  std::string f(findDataFile(uri));
+  music = Mix_LoadMUS(f.c_str());
   if ( music == NULL )
     throw std::runtime_error(std::string("Couldn't load ")+uri+" "+SDL_GetError());
   Mix_FadeInMusic(music,0,2000);
@@ -124,7 +127,9 @@ SoundSDLMixer::loadSample(const char *uri)
 {
   if (samples.find(std::string(uri))!=samples.end())
     return;
-  samples[uri]=Mix_LoadWAV(uri);
+  assert(uri);
+  std::string f(findDataFile(uri));
+  samples[uri]=Mix_LoadWAV(f.c_str());
 }
   
 int

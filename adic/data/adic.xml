@@ -374,31 +374,31 @@
 <!-- dir ist richtung -->
 <!-- vector ist position -->
 <stdvectorOfObject this.name="startObjects">
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="2200" y="550" />
   </Object>
-  <Object dir="45" URI="file:data/barrel.xml">
+  <Object dir="45" URI="data:barrel.xml">
     <V2D this.name="pos" x="2250" y="500" />
   </Object>
-  <Object dir="30" URI="file:data/barrel.xml">
+  <Object dir="30" URI="data:barrel.xml">
     <V2D this.name="pos" x="700" y="280" />
   </Object>
-  <Object dir="30" URI="file:data/barrel.xml">
+  <Object dir="30" URI="data:barrel.xml">
     <V2D this.name="pos" x="750" y="230" />
   </Object>
-  <Object dir="90" URI="file:data/barrel.xml">
+  <Object dir="90" URI="data:barrel.xml">
     <V2D this.name="pos" x="2830" y="1350" />
   </Object>
-  <Object dir="0" URI="file:data/fountain.xml">
+  <Object dir="0" URI="data:fountain.xml">
     <V2D this.name="pos" x="1250" y="1370" />
   </Object>
-  <Object dir="15" URI="file:data/barrel.xml">
+  <Object dir="15" URI="data:barrel.xml">
     <V2D this.name="pos" x="2200" y="1050" />
   </Object>
-  <Object dir="15" URI="file:data/fountain.xml">
+  <Object dir="15" URI="data:fountain.xml">
     <V2D this.name="pos" x="2250" y="1000" />
   </Object>
-  <Object dir="60" URI="file:data/fountain.xml">
+  <Object dir="60" URI="data:fountain.xml">
     <V2D this.name="pos" x="1775" y="1300" />
   </Object>
 </stdvectorOfObject>

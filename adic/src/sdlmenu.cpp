@@ -3,7 +3,7 @@
 static int player_i;
 static bool step_return = true;
 
-const std::string file_names[] = {"data/gui_0001.png", "data/gui_0002.png", "data/gui_0003.png", "data/gui_0004.png", "data/gui_0005.png", "data/gui_0006.png", "data/gui_0007.png" };
+const std::string file_names[] = {"data:gui_0001.png", "data:gui_0002.png", "data:gui_0003.png", "data:gui_0004.png", "data:gui_0005.png", "data:gui_0006.png", "data:gui_0007.png" };
 
 SDLMenu::SDLMenu(SDLGLGUI &_gui)
   : gui(_gui),
@@ -33,7 +33,7 @@ SDLMenu::SDLMenu(SDLGLGUI &_gui)
   playerName.printed.connect(printed.slot());
   teamName.printed.connect(printed.slot());
 
-  m_hiPtr = DOPE_SMARTPTR<Texture>(gui.getTexture("data/hi.png"));
+  m_hiPtr = DOPE_SMARTPTR<Texture>(gui.getTexture("data:hi.png"));
   for (int i = 0; i<7; i++)
     {
       m_screens.push_back( DOPE_SMARTPTR<Texture>(gui.getTexture(file_names[i])) );

@@ -41,14 +41,14 @@
 #include "game.h"
 #include "messages.h"
 #include "input.h"
+#include "commonconfig.h"
 
 //! server configuration
-struct ServerConfig
+struct ServerConfig : public CommonConfig
 {
-  ServerConfig() : m_port(ADIC_PORT), m_meshURI("file:data/mesh.xml")
+  ServerConfig() : m_meshURI("data:mesh.xml")
   {}
   
-  unsigned short int m_port;
   std::string m_meshURI;
 };
 DOPE_CLASS(ServerConfig);
@@ -56,6 +56,7 @@ DOPE_CLASS(ServerConfig);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, ServerConfig &c)
 {
+  composite(layer2,static_cast<CommonConfig &>(c));
   layer2.simple(c.m_port,"port").simple(c.m_meshURI,"meshURI");
 }
 

@@ -330,22 +330,22 @@ y="1100" /></stdpairOfV2DAndfloat>
 <!-- dir ist richtung -->
 <!-- vector ist position -->
 <stdvectorOfObject this.name="startObjects">
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="830" y="70" />
   </Object>
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="900" y="550" />
   </Object>
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="1200" y="700" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="1200" y="120" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="80" y="1000" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="1820" y="1000" />
   </Object>
 </stdvectorOfObject>

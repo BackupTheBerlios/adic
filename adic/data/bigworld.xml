@@ -679,22 +679,22 @@
 <!-- dir ist richtung -->
 <!-- vector ist position -->
 <stdvectorOfObject this.name="startObjects">
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="2200" y="750" />
   </Object>
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="900" y="380" />
   </Object>
-  <Object dir="0" URI="file:data/barrel.xml">
+  <Object dir="0" URI="data:barrel.xml">
     <V2D this.name="pos" x="4530" y="450" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="1250" y="1370" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="4200" y="650" />
   </Object>
-  <Object dir="45" URI="file:data/fountain.xml">
+  <Object dir="45" URI="data:fountain.xml">
     <V2D this.name="pos" x="5775" y="1300" />
   </Object>
 </stdvectorOfObject>
