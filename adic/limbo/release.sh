@@ -117,7 +117,7 @@ if test ! -e SDL_mixer-1.2.5; then
     $HTTPGET http://www.libsdl.org/projects/SDL_mixer/release/SDL_mixer-1.2.5.tar.gz|tar xzf -
 fi
 
-#todo build semi-static binary package for linux/x11
+#build semi-static binary package for linux/x11
 #we cannot statically link the client
 
 #build SDL stuff
@@ -150,16 +150,25 @@ cd $BUILDDIR/build
 mkdir -p semi-static
 cd semi-static
 if test -e $DIR; then
-    echo Warning `pwd`/$DIR directory already exists - abort or I will remove it
+    echo Warning `pwd`/$DIR directory already exists - assuming we already did compile the semi-static binaries
     read
-    rm -rf $DIR
+else
+    mkdir $DIR
+    cd $DIR
+    DISTNAME=adic-bin-linux-i386-semistatic-${DIR#adic-*}
+    STPREFIX=$BUILDDIR/build/semi-static/$DISTNAME
+    $BUILDDIR/$DIR/configure $CONFIGURE_OPTIONS --with-sdl-prefix=$PREFIX --enable-mostlystatic --enable-fastcompile --prefix=$STPREFIX --bindir=$STPREFIX --datadir=$STPREFIX/data
+    make install
+    # rearange files
+    cd $STPREFIX
+    mv data/doc/adic/* .
+    mv data/adic d2
+    rm -rf data
+    mv d2 data
+    strip adicclient adicserver adicbot
+    tar cvf - $DISTNAME|gzip --best > $BUILDDIR/upload/$DISTNAME.tar.gz
+    tar cvf - $DISTNAME|bzip2 --best > $BUILDDIR/upload/$DISTNAME.tar.bz2
 fi
-mkdir $DIR
-cd $DIR
-$BUILDDIR/$DIR/configure $CONFIGURE_OPTIONS --with-sdl-prefix=$PREFIX --enable-mostlystatic --enable-fastcompile
-make
-#todo install
-
 
 #todo build static binary package for linux/fbdev
 #./configure  --disable-alsa --disable-esd --disable-arts --disable-video-x11 --disable-dga --disable-video-dga --disable-video-ggi --disable-video-svga --enable-video-opengl --prefix=/tmp/usr --disable-cdrom --disable-video-dummy --disable-video-x11-xv --disable-diskaudio --disable-nas --enable-dlopen
@@ -169,7 +178,7 @@ make
 #g++-3.2 -Wall -ansi -pedantic -Wno-long-long -Os -o adicclient gamecommon.o netstream.o adicclient.o -nodefaultlibs  -L/tmp/usr/lib -L/usr/local/lib /tmp/usr/lib/libdope.a /usr/local/lib/libsigc.a /usr/lib/libxml2.a -L/usr/lib -L/usr/X11R6/lib /usr/lib/libSDL_image.a /usr/lib/libjpeg.a /usr/lib/libpng.a /usr/local/lib/libSDL_mixer.a /usr/lib/libSDL.a -lpthread -ldl /usr/lib/libesd.a /usr/lib/libaudiofile.a -lm -lX11 -lXext /usr/local/lib/gcc-lib/i586-pc-linux-gnu/3.2/libstdc++.a -lz -lgcc_s -lc
 
 
-#cross compile
+#cross compile for win32
 if test -e $SETUPCROSS; then
     source $SETUPCROSS
     cd $BUILDDIR/build
