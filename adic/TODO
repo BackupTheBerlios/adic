@@ -1,3 +1,9 @@
+ich war gerade dabei statische binaries zu bauen
+und habe wohl einen bug in der SDL gefunden
+dlopen kann bei statischen binaries NULL zurückgeben
+das wird nicht abgefangen
+
+
 FOR 1.0.0:
 - rewrite world lag compensation
 - reduce text on startup (perhaps print text faster (glterminal))

@@ -7,6 +7,7 @@ PREFIX=/tmp/usr
 export ACLOCAL_FLAGS="-I config/m4"
 export CXX=g++-3.2
 export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
+export CFLAGS="-Wall -ansi -pedantic -Wno-long-long -O3 -DNDEBUG"
 CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX"
 export ADIC_DEB_CONFIGURE_OPTIONS=$CONFIGURE_OPTIONS
 DOPE_BUILD=$BUILDDIR/dope-release.sh
@@ -133,7 +134,52 @@ else
     echo cross compiler config script not found
 fi
 
-#todo build static binary packages for linux/fbdev
+
+# get SDL stuff
+cd $BUILDDIR
+wget http://www.libsdl.org/release/SDL-1.2.5.tar.gz
+wget http://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.3.tar.gz
+wget http://www.libsdl.org/projects/SDL_mixer/release/SDL_mixer-1.2.5.tar.gz
+
+
+
+
+#todo build semi-static binary package for linux/x11
+#we cannot statically link the client
+
+#build SDL stuff
+tar xzvf SDL-1.2.5.tar.gz
+cd SDL-1.2.5
+./configure --disable-shared --enable-video-opengl --enable-dlopen --disable-video-ggi --disable-video-svga --disable-video-dummy --disable-diskaudio --disable-nas --disable-video-fbcon --disable-video-directfb --disable-video-x11-xv --disable-dga --disable-video-x11-dga --enable-esd-shared --enable-arts-shared --disable-cdrom --disable-debug --prefix=$PREFIX
+make install
+cd $BUILDDIR
+tar xzvf SDL_image-1.2.3.tar.gz
+cd SDL_image-1.2.3
+./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-bmp --disable-gif --disable-jpg --disable-lbm --disable-pcx --disable-pnm --disable-tga --disable-tif --disable-xcf --disable-xpm
+make install
+cd $BUILDDIR
+tar xzvf SDL_mixer-1.2.5.tar.gz
+cd SDL_mixer-1.2.5
+./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-music-cmd --disable-music-midi --disable-music-timidity-midi --disable-music-native-midi --disable-music-native-midi-gpl --disable-music-ogg --disable-music-mp3
+make install
+
+#build semi-static adic
+cd $BUILDDIR/build
+mkdir -p semi-static
+if test -e $DIR; then
+    echo Warning `pwd`/$DIR directory already exists - abort or I will remove it
+    read
+    rm -rf $DIR
+fi
+mkdir $DIR
+cd $DIR
+$BUILDDIR/$DIR/configure $CONFIGURE_OPTIONS --with-sdl-prefix=$PREFIX --enable-mostlystatic --enable-fastcompile
+make
+#todo install
+
+
+#todo build static binary package for linux/fbdev
+#./configure  --disable-alsa --disable-esd --disable-arts --disable-video-x11 --disable-dga --disable-video-dga --disable-video-ggi --disable-video-svga --enable-video-opengl --prefix=/tmp/usr --disable-cdrom --disable-video-dummy --disable-video-x11-xv --disable-diskaudio --disable-nas --enable-dlopen
 
 
 #upload packages
