@@ -255,6 +255,12 @@ public:
     r=e.m_wall;
     return true;
   }
+
+  const Poly& getRoomPoly(FWEdge::RoomID r) const
+  {
+    assert(r<m_rooms.size());
+    return m_rooms[r].m_poly;
+  }
   
   //! helper to walk through a room along the walls
   /*!

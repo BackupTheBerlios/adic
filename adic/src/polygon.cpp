@@ -22,7 +22,7 @@ Poly::inside(const V2D &p) const
   Line l1, l2;
   V2D old(m_lineloop.back());
   //  std::cout << "xmax " << m_xmax << std::endl;
-  for(int i=0; i<m_lineloop.size(); i++)
+  for(unsigned i=0; i<m_lineloop.size(); i++)
     {
       l2 = Line(old, m_lineloop[i]);
       l1 = Line(p, V2D(m_xmax+10, p.m_v[1])); //max( l2.m_a[0], l2.m_b[0] );

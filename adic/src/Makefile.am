@@ -95,7 +95,9 @@ adicclient_SOURCES = $(clientcommon) \
 	sdljoystick.h sdljoystick.cpp \
 	sdlmouse.h sdlmouse.cpp \
 	sdlinputfield.h sdlinputfield.cpp \
-	sdlmenu.h sdlmenu.cpp
+	sdlmenu.h sdlmenu.cpp \
+	glpoly.h glpoly.cpp \
+	camera.h camera.cpp
 
 # we do not need @GL_LIBS@ since we now dlopen it
 # todo check for SDL_image and SDL_mixer

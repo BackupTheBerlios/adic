@@ -8,7 +8,7 @@ SDLGLGUI::SDLGLGUI(Client &client)
   : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
     //    m_textureTime(5), 
     m_autoCenter(true), 
-    m_zoom(1), m_zoomOp(0), m_autoZoom(true),
+    m_zoomOp(0), m_autoZoom(true),
     m_showNames(true),
     m_quit(false), m_frames(0),
     m_chatMode(0), m_lineSmooth(getGUIConfig().quality>0), m_toggles(~0)
@@ -125,6 +125,17 @@ SDLGLGUI::createWindow()
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
   m_circlePtr=getTexture("data:pillar.png");
   m_texCircle=true;
+
+  // load the room textures - in the moment they are hardcoded
+  std::vector<std::string> texNames;
+  texNames.push_back("data:room1.png");
+  texNames.push_back("data:room2.png");
+  texNames.push_back("data:room3.png");
+  texNames.push_back("data:room4.png");
+  m_roomTextures.resize(texNames.size());
+  for (unsigned i=0;i<texNames.size();++i)
+    m_roomTextures[i]=getTexture(texNames[i].c_str());
+
   glDisable(GL_NORMALIZE);
   GL_ERRORS();
   glDisable(GL_LIGHTING);
@@ -425,6 +436,7 @@ SDLGLGUI::step(R dt)
   // paint world (if possible)
   const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
   if (worldPtr.get()) {
+    if (m_toggles&(1<<8)) drawPolys();
     if (m_toggles&(1<<3)) drawWalls();
     if (m_toggles&(1<<4)) drawDoors();
     if (m_toggles&(1<<5)) drawPillars();
@@ -529,17 +541,11 @@ SDLGLGUI::step(R dt)
   return true;
 }
 
-V2D 
-SDLGLGUI::getPos() const
-{
-  return m_pos;
-}
-
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
 {
   if (!m_texCircle) {
-    unsigned d=1.0/m_zoom;
+    unsigned d=1.0/getZoom();
     unsigned res=12;
     if (d>1) res/=d;
     if (res>=3) {
@@ -605,7 +611,7 @@ SDLGLGUI::drawWall(const Wall &w, bool cwClosed, bool ccwClosed)
     numlines=(cwClosed==ccwClosed) ? 1 : 2;
   else numlines=3;
   float wt=w.getWallWidth();
-  nlw=wt*m_zoom/float(numlines);
+  nlw=wt*getZoom()/float(numlines);
   if (m_lineSmooth) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
@@ -667,7 +673,7 @@ SDLGLGUI::drawDoor(const Wall &w, bool closed)
   glGetFloatv(GL_LINE_WIDTH,&lw);
 
   // now set the line width
-  glLineWidth(w.getWallWidth()*m_zoom);
+  glLineWidth(w.getWallWidth()*getZoom());
 
   Line l(w.getLine());
 
@@ -691,11 +697,43 @@ SDLGLGUI::drawDoor(const Wall &w, bool closed)
 }
 
 void
-SDLGLGUI::drawPolygon(const std::vector<V2D> &p)
+SDLGLGUI::drawPolys()
 {
-  // todo - OpenGL only draws convex polygons => we have to do it ourselves
-  // this is a job for Jens Schwarz ;-)
+  const Game::WorldPtr &worldPtr(m_client.getWorldPtr());
+  unsigned nr=worldPtr->getNumRooms();
+  if (nr!=m_polys.size()) {
+    m_polys.resize(nr);
+    for (unsigned i=0;i<nr;++i){
+      m_polys[i]=DOPE_SMARTPTR<GLPoly>(new GLPoly(worldPtr->getRoomPoly(i).getLineLoop()));
+    }
+  }
+  float cschemes[4][3]={
+    {1.0,0.7,0.7},
+    {0.8,1.0,0.8},
+    {0.2,0.0,0.0},
+    {0.0,0.2,0.0}
+  };
+
+  float* colors[2]={cschemes[2],cschemes[3]};
+  if (getGUIConfig().quality>0) {
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    colors[0]=cschemes[0];
+    colors[1]=cschemes[1];
+  }
+  for (unsigned i=0;i<nr;++i) {
+    int c=m_client.getGame().roomIsClosed(i) ? 0 : 1;
+    glColor3fv(colors[c]);
+    glBindTexture(GL_TEXTURE_2D,m_roomTextures[i%m_roomTextures.size()]->getTextureID());
+    m_polys[i]->draw();
+  }
+  if (getGUIConfig().quality>0) {
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+  }
 }
+
 void
 SDLGLGUI::drawTexture(const Texture &tex, const V2D &p, R rot)
 {
@@ -892,27 +930,28 @@ SDLGLGUI::setupCamera(R dt)
 	pos=(maxp+minp)/2;
 	pos[0]=int(pos[0]);
 	pos[1]=int(pos[1]);
-	m_pos=pos+V2D(0.375f,0.375f);
+	m_camera.setPos(pos+V2D(0.375f,0.375f));
       }
       if ((c>1)&&m_autoZoom) {
 	maxp-=minp;
 	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+300.0);
 	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+300.0);
-	m_zoom=std::min(xzoom,yzoom);
-	m_zoom=std::min(R(2.0),m_zoom);
+	m_camera.setZoom(std::min(std::min(xzoom,yzoom),R(2.0)));
       }
     }
   }
-  if (m_scrollOp[0])
-    m_pos[0]+=dt*R(m_scrollOp[0]*100)/m_zoom;
-  if (m_scrollOp[1])
-    m_pos[1]+=dt*R(m_scrollOp[1]*100)/m_zoom;
-  if (m_zoomOp) {
-    m_zoom*=1.0+0.1*dt*R(m_zoomOp);
-    m_zoom=std::max(m_zoom,R(0.1));
+  if (m_scrollOp[0]||m_scrollOp[1]) {
+    V2D s(m_scrollOp[0],m_scrollOp[1]);
+    s*=dt*200/getZoom();
+    m_camera.setPos(m_camera.getWPos()+s);
   }
-  glTranslatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
-  glScalef(m_zoom,m_zoom,1);
+  if (m_zoomOp) {
+    m_camera.setZoom(std::max(R(m_camera.getWZoom()*(1.0+0.2*dt*R(m_zoomOp))),R(0.1)));
+  }
+  m_camera.step(dt);
+  
+  glTranslatef(-int(getPos()[0]*getZoom())+m_width/2,-int(getPos()[1]*getZoom())+m_height/2,0);
+  glScalef(getZoom(),getZoom(),1);
 }
 
 void
@@ -928,7 +967,7 @@ SDLGLGUI::drawWalls()
      Wall dummy;
      R wt=dummy.getWallWidth();
   
-     float nlw=wt*2*m_zoom;
+     float nlw=wt*2*getZoom();
      if (!m_lineSmooth) nlw=ceil(nlw); // todo this is not enough
      // now set the line width
      glLineWidth(nlw);
@@ -1055,7 +1094,7 @@ SDLGLGUI::drawPlayers(R dt)
       if (cp.isPlayer()&&m_showNames) {
 	glPushMatrix();
 	glTranslatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
-	float s=1.0f/m_zoom;
+	float s=1.0f/getZoom();
 	glScalef(s,s,1);
 	m_fontPtr->drawText(m_client.getPlayerName(p),true);
 

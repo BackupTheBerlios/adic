@@ -33,6 +33,8 @@
 #include "glterminal.h"
 #include "glfont.h"
 #include "sdlinputfield.h"
+#include "glpoly.h"
+#include "camera.h"
 
 class SDLMenu;
 
@@ -45,8 +47,19 @@ public:
   bool init();
   //! repaint
   bool step(R dt);
+
   //! center of screen coordinates
-  V2D getPos() const;
+  V2D getPos() const
+  {
+    return m_camera.getPos();
+  }
+  
+  //! current zoom
+  R getZoom() const 
+  {
+    return m_camera.getZoom();
+  }
+  
   //! cleanup
   ~SDLGLGUI();
 
@@ -114,15 +127,13 @@ public:
   }
 protected:
   void drawPillars();
+  void drawPolys();
   void setupCamera(R dt);
   void drawWalls();
   void drawDoors();
   void drawPlayers(R dt);
   void drawTeamStat();
   
-  //! \todo not yet implemented
-  void drawPolygon(const std::vector<V2D> &p);
-
   //! create window
   void createWindow();
   //! resize gui
@@ -141,12 +152,13 @@ protected:
   std::vector<Animation> m_animations;
   DOPE_SMARTPTR<Texture> m_circlePtr;
   bool m_texCircle;
+  std::vector<DOPE_SMARTPTR<Texture> > m_roomTextures;
+
+  Camera m_camera;
   
-  V2D m_pos;
   int m_scrollOp[2];
   bool m_autoCenter;
 
-  R m_zoom;
   int m_zoomOp;
   bool m_autoZoom;
 
@@ -173,6 +185,9 @@ protected:
 
   //! some toggles
   unsigned m_toggles;
+
+  //! room polygons
+  std::vector<DOPE_SMARTPTR<GLPoly> > m_polys;
 };
 
 #endif

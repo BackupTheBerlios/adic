@@ -32,6 +32,7 @@
 #include <windows.h>
 #undef NOMINMAX
 #undef DLOPEN_OPENGL
+#define WINDOOF 1
 #endif
 
 #ifdef DLOPEN_OPENGL

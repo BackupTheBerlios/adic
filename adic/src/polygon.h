@@ -29,6 +29,11 @@ public:
     \returns true if point is inside
   */
   bool inside(const V2D &p) const;
+
+  const std::vector<V2D> &getLineLoop() const
+  {
+    return m_lineloop;
+  }
 };
 
 

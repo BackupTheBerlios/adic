@@ -3,11 +3,14 @@ FUNC(void, glMatrixMode,(unsigned int) );
 FUNC(void, glLoadIdentity,(void) );
 FUNC(void, glColor3f,(float,float,float) );
 FUNC(void, glColor4f,(float,float,float,float) );
+FUNC(void, glColor3fv,(const float *) );
+FUNC(void, glColor4fv,(const float *) );
 FUNC(void, glTranslatef,(float,float,float) );
 FUNC(void, glScalef,(float,float,float) );
 FUNC(void, glBegin,(unsigned int) );
 FUNC(void, glVertex2i,(int,int) );
 FUNC(void, glVertex2f,(float,float) );
+FUNC(void, glVertex3dv,(double *) );
 FUNC(void, glEnd,(void) );
 FUNC(void, glViewport,(int,int,int,int) );
 FUNC(void, glOrtho,(double,double,double,double,double,double) );
@@ -34,3 +37,17 @@ FUNC(void, glDrawPixels, (int,int,int,int, void *) );
 FUNC(void, glPixelZoom, (float,float) );
 FUNC(int, glGetError, (void) );
 FUNC(void, glBlendFunc, (unsigned int,unsigned int) );
+FUNC(GLuint, glGenLists, (GLsizei range) );
+FUNC(void, glNewList, (GLuint list,GLenum mode) );
+FUNC(void, glEndList, (void) );
+FUNC(void, glCallList, (GLuint list) );
+FUNC(void, glDeleteLists, (GLuint list,GLsizei range) );
+
+
+/* glu */
+FUNC(GLUtesselator*, gluNewTess, (void) );
+FUNC(void, gluTessCallback, (GLUtesselator* tess, GLenum which, _GLUfuncptr CallBackFunc ) );
+FUNC(void, gluTessBeginPolygon, (GLUtesselator* tess, GLvoid* data ) );
+FUNC(void, gluTessVertex, (GLUtesselator* tess, GLdouble *location, GLvoid* data ) );
+FUNC(void, gluTessEndPolygon, ( GLUtesselator* tess ) );
+FUNC(void, gluDeleteTess, ( GLUtesselator* tess ) );

@@ -42,7 +42,7 @@ public:
   {
     layer2.SIMPLE(maxspeed).SIMPLE(minspeed)
       .SIMPLE(rotspeed).SIMPLE(acceleration).SIMPLE(hdamping).SIMPLE(vdamping)
-      .SIMPLE(mass).SIMPLE(maxfitness).SIMPLE(minfitness).SIMPLE(type)
+      .SIMPLE(mass).SIMPLE(maxfitness).SIMPLE(minfitness).SIMPLE(endurance).SIMPLE(type)
       .SIMPLE(r).SIMPLE(recoverTime);
   }
 
