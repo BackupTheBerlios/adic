@@ -65,6 +65,7 @@ Server::main()
   TimeStamp minStep(0,1000000/100); // max. 100 Hz will be less because of the min sleep problem
   TimeStamp dt;
   TimeStamp null;
+  TimeStamp timeOut;
   oldTime.now();
   unsigned frames=0;
   while (!m_quit) {
@@ -73,7 +74,8 @@ Server::main()
     newTime.now();
     dt=newTime-oldTime;
     while(dt<minStep) {
-      (minStep-dt).sleep();
+      timeOut=(minStep-dt);
+      listener.select(&timeOut);
       newTime.now();
       dt=newTime-oldTime;
     }
