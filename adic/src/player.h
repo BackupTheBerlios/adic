@@ -26,6 +26,9 @@
 #define PLAYER_H
 
 #include "roundobject.h"
+#include "playerdata.h"
+#include "genericpointer.h"
+#include "uriloader.h"
 
 //! a player in the game world
 /*!
@@ -34,7 +37,10 @@
 class Player : public RoundObject
 {
 public:
-  Player(const V2D &pos=V2D(0,0), R dir=0, int8_t _type=0,R r=15);
+  Player();
+  Player(const V2D &pos, R dir, const std::string &playerDataURI);
+
+  typedef GenericPointer<PlayerData, std::string, URILoader<URICache<PlayerData> > > PlayerDataPtr;
   
   bool step(R dt);
 
@@ -42,8 +48,8 @@ public:
   inline void composite(Layer2 &layer2)
   {
     RoundObject::composite(layer2);
-    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy).SIMPLE(type)
-      .SIMPLE(m_fitness).SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
+    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy).SIMPLE(m_playerDataPtr)
+      .SIMPLE(m_fitness);// .SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
   }
 
   void setControl(int8_t x, int8_t y)
@@ -65,26 +71,37 @@ public:
   void rollback() 
   {
     RoundObject::rollback();
-    m_speed=m_oldSpeed;
-    m_direction=m_oldDirection;
-    DOPE_CHECK(m_speed==m_oldSpeed);
-    DOPE_CHECK(m_direction==m_oldDirection);
+    /*
+      m_speed=m_oldSpeed;
+      m_direction=m_oldDirection;
+      assert(m_speed==m_oldSpeed);
+      assert(m_direction==m_oldDirection);
+    */
   }
   void commit()
   {
     RoundObject::commit();
-    m_oldSpeed=m_speed;
-    m_oldDirection=m_direction;
+    /*
+      m_oldSpeed=m_speed;
+      m_oldDirection=m_direction;
+    */
   }
-  
+
   const V2D& getSpeed() const
   {
     return m_speed;
   }
+
+  V2D getImpuls() const
+  {
+    assert(m_playerDataPtr.get());
+    return getSpeed()*m_playerDataPtr->mass;
+  }
   
   void applyImpuls(const V2D &i)
   {
-    m_speed+=i;
+    assert(m_playerDataPtr.get());
+    m_speed+=i/m_playerDataPtr->mass;
   }
 
   int8_t getX() const
@@ -97,19 +114,15 @@ public:
   }
   bool isPlayer() const
   {
-    return type==0;
+    assert(m_playerDataPtr.get());
+    return m_playerDataPtr->type<10;
   }
+  int8_t getType() const
+  {
+    assert(m_playerDataPtr.get());
+    return m_playerDataPtr->type;
+}
 protected:
-
-  //! maximum speed
-  static const R m_maxspeed;
-  //! acceleration
-  static const R m_acceleration;
-  //! damping of velocity not in our direction
-  static const R m_hdamping;
-  //! damping of velocity in our direction
-  static const R m_vdamping;
-
   //! our crrent speed vector
   V2D m_speed;
   //! our direction we are heading
@@ -118,13 +131,15 @@ protected:
   int8_t m_ix;
   //! input y
   int8_t m_iy;
-  //! type
-  int8_t type;
+  //! data that isn't changed
+  PlayerDataPtr m_playerDataPtr;
   //! 0<fit<1
   R m_fitness;
   
-  V2D m_oldSpeed;
-  R m_oldDirection;
+  /*
+    V2D m_oldSpeed;
+    R m_oldDirection;
+  */
 };
 DOPE_CLASS(Player);
 

@@ -17,18 +17,27 @@
 #define LOOKUP(m,t) m##P=&m;DOPE_CHECK(m##P)
 #endif
 
-SDLGLGUI::Player::Player(SDLGLGUI &gui, const std::vector<std::string> &uris)
+SDLGLGUI::Animation::Animation(SDLGLGUI &gui, const std::vector<std::string> &uris)
   : time(0)
 {
   for (unsigned i=0;i<uris.size();++i)
     textures.push_back(gui.getTexture(uris[i]));
 }
 
+Texture &
+SDLGLGUI::Animation::getTexture() const
+{
+  unsigned id=unsigned(fabs(time));
+  DOPE_CHECK(id<textures.size());
+  DOPE_CHECK(textures[id].get());
+  return *textures[id].get();
+}
+
 void 
-SDLGLGUI::Player::step(const ::Player &p,R dt)
+SDLGLGUI::Animation::step(R dt)
 {
   if (textures.size()<2) return;
-  time+=p.getY()*dt*p.getSpeed().length()*0.1;
+  time+=dt;
   while (time>=textures.size())
 	time-=textures.size();
   while (time<0)
@@ -431,14 +440,14 @@ SDLGLGUI::step(R dt)
     DOPE_WARN("Did not receive world yet");
   }
   // paint players
-  if (m_players.size()!=players.size()) {
-    while (players.size()<m_players.size())
-      m_players.pop_back();
-    while (m_players.size()<players.size())
+  if (m_animations.size()!=players.size()) {
+    while (players.size()<m_animations.size())
+      m_animations.pop_back();
+    while (m_animations.size()<players.size())
       {
-	PlayerID id=m_players.size();
+	PlayerID id=m_animations.size();
 	if (players[id].isPlayer()) {
-	  // find team this player is in
+	  // find team this player is in todo: similar code in game.cpp
 	  unsigned tid=~0U;
 	  const std::vector<Team> &teams(m_client.getGame().getTeams());
 	  unsigned i=0;
@@ -452,34 +461,41 @@ SDLGLGUI::step(R dt)
 	  DOPE_CHECK(i<teams.size());
 	  DOPE_CHECK(tid!=~0U);
 	  DOPE_CHECK(tid<teams[i].textures.size());
-	  m_players.push_back(Player(*this,teams[i].textures[tid]));
+	  m_animations.push_back(Animation(*this,teams[i].textures[tid]));
 	}else{
-	  std::vector<std::string> uris(1);
-	  uris[0]=m_client.getPlayerName(id);
-	  m_players.push_back(Player(*this,uris));
+	  std::vector<std::string> uris;
+	  switch (players[id].getType()) {
+	  case 10:
+	    uris.push_back("data/barrel.png");
+	    break;
+	  default:
+	    DOPE_WARN("Unknown type => no texture");
+	  }
+	  m_animations.push_back(Animation(*this,uris));
 	}
       }
   }
   for (unsigned p=0;p<players.size();++p)
     {
+      const Player &cp(players[p]);
       if (m_client.getGame().playerIsLocked(p))
 	glColor3fP(1.0,0.0,0.0);
       else
 	glColor3fP(0.0,1.0,0.0);
-      //      drawCircle(players[p].m_pos,players[p].m_r);
-      m_players[p].step(players[p],dt);
-      drawTexture(m_players[p].getTexture(),players[p].m_pos,players[p].getDirection());
-      if (players[p].isPlayer()&&m_showNames) {
+      //      drawCircle(cp.m_pos,cp.m_r);
+      m_animations[p].step(dt*cp.getY()*cp.getSpeed().length()*0.1);
+      drawTexture(m_animations[p].getTexture(),cp.m_pos,cp.getDirection());
+      if (cp.isPlayer()&&m_showNames) {
 	glPushMatrixP();
-	glTranslatefP(int(players[p].m_pos[0]), int(players[p].m_pos[1])+2*players[p].m_r, 0);
+	glTranslatefP(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
 	drawText(m_client.getPlayerName(p),true);
 	glPopMatrixP();
       }
-      /*      V2D dv(V2D(0,100).rot(players[p].getDirection()));
+      /*      V2D dv(V2D(0,100).rot(cp.getDirection()));
       glColor3fP(1.0,1.0,0.0);
       glBeginP(GL_LINES);
-      glVertex2fP(players[p].m_pos[0],players[p].m_pos[1]);
-      dv+=players[p].m_pos;
+      glVertex2fP(cp.m_pos[0],cp.m_pos[1]);
+      dv+=cp.m_pos;
       glVertex2fP(dv[0],dv[1]);
       glEndP(); 
       glColor3fP(1.0,1.0,1.0); */

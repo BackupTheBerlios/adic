@@ -43,6 +43,7 @@ gamecommon = \
 	roundobject.h \
 	door.h door.cpp \
 	icon.h \
+	playerdata.h playerdata.cpp \
 	player.h player.cpp \
 	game.h game.cpp \
 	uriloader.h \

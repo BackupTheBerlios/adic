@@ -229,9 +229,9 @@ public:
     m_emitFilter=efbackup;
   }
   
-  PlayerID addPlayer(const std::string &name)
+  PlayerID addPlayer(const std::string &name, const std::string &URI)
   {
-    return m_game.addPlayer(name);
+    return m_game.addPlayer(name,URI);
   }
 
   void setInput(const PlayerInput &i)

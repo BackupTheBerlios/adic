@@ -66,6 +66,28 @@ inline void composite(Layer2 &layer2, Edge &e)
   layer2.simple(e.vid,"vid").simple(e.type,"type");
 }
 
+
+struct Object
+{
+  V2D pos;
+  R dir;
+  std::string URI;
+
+  template <typename Layer2>
+  inline void composite(Layer2 &layer2)
+  {
+    layer2.SIMPLE(pos).SIMPLE(dir).SIMPLE(URI);
+  }
+
+};
+DOPE_CLASS(Object);
+template <typename Layer2>
+inline void composite(Layer2 &layer2, Object &o)
+{
+  o.composite(layer2);
+}
+
+
 //! simple mesh as input to the world
 class Mesh
 {
@@ -73,12 +95,13 @@ public:
   //! edge ID type
   typedef int EID;
   typedef std::vector<std::pair<V2D,R> > StartPoints;
+  typedef std::vector<Object> StartObjects;
   
   std::vector<V2D> vertices;
   std::vector<Edge> edgelist;
 
   StartPoints startPoints;
-  StartPoints startObjects;
+  StartObjects startObjects;
   
   template <typename Layer2>
   inline void composite(Layer2 &layer2)

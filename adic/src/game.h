@@ -166,10 +166,10 @@ public:
     return m_players;
   }
   //! add a new player
-  PlayerID addPlayer(const std::string &name);
+  PlayerID addPlayer(const std::string &name, const std::string &URI);
 
   //! add a object
-  void addObject(const V2D &pos, R dir, const std::string &name, R r);
+  void addObject(const Object &o);
   
   void setInput(const PlayerInput &i);
 

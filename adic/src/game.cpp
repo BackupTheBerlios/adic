@@ -105,6 +105,9 @@ Game::collidePlayer(unsigned pid, bool test)
 {
   DOPE_CHECK(pid<m_players.size());
   Player &p=m_players[pid];
+  if (!p.moved())
+    return false;
+
   WorldPtr w(getWorldPtr());
   if (w.get()) {
     // find room this player is in
@@ -131,8 +134,8 @@ Game::collidePlayer(unsigned pid, bool test)
 	  }
 	  
 	  // now calculate impuls
-	  V2D oimp(cv.project(p.getSpeed()));
-	  V2D timp((-cv).project(m_players[o].getSpeed()));
+	  V2D oimp(cv.project(p.getImpuls()));
+	  V2D timp((-cv).project(m_players[o].getImpuls()));
 	  p.applyImpuls(timp-oimp);
 	  m_players[o].applyImpuls(oimp-timp);
 	  p.commit();
@@ -152,7 +155,7 @@ Game::collidePlayer(unsigned pid, bool test)
 	  calcPlayerInRoom(pid);
 	  r=playerInRoomCached(pid);
 	  DOPE_CHECK(!w->collide(p,r,cv));
-	  V2D imp(cv.project(p.getSpeed()));
+	  V2D imp(cv.project(p.getImpuls()));
 	  p.applyImpuls(imp*-2);
 	  p.commit();
 	  if (!test) collision.emit(p.m_pos,2*imp.length());
@@ -163,10 +166,7 @@ Game::collidePlayer(unsigned pid, bool test)
     for (unsigned d=0;d<m_doors.size();++d)
       {
 	if (collideDoorAndPlayer(m_doors[d],p,false))
-	  {
-	    DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],p,false));
-	    return true;
-	  }
+	  return true;
       }
   }
   p.commit();
@@ -185,27 +185,24 @@ Game::miniStep(R dt)
 	// calculate player step
 	if (playerIsLocked(p))
 	  m_players[p].setControl(0,0);
-	DOPE_CHECK(!collidePlayer(p));
+	assert(!collidePlayer(p));
 	m_players[p].step(dt);
 	calcPlayerInRoom(p);
 	collidePlayer(p);
+	assert(!collidePlayer(p));
       }
-      // "collide" collect icons
     }
 
   // step doors
   for (unsigned d=0;d<m_doors.size();++d)
     {
       m_doors[d].step(dt);
-      if (m_doors[d].getSpeed()!=R(0)) {
+      if (m_doors[d].moved()) {
 	// collide with players
 	for (unsigned p=0;p<m_players.size();++p)
 	  {
 	    if (collideDoorAndPlayer(m_doors[d],m_players[p],true))
-	      {
-		DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],m_players[p],true));
-		break;
-	      }
+	      break;
 	  }
       }
       m_doors[d].commit();
@@ -229,14 +226,14 @@ void Game::calcClosedRooms()
 }
 
 PlayerID
-Game::addPlayer(const std::string &name)
+Game::addPlayer(const std::string &name, const std::string &URI)
 {
   PlayerID id=m_players.size();
   WorldPtr w(getWorldPtr());
   DOPE_CHECK(w.get());
   const Mesh::StartPoints &s(w->getStartPoints());
   for (unsigned p=0;p<s.size();++p) {
-    Player newp(s[p].first,s[p].second*M_PI/180);
+    Player newp(s[p].first,s[p].second*M_PI/180,URI);
     m_players.push_back(newp);
     if (!collidePlayer(id,true)) {
       setPlayerName(id,name);
@@ -251,13 +248,13 @@ Game::addPlayer(const std::string &name)
 }
 
 void 
-Game::addObject(const V2D &pos, R dir, const std::string &name, R r)
+Game::addObject(const Object &o)
 {
-  Player newp(pos,dir*M_PI/180,1,r);
+  Player newp(o.pos,o.dir*M_PI/180,o.URI);
   PlayerID id=m_players.size();
   m_players.push_back(newp);
   DOPE_CHECK(!collidePlayer(id,true));
-  setPlayerName(id,name);
+  //  setPlayerName(id,name);
 }
 
 void 
@@ -317,22 +314,40 @@ Game::collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor)
   R dist;
   if (!w.collide(p,cv,dist))
     return false;
-  // todo apply imulses - unfortunately i don't know the distance of the
-  // collision point => i can't calculate the momentum
+
+  // todo remove
+  V2D preRollback=p.m_pos;
+
   if (!rollbackdoor)
     p.rollback();
   else
     d.rollback();
-  V2D oimp(cv.project(p.getSpeed()));
-  // todo this seems a bit stupid since the speed of the door is always in the direction
-  // of cv (no not really because of the pillars at the end of the door)
-  // todo this is buggy
-  V2D timp(cv.project(rd.getImpuls(dist)));
-  p.applyImpuls(timp*0.9-oimp);
-  rd.applyImpuls(dist,oimp*0.9-timp);
+
+  // todo remove
+  V2D postRollback=p.m_pos;
+  V2D diff=preRollback-postRollback;
+
+  // player impuls
+  V2D pimp(cv.project(p.getImpuls()));
+  // this seems a bit stupid because the speed of the door should always be 
+  // in the direction of cv but it is not because of the pillars at the end of the door
+  // door impuls
+  V2D dimp(cv.project(rd.getImpuls(dist)));
+  p.applyImpuls(dimp*0.9-pimp);
+  rd.applyImpuls(dist,pimp*0.9-dimp);
   p.commit();
   d.commit();
-  collision.emit(p.m_pos,oimp.length()+timp.length());
+  collision.emit(p.m_pos,pimp.length()+dimp.length());
+  // todo remove it again
+  {
+    RealDoor rd(doorInWorld(d));
+    Wall w(rd.asWall());
+    V2D cv;
+    R dist;
+    if (w.collide(p,cv,dist)) {
+      DOPE_FATAL("rollback failed - diff is: "<<diff);
+    }
+  }
   return true;
 }
 

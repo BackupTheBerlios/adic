@@ -44,19 +44,11 @@ public:
   ~SDLGLGUI(){m_textures.clear();killWindow();}
 protected:
 
-  struct Player
+  struct Animation
   {
-    Player(SDLGLGUI &gui, const std::vector<std::string> &uris);
-    
-    Texture &getTexture() const
-    {
-      unsigned id=time;
-      DOPE_CHECK(id<textures.size());
-      DOPE_CHECK(textures[id].get());
-      return *textures[id].get();
-    }
-
-    void step(const ::Player &p,R dt);
+    Animation(SDLGLGUI &gui, const std::vector<std::string> &uris);
+    Texture &getTexture() const;
+    void step(R dt);
     
     std::vector<DOPE_SMARTPTR<Texture> > textures;
     R time;
@@ -83,7 +75,7 @@ protected:
   DOPE_SMARTPTR<Texture> m_texturePtr;
   R m_textureTime;
   DOPE_SMARTPTR<Texture> m_fontPtr;
-  std::vector<Player> m_players;
+  std::vector<Animation> m_animations;
 
   V2D m_pos;
   int m_scrollOp[2];

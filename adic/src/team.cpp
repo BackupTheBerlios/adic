@@ -31,6 +31,7 @@ Team::Team(const std::string &_name,unsigned tno)
     break;
   }
   textures.resize(4);
+  dataURIs.resize(4);
   for (unsigned i=0;i<textures.size();++i) {
     std::string mdl;
     switch(i%textures.size()) {
@@ -47,6 +48,7 @@ Team::Team(const std::string &_name,unsigned tno)
       mdl="cowboy";
       break;
     }
+    dataURIs[i]=std::string("file:data/")+mdl+".xml";
     for (unsigned f=1;f<7;++f) {
       textures[i].push_back(std::string("data/")+mdl+colorname+anyToString(f)+".png");
     }

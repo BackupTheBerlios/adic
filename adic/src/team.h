@@ -35,6 +35,7 @@ struct Team
   
   std::string name;
   float color[3];
+  std::vector<std::string> dataURIs;
   std::vector<std::vector<std::string> > textures;
   std::vector<PlayerID> playerIDs;
   bool operator==(const std::string &n) const
@@ -52,7 +53,7 @@ inline void composite(Layer2 &layer2, Team &t)
 {
   layer2.simple(t.name,"name").simple(t.playerIDs,"playerIDs")
     .fixedCVector(t.color,3,"color")
-    .simple(t.textures,"textures");
+    .simple(t.textures,"textures").simple(t.dataURIs,"dataURIs");
 }
 
 #endif

@@ -53,7 +53,8 @@ Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
       if (t->playerIDs.size()>=t->textures.size())
 	continue;
       // try to add player
-      PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_uname);
+      assert(t->playerIDs.size()<t->dataURIs.size());
+      PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_uname,t->dataURIs[t->playerIDs.size()]);
       if (id==PlayerID(~0U))
 	break;
       playerIDs.push_back(id);
@@ -87,11 +88,9 @@ Server::Server(ServerConfig &config)
 {
   Game::WorldPtr w(m_game.getWorldPtr());
   assert(w.get());
-  const Mesh::StartPoints &objpos(w->getStartObjects());
-  for (unsigned i=0;i<objpos.size();++i){
-    // todo add different kind of objects
-    m_game.addObject(objpos[i].first,objpos[i].second,"data/barrel.png",30);
-  }
+  const Mesh::StartObjects &objpos(w->getStartObjects());
+  for (unsigned i=0;i<objpos.size();++i)
+    m_game.addObject(objpos[i]);
 }
 
 Team *
