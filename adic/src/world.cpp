@@ -87,7 +87,7 @@ World::setFromMesh(const Mesh &mesh)
 	  // we visited this edge already - set current full winged edge
 	  Value cfweID=it->second;
 	  if (firstEdge) {
-	    fe=cfweID;
+	    fe=cfweID; // todo here is a bug? (if the first edge is not CW there is a bug)
 	    feCW=false;
 	  }
 	  FWEdge &cfwe=m_edges[cfweID];
@@ -222,6 +222,18 @@ bool
 World::isInRoom(const V2D &p, FWEdge::RoomID r)
 {
   return Polygon(getLineLoop(r)).inside(p);
+}
+
+std::vector<FWEdge::EID>
+World::getAllDoors() const
+{
+  std::vector<FWEdge::EID> r;
+  for (unsigned e=0;e<m_edges.size();++e)
+    {
+      if (m_edges[e].isDoor())
+	r.push_back(e);
+    }
+  return r;
 }
 
 

@@ -38,6 +38,12 @@ public:
   */
   virtual bool step(R dt)=0;
 
+  //! rollback last step
+  virtual void rollback()=0;
+  
+  //! commit last step
+  virtual void commit()=0;
+
   //! collide with a circle
   /*!
     \param c the circle to collide

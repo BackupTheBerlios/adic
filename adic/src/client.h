@@ -97,6 +97,11 @@ public:
     return m_game.getWorldPtr();
   }
 
+  Game &getGame()
+  {
+    return m_game;
+  }
+  
   const Game::Players &getPlayers() const
   {
     return m_game.getPlayers();

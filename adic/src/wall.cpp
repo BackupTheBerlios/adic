@@ -8,12 +8,14 @@ Wall::collide(const Circle &circle, V2D &cv) const
   R dpa = (circle.m_pos-m_l.m_a).norm2() - circle.m_r - m_pr;
   R dpb = (circle.m_pos-m_l.m_b).norm2() - circle.m_r - m_pr;
 
+  /*
   std::cout << "dl  " << dl << std::endl;
   std::cout << "dpa " << dpa << std::endl;
   std::cout << "dpb " << dpb << std::endl;
   std::cout << "m_wt" << m_wt << std::endl;
   std::cout << "m_pr" << m_pr << std::endl;
   std::cout << "c   " << circle.m_r << std::endl;
+  */
 
   R d = 0;
   int c = 0;
@@ -33,7 +35,7 @@ Wall::collide(const Circle &circle, V2D &cv) const
       else if (-dpb<d) { c = 3; d = -dpb; }
     }
 
-  std::cout << "d " << d << std::endl;
+  //  std::cout << "d " << d << std::endl;
 
   if (c==1)
     {
@@ -55,3 +57,11 @@ Wall::collide(const Circle &circle, V2D &cv) const
   else
     return false;
 }
+
+bool 
+Wall::collide(const Circle &circle, V2D &cv, R dist) const
+{
+  dist=(m_l.m_b-m_l.m_a).length();
+  return collide(circle,cv);
+}
+

@@ -38,6 +38,7 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
+    RoundObject::composite(layer2);
     layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy);
   }
 
@@ -51,6 +52,30 @@ public:
   {
     return m_direction;
   }
+
+  void rollback() 
+  {
+    RoundObject::rollback();
+    m_speed=m_oldSpeed;
+    m_direction=m_oldDirection;
+  }
+  void commit()
+  {
+    RoundObject::commit();
+    m_oldSpeed=m_speed;
+    m_oldDirection=m_direction;
+  }
+  
+  const V2D& getSpeed() const
+  {
+    return m_speed;
+  }
+  
+  void applyImpuls(const V2D &i)
+  {
+    m_speed+=i;
+  }
+  
 protected:
   int8_t getX() const
   {
@@ -66,7 +91,9 @@ protected:
   //! acceleration
   static const R m_acceleration;
   //! damping of velocity not in our direction
-  static const R m_damping;
+  static const R m_hdamping;
+  //! damping of velocity in our direction
+  static const R m_vdamping;
 
   //! our crrent speed vector
   V2D m_speed;
@@ -76,6 +103,9 @@ protected:
   int8_t m_ix;
   //! input y
   int8_t m_iy;
+
+  V2D m_oldSpeed;
+  R m_oldDirection;
 };
 DOPE_CLASS(Player);
 

@@ -1,3 +1,29 @@
+heißenbug:
+create door is called more than once when running without gdb
+and exactly once when running in gdb
+
+
+collideDoorAndPlayer
+macht nen rollback fuer beide
+das kann zu fehlern fuehren
+
+
+
+client und server main loop richtig machen !!!
+
+
+
+in door.h habe ich aus versehen ueberall grad benutzt
+
+
+nochmal ueber die klasse door nachdenken
+meine urspruenglicher gedanke war der die daten moeglichst klein zu halten
+damit wenig netzerk traffic erzeugt wird
+das hat aber zur folge dass alle methoden die eigentlich zur tuer gehoeren nach
+game wandern
+evtl. 2-stufig
+also tür-daten und tür-adapter
+
 xml parser haengt ewig
 problem ist timeout
 warum wird der parser nicht rechtzeitig angehalten ?

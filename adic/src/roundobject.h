@@ -40,6 +40,16 @@ struct RoundObject : public GameObject, public Circle
   RoundObject(const V2D &pos,R r=5) : Circle(pos,r)
   {}
   
+  void rollback()
+  {
+    *(static_cast<Circle *>(this))=m_oldCircle;
+  }
+  
+  void commit()
+  {
+    m_oldCircle=*this;
+  }
+  
   bool collide(const Circle &c, V2D &cv)
   {
     if (!Circle::collide(c))
@@ -47,6 +57,15 @@ struct RoundObject : public GameObject, public Circle
     cv=m_pos-c.m_pos;
     return true;
   }
+
+protected:
+  template <typename Layer2>
+  inline void composite(Layer2 &layer2)
+  {
+    Circle::composite(layer2);
+  }
+
+  Circle m_oldCircle;
 };
 
 #endif

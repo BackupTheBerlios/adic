@@ -61,6 +61,11 @@ public:
     return r.sub(o);
   }
 
+  V2D operator-() const
+  {
+    return V2D(-m_v[0],-m_v[1]);
+  }
+  
   V2D &operator+=(const V2D &o)
   {
     return add(o);
