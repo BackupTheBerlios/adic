@@ -419,6 +419,12 @@ SDLGLGUI::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 }
 
 void
+SDLGLGUI::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
+{
+}
+
+
+void
 SDLGLGUI::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
 {
   // prepare for next level - reset all internal data structures
@@ -456,8 +462,7 @@ SDLGLGUI::step(R dt)
       p*=0.5;
       R xzoom=double(m_width)/(br[0]-tl[0]);
       R yzoom=double(m_height)/(tl[1]-br[1]);
-      m_camera=Camera(p,std::min(std::min(xzoom,yzoom)*R(0.9),R(2.0)),10);
-      m_camera.setZoom(1);
+      m_camera=Camera(p,std::min(std::min(xzoom,yzoom)*R(0.9),R(2.0)),R(360));
     }
     m_haveWorld=true;
     
@@ -966,9 +971,14 @@ SDLGLGUI::setupCamera(R dt)
       }
       if ((c>1)&&m_autoZoom) {
 	maxp-=minp;
-	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+300.0);
-	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+300.0);
+	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+500.0);
+	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+500.0);
 	m_camera.setZoom(std::min(std::min(xzoom,yzoom),R(2.0)));
+      }
+      if (c==1) {
+	assert(myIDs.size());
+	assert(myIDs[0]<players.size());
+	m_camera.setRotate(-players[myIDs[0]].getDirection()*180/M_PI);
       }
     }
   }
@@ -980,10 +990,13 @@ SDLGLGUI::setupCamera(R dt)
   if (m_zoomOp) {
     m_camera.setZoom(std::max(R(m_camera.getWZoom()*(1.0+0.4*dt*R(m_zoomOp))),R(0.1)));
   }
+
   m_camera.step(dt);
-  
-  glTranslatef(-int(getPos()[0]*getZoom())+m_width/2,-int(getPos()[1]*getZoom())+m_height/2,0);
+
+  glTranslatef(m_width/2,m_height/2,0);
   glScalef(getZoom(),getZoom(),1);
+  glRotatef(-getRotate(),0,0,1);
+  glTranslatef(-getPos()[0],-getPos()[1],0);
 }
 
 void
@@ -1168,6 +1181,7 @@ SDLGLGUI::drawPlayers(R dt)
 	glTranslatef(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
 	float s=1.0f/getZoom();
 	glScalef(s,s,1);
+	glRotatef(getRotate(),0,0,1);
 	m_fontPtr->drawText(m_client.getPlayerName(p),true);
 
 	if (!(m_toggles&(1<<8))) {

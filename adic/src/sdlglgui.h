@@ -59,6 +59,12 @@ public:
   {
     return m_camera.getZoom();
   }
+
+  //! current zoom
+  R getRotate() const 
+  {
+    return m_camera.getRotate();
+  }
   
   //! cleanup
   ~SDLGLGUI();
@@ -68,6 +74,7 @@ public:
   void handleQuit();
   void handleChatInput(const std::string &msg);
   void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr);
+  void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr);
   void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr);
   
   //! load a texture (or fetch it from the cache)

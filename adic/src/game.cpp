@@ -592,6 +592,7 @@ Game::restart()
   m_icons.clear();
   m_doors.clear();
   m_stepFault=0;
+  m_frame=0;
   m_playerRoomMap.clear();
   m_roomDoors.clear();
   m_closedRooms.clear();

@@ -50,7 +50,7 @@ public:
   virtual unsigned numInputDevices() const=0;
 
   virtual void handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)=0;
-
+  virtual void handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)=0;
   virtual void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)=0;
   
   GUIConfig &getGUIConfig()

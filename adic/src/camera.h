@@ -73,19 +73,40 @@ public:
   {
     m_wRotate=w;
   }
+  void setMaxZoomSpeed(R m)
+  {
+    m_mzSpeed=m;
+  }
 protected:
   //! wished position
   V2D m_wPos;
   //! current position
   V2D m_cPos;
+  //! current speed
+  V2D m_cpSpeed;
+  //! max speed
+  R   m_mpSpeed;
+  
   //! wished zoom
   R m_wZoom;
   //! current zoom
   R m_cZoom;
+  //! current zoom speed
+  R m_czSpeed;
+  //! max zoom speed
+  R m_mzSpeed;
+  
   //! wished rotation
   R m_wRotate;
   //! current rotation
   R m_cRotate;
+  //! current rotational speed
+  R m_crSpeed;
+  //! max rotational speed
+  R m_mrSpeed;
+
+  //! age of camera
+  R m_age;
 };
 
 #endif

@@ -65,12 +65,14 @@ Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 
   unsigned got=m_playerIDs.size();
   unsigned req=m_config.m_users.users.size();
+  assert(m_guiPtr.get());
   unsigned devs=m_guiPtr->numInputDevices();
   std::cout << "I Got "<< got <<" player IDs (requested "<< req <<" )\n";
   std::cout << "I found "<<devs<<" input devices\n";
   if ((req>0)&&(!got))
     std::cout << "The server is full.\n";
   playNextSong();
+  m_guiPtr->handleGreeting(gPtr);
 }
 
 void 
