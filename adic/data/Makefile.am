@@ -134,6 +134,7 @@ gamefiles_DATA = \
 	room1.png \
 	room2.png \
 	room3.png \
-	room4.png 
+	room4.png \
+	unknown.png
 
 EXTRA_DIST = $(gamefiles_DATA)

@@ -444,9 +444,9 @@ SDLGLGUI::step(R dt)
     if (m_toggles&(1<<3)) drawWalls();
     if (m_toggles&(1<<4)) drawDoors();
     if (m_toggles&(1<<5)) drawPillars();
+    if (m_toggles&(1<<6)) drawPlayers(dt);
+    if (m_toggles&(1<<7)) drawTeamStat();
   }
-  if (m_toggles&(1<<6)) drawPlayers(dt);
-  if (m_toggles&(1<<7)) drawTeamStat();
   
   // paint texture
   /* left here for testing purposes
@@ -1099,10 +1099,14 @@ SDLGLGUI::drawPlayers(R dt)
 	      break;
 	    }
 	  }
-	  assert(i<teams.size());
-	  assert(tid!=~0U);
-	  assert(tid<teams[i].textures.size());
-	  m_animations.push_back(Animation(*this,teams[i].textures[tid]));
+	  if ((i>=teams.size())||(tid==~OU)||(tid>=teams[i].textures.size())) {
+	    DOPE_WARN("report this as bug! Include: "<<i<<","<<teams.size()<<","<<tid);
+	    std::vector<std::string> uris;
+	    uris.push_back("data:unknown.png");
+	    m_animations.push_back(Animation(*this,uris));
+	  }else{
+	    m_animations.push_back(Animation(*this,teams[i].textures[tid]));
+	  }
 	}else{
 	  std::vector<std::string> uris;
 	  switch (players[id].getType()) {
@@ -1117,7 +1121,8 @@ SDLGLGUI::drawPlayers(R dt)
 	    }
 	    break;
 	  default:
-	    DOPE_WARN("Unknown type => no texture");
+	    uris.push_back("data:unknown.png");
+	    DOPE_WARN("Unknown type => unknown texture");
 	  }
 	  m_animations.push_back(Animation(*this,uris));
 	}

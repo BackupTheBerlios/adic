@@ -6,7 +6,7 @@ BUILDDIR=/tmp/adic
 PREFIX=/tmp/usr
 export ACLOCAL_FLAGS="-I config/m4"
 export CXX=g++-3.2
-export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os -DNDEBUG"
+export CXXFLAGS="-Wall -ansi -pedantic -Wno-long-long -Os"
 CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX"
 #todo use debian libsdl-* again (i do not use it because of troubles with libpng and debian testing)
 #if I do this the sdl stuff must be build after the debian packages again
