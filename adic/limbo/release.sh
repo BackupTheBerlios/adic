@@ -131,12 +131,12 @@ cd $BUILDDIR/SDL_mixer-1.2.5
 ./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-music-cmd --disable-music-midi --disable-music-timidity-midi --disable-music-native-midi --disable-music-native-midi-gpl --disable-music-ogg --disable-music-mp3
 make install
 #modify inter-library dependencies
-cd $PREFIX/usr/lib
+cd $PREFIX/lib
 mv libSDL_image.la libSDL_image.la.old
-QPREFIX=`echo $PREFIX|sed 's/\//\\\\\//g'`
-sed "s/^dependency_libs=.*\$/dependency_libs=\' \/usr\/lib\/libpng.a -L$QPREFIX\/lib -lSDL\'/" libSDL_image.la.old > libSDL_image.la
+#QPREFIX=`echo $PREFIX|sed 's/\//\\\\\//g'`
+sed "s/^dependency_libs=.*\$/dependency_libs=\' \/usr\/lib\/libpng.a\'/" libSDL_image.la.old > libSDL_image.la
 mv libSDL_mixer.la libSDL_mixer.la.old
-sed "s/^dependency_libs=.*\$/dependency_libs=\'-L$QPREFIX\/lib -lSDL\'/" libSDL_mixer.la.old > libSDL_mixer.la
+sed "s/^dependency_libs=.*\$/dependency_libs=\'\'/" libSDL_mixer.la.old > libSDL_mixer.la
 
 
 #build semi-static adic

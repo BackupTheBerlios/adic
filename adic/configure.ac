@@ -118,7 +118,8 @@ fi
 if $mostlystatic; then
 	echo "linking as much as possible statically"
 	SERVER_LDADD="-all-static"
-	GUICLIENT_LDADD="$SPECIAL_LDADD"
+	dnl -static with libtool means that all libtool libraries are linked statically
+	GUICLIENT_LDADD="-static $SPECIAL_LDADD"
 	BOTCLIENT_LDADD="-all-static"
 fi
 
