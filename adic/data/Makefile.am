@@ -3,6 +3,7 @@ gamefiles_DATA = \
 	mesh.xml barrel.xml fountain.xml \
 	boy.xml girl.xml muetze.xml cowboy.xml \
 	music.mod collision.wav \
+	printer.wav newline.wav \
 	font.png textures.png barrel.png \
 	girl_blue_0001.png \
 	girl_blue_0002.png \
