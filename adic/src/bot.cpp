@@ -21,5 +21,6 @@ BotFactory::create(BotClient &client,PlayerID _pid, unsigned _inputID)
   const std::string &i(client.getConfig().implementation);
   if (i=="KarmeBot") return new KarmeBot(client,_pid,_inputID);
   if (i=="BlackBot") return new BlackBot(client,_pid,_inputID);
+  if (i=="SampleBot") return new SampleBot(client,_pid,_inputID);
   DOPE_FATAL("Unkown implementation: \""<<i<<"\"");
 }

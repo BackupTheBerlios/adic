@@ -195,13 +195,15 @@ adicboth = \
 	botclient.h \
 	bot.h \
 	karmebot.h \
-	blackbot.h
+	blackbot.h \
+	samplebot.h
 
 realadicbotcpp = \
 	botclient.cpp \
 	bot.cpp \
 	karmebot.cpp \
-	blackbot.cpp
+	blackbot.cpp \
+	samplebot.cpp
 
 if FASTCOMPILE
 adicbotcpp = $(clientcommoncpp) adicbot.cpp
