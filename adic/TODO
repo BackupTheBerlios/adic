@@ -1,3 +1,6 @@
+die semi-statischen binaries sind jetzt fast gut
+für libgcc_s noch eine lsg finden
+
 ich war gerade dabei statische binaries zu bauen
 und habe wohl einen bug in der SDL gefunden
 dlopen kann bei statischen binaries NULL zurückgeben

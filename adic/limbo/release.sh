@@ -121,15 +121,20 @@ fi
 #we cannot statically link the client
 
 #build SDL stuff
-cd $BUILDDIR/SDL-1.2.5
-./configure --disable-shared --enable-video-opengl --enable-dlopen --disable-video-ggi --disable-video-svga --disable-video-dummy --disable-diskaudio --disable-nas --disable-video-fbcon --disable-video-directfb --disable-video-x11-xv --disable-dga --disable-video-x11-dga --enable-esd-shared --enable-arts-shared --disable-cdrom --disable-debug --prefix=$PREFIX
-make install
-cd $BUILDDIR/SDL_image-1.2.3
-./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-bmp --disable-gif --disable-jpg --disable-lbm --disable-pcx --disable-pnm --disable-tga --disable-tif --disable-xcf --disable-xpm
-make install
-cd $BUILDDIR/SDL_mixer-1.2.5
-./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-music-cmd --disable-music-midi --disable-music-timidity-midi --disable-music-native-midi --disable-music-native-midi-gpl --disable-music-ogg --disable-music-mp3
-make install
+if test -e $PREFIX/bin/sdl-config; then
+    echo sdl-config found - assuming it is okay
+    read
+else
+    cd $BUILDDIR/SDL-1.2.5
+    ./configure --disable-shared --enable-video-opengl --enable-dlopen --disable-video-ggi --disable-video-svga --disable-video-dummy --disable-diskaudio --disable-nas --disable-video-fbcon --disable-video-directfb --disable-video-x11-xv --disable-dga --disable-video-x11-dga --enable-esd-shared --enable-arts-shared --disable-cdrom --disable-debug --prefix=$PREFIX
+    make install
+    cd $BUILDDIR/SDL_image-1.2.3
+    ./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-bmp --disable-gif --disable-jpg --disable-lbm --disable-pcx --disable-pnm --disable-tga --disable-tif --disable-xcf --disable-xpm
+    make install
+    cd $BUILDDIR/SDL_mixer-1.2.5
+    ./configure --disable-shared --with-sdl-prefix=$PREFIX --prefix=$PREFIX --disable-music-cmd --disable-music-midi --disable-music-timidity-midi --disable-music-native-midi --disable-music-native-midi-gpl --disable-music-ogg --disable-music-mp3
+    make install
+fi
 #modify inter-library dependencies
 cd $PREFIX/lib
 mv libSDL_image.la libSDL_image.la.old
@@ -140,11 +145,6 @@ sed "s/^dependency_libs=.*\$/dependency_libs=\'\'/" libSDL_mixer.la.old > libSDL
 
 
 #build semi-static adic
-
-#TODO:
-#hier war ich grad
-#das problem mit SDL_image und SDL_mixer sind die libtool inter-library dependencies .la
-#die musste ich von hand editieren
 
 cd $BUILDDIR/build
 mkdir -p semi-static

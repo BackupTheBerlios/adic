@@ -105,7 +105,9 @@ if $staticcpp||$mostlystatic; then
 	dnl not work - but are different gcc_s libraries compatible ?
 	dnl especially is the gcc_s from gcc 3.0.x compatible with the one in gcc 3.2 ?
 	dnl it seems to work
-	SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_s -lc"
+	dnl update:
+	dnl exceptions work with libgcc_eh.a - now all c++ stuff is linked statically
+	SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_eh -lc"
 fi
 
 if $staticcpp; then
