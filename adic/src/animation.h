@@ -17,38 +17,27 @@
  */
 
 /*!
-   \file texture.h<2>
-   \brief texture class
+   \file animation.h
+   \brief class Animation
    \author Jens Thiele
-   \note should be called GLTexture
 */
 
+#ifndef ANIMATION_H
+#define ANIMATION_H
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#include "typedefs.h"
+#include "texture.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include "sdlgl.h"
+class SDLGLGUI;
 
-class Texture
+struct Animation
 {
-public:
-  Texture(SDLGL &gl, const char* name);
-
-  bool isTransparent() const {return haveAlphaChannel;}
-  int getWidth() const {return width;}
-  int getHeight() const {return height;}
-  GLuint getTextureID() const {return textureID;}
-    
-protected:
-  GLuint textureID;
-  int width;
-  int height;
-  bool haveAlphaChannel;
-
-
-  static SDL_Surface* loadImage(const char* filename);
+  Animation(SDLGLGUI &gui, const std::vector<std::string> &uris);
+  Texture &getTexture() const;
+  void step(R dt);
+  
+  std::vector<DOPE_SMARTPTR<Texture> > textures;
+  R time;
 };
 
 #endif

@@ -68,8 +68,10 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	client.h client.cpp \
 	guiconfig.h \
 	gui.h gui.cpp \
+	sdlgl.h sdlgl.cpp \
 	sdlglgui.h sdlglgui.cpp \
 	texture.h texture.cpp \
+	animation.h animation.cpp \
 	soundconfig.h \
 	sound.h sound.cpp \
 	soundsdlmixer.h soundsdlmixer.cpp \

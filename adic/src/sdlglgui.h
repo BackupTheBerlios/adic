@@ -29,6 +29,7 @@
 #include "texture.h"
 #include "sdlsigfactory.h"
 #include "sdlinputdev.h"
+#include "animation.h"
 
 class SDLGLGUI : public GUI
 {
@@ -39,28 +40,18 @@ public:
   bool init();
   //! repaint
   bool step(R dt);
-
+  //! center of screen coordinates
   V2D getPos() const;
-  
   //! cleanup
   ~SDLGLGUI(){m_textures.clear();killWindow();}
 
   void handleKey(SDL_KeyboardEvent e);
   void handleResize(SDL_ResizeEvent e);
   void handleQuit();
+
+  //! load a texture (or fetch it from the cache)
+  DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
 protected:
-
-  struct Animation
-  {
-    Animation(SDLGLGUI &gui, const std::vector<std::string> &uris);
-    Texture &getTexture() const;
-    void step(R dt);
-    
-    std::vector<DOPE_SMARTPTR<Texture> > textures;
-    R time;
-  };
-  
-
   //! create window
   void createWindow();
   //! resize gui
@@ -93,71 +84,14 @@ protected:
   bool m_autoZoom;
 
   
-  DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
   typedef std::map<std::string, DOPE_SMARTPTR<Texture> > Textures;
   Textures m_textures;
   bool m_showNames;
 
   SDLSigFactory sf;
   bool m_quit;
-  
-  typedef void (*voidFunc)(void);
-  typedef void (*intFunc)(int);
-  typedef void (*uintFunc)(unsigned int);
-  typedef void (*uint2Func)(unsigned int,unsigned int);
-  typedef void (*uintuintPFunc)(unsigned int, unsigned int *);
-  typedef void (*uint2intFunc)(unsigned int,unsigned int,int);
-  typedef void (*floatFunc)(float);
-  typedef void (*fvec2Func)(float,float);
-  typedef void (*fvec3Func)(float,float,float);
-  typedef void (*fvec4Func)(float,float,float,float);
-  typedef void (*fvec5Func)(float,float,float,float,float);
-  typedef void (*fvec6Func)(float,float,float,float,float,float);
-  typedef void (*dvec6Func)(double,double,double,double,double,double);
-  typedef void (*ivec2Func)(int,int);
-  typedef void (*ivec4Func)(int,int,int,int);
-  typedef void (*uintfloatPFunc)(unsigned int, float *);
 
-
-  typedef void (*glTexImage2DFunc) ( GLenum target, GLint level,
-				     GLint internalFormat,
-				     GLsizei width, GLsizei height,
-				     GLint border, GLenum format, GLenum type,
-				     const GLvoid *pixels );
-
-#define LOOKUP(m,t) t m##P
-public:
-
-  LOOKUP(glClear,uintFunc);
-  LOOKUP(glMatrixMode,uintFunc);
-  LOOKUP(glLoadIdentity,voidFunc);
-  LOOKUP(glColor3f,fvec3Func);
-  LOOKUP(glColor4f,fvec4Func);
-  LOOKUP(glTranslatef,fvec3Func);
-  LOOKUP(glScalef,fvec3Func);
-  LOOKUP(glBegin,uintFunc);
-  LOOKUP(glVertex2i,ivec2Func);
-  LOOKUP(glVertex2f,fvec2Func);
-  LOOKUP(glEnd,voidFunc);
-  LOOKUP(glViewport,ivec4Func);
-  LOOKUP(glOrtho,dvec6Func);
-  LOOKUP(glClearColor,fvec4Func);
-  LOOKUP(glPushMatrix,voidFunc);
-  LOOKUP(glPopMatrix,voidFunc);
-  LOOKUP(glGetFloatv,uintfloatPFunc);
-  LOOKUP(glLineWidth,floatFunc);
-  LOOKUP(glFlush,voidFunc);
-  LOOKUP(glFinish,voidFunc);
-  LOOKUP(glEnable,uintFunc);
-  LOOKUP(glDisable,uintFunc);
-  LOOKUP(glBlendFunc,uint2Func);
-  LOOKUP(glTexCoord2f,fvec2Func);
-  LOOKUP(glBindTexture,uint2Func);
-  LOOKUP(glGenTextures,uintuintPFunc);
-  LOOKUP(glTexParameteri,uint2intFunc);
-  LOOKUP(glTexImage2D,glTexImage2DFunc);
-  LOOKUP(glRotatef,fvec4Func);
-#undef LOOKUP
+  SDLGL gl;
 };
 
 #endif

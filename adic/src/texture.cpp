@@ -24,9 +24,8 @@
 
 #include "typedefs.h"
 #include "texture.h"
-#include "sdlglgui.h"
 
-Texture::Texture(SDLGLGUI &gl, const char* name)
+Texture::Texture(SDLGL &gl, const char* name)
 {
   SDL_PixelFormat RGB_PixelFormat = {
     NULL,
@@ -78,15 +77,15 @@ Texture::Texture(SDLGLGUI &gl, const char* name)
   tmp=NULL;
   width=image->w;
   height=image->h;
-  gl.glGenTexturesP(1,&textureID);
-  gl.glBindTextureP(GL_TEXTURE_2D,textureID);
+  gl.GenTextures(1,&textureID);
+  gl.BindTexture(GL_TEXTURE_2D,textureID);
   // scale linearly when image bigger than texture
-  gl.glTexParameteriP(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
+  gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); 
   // scale linearly when image smaller than texture
-  gl.glTexParameteriP(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+  gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
   // 2d texture, level of detail 0 (normal), 3 components (red, green, blue), x size from image, y size from image,
   // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.
-  gl.glTexImage2DP(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format , type, image->pixels);
+  gl.TexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format , type, image->pixels);
   SDL_FreeSurface(image);
 }
 
