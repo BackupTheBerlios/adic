@@ -37,12 +37,13 @@ struct RoundObject : public GameObject, public Circle
   RoundObject()
   {}
   
-  RoundObject(const V2D &pos,R r=5) : Circle(pos,r)
+  RoundObject(const V2D &pos,R r=22) : Circle(pos,r)
   {}
   
   void rollback()
   {
     *(static_cast<Circle *>(this))=m_oldCircle;
+    DOPE_CHECK(*(static_cast<Circle *>(this))==m_oldCircle);
   }
   
   void commit()

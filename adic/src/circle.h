@@ -50,6 +50,11 @@ public:
   {
     layer2.SIMPLE(m_pos).SIMPLE(m_r);
   }
+
+  bool operator==(const Circle &c) const
+  {
+    return (m_pos==c.m_pos)&&(m_r==c.m_r);
+  }
 };
 DOPE_CLASS(Circle);
 

@@ -59,6 +59,8 @@ public:
     RoundObject::rollback();
     m_speed=m_oldSpeed;
     m_direction=m_oldDirection;
+    DOPE_CHECK(m_speed==m_oldSpeed);
+    DOPE_CHECK(m_direction==m_oldDirection);
   }
   void commit()
   {
@@ -76,8 +78,7 @@ public:
   {
     m_speed+=i;
   }
-  
-protected:
+
   int8_t getX() const
   {
     return m_ix;
@@ -86,6 +87,7 @@ protected:
   {
     return m_iy;
   }
+protected:
 
   //! maximum speed
   static const R m_maxspeed;
