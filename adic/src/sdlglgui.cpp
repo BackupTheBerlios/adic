@@ -87,6 +87,7 @@ SDLGLGUI::step(R dt)
   // paint world
   Game::WorldPtr worldPtr=m_client.getWorldPtr();
   if (worldPtr.get()) {
+    // paint walls
     for (unsigned r=0;r<worldPtr->getNumRooms();++r)
       {
 	std::vector<V2D> lineloop(worldPtr->getLineLoop(r));
@@ -97,6 +98,22 @@ SDLGLGUI::step(R dt)
 	  }
 	glEnd();
       }
+    // paint doors
+    std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
+    Game::Doors &doors(m_client.getGame().getDoors());
+    glColor3f(0.0,0.0,1.0);
+    for (unsigned d=0;d<doors.size();++d) {
+      RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
+      Wall w(rd.asWall());
+      Line l(w.getLine());
+      drawCircle(l.m_a,w.getPillarRadius());
+      drawCircle(l.m_b,w.getPillarRadius());
+      glBegin(GL_LINES);
+      glVertex2f(l.m_a[0],l.m_a[1]);
+      glVertex2f(l.m_b[0],l.m_b[1]);
+      glEnd();
+    }
+    glColor3f(1.0,1.0,1.0);    
   }else{
     DOPE_WARN("Did not receive world yet");
   }
@@ -104,6 +121,7 @@ SDLGLGUI::step(R dt)
   const Game::Players &players(m_client.getPlayers());
   for (unsigned p=0;p<players.size();++p)
     {
+      glColor3f(0.0,1.0,0.0);
       drawCircle(players[p].m_pos,players[p].m_r);
       V2D dv(V2D(0,100).rot(players[p].getDirection()));
       glColor3f(1.0,1.0,0.0);
@@ -114,6 +132,7 @@ SDLGLGUI::step(R dt)
       glEnd();
       glColor3f(1.0,1.0,1.0);
     }
+  
   SDL_GL_SwapBuffers();
   return true;
 }
@@ -187,7 +206,9 @@ SDLGLGUI::initGL()
 
 void
 SDLGLGUI::killWindow()
-{}
+{
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
 
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
