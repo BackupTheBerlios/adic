@@ -1,6 +1,7 @@
 #include "sdlglgui.h"
 #include "sdlmenu.h"
 #include <algorithm>
+#include <iomanip>
 
 
 SDLGLGUI::SDLGLGUI(Client &client) 

@@ -24,6 +24,10 @@
 
 #include "botclient.h"
 #include "bot.h"
+#include <dope/dopestl.h>
+#include <dope/argvparser.h>
+#include <dope/dopesignal.h>
+#include <signal.h>
 
 void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;

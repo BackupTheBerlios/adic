@@ -49,7 +49,7 @@ Wall::collide(const Circle &circle, V2D &cv, R &dist) const
 
   if (c==1)
     {
-      cv = dn;
+      cv = -dn;
       dist = Line(m_l).project(circle.m_pos);
       //std::cout << "project (c=1): " << dist << std::endl;
       return true;

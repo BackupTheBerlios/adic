@@ -26,6 +26,9 @@
 #include "gui.h"
 #include "sound.h"
 
+#include <dope/argvparser.h> // layer 2 argument vector parser
+#include <dope/dopestl.h>
+
 void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }

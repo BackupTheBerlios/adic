@@ -27,8 +27,6 @@
 
 #include <iostream>
 #include <exception>
-// layer 2 argument vector parser
-#include <dope/argvparser.h>
 #include <dope/network.h>
 #include <dope/dopesignal.h>
 

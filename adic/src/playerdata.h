@@ -29,6 +29,8 @@
 #include <vector>
 #include <string>
 
+#include <dope/typenames.h>
+
 //! fixed player data
 class PlayerData
 {

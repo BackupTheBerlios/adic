@@ -29,6 +29,7 @@
 #include <iostream>
 #include <math.h>
 #include <assert.h>
+#include <dope/typenames.h>
 
 //! yet another simple 2D-Vector
 /*! keep everything inline because it is simple and should be fast */

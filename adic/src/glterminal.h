@@ -27,6 +27,8 @@
 
 #include "typedefs.h"
 #include <sstream>
+#include <sigc++/signal_system.h>
+#include <list>
 
 class SDLGLGUI;
 class SDLGL;

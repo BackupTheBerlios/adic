@@ -28,6 +28,7 @@
 #include "sound.h"
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#include <map>
 
 //! sound implementation using SDL_mixer
 class SoundSDLMixer : public Sound

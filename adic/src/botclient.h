@@ -29,13 +29,6 @@
 
 #include <iostream>
 #include <exception>
-// layer 2 argument vector parser
-#include <dope/argvparser.h>
-#include <dope/network.h>
-#include <dope/dopesignal.h>
-
-#include <signal.h>
-
 #include "game.h"
 #include "clientconfig.h"
 #include "netstream.h"

@@ -23,6 +23,7 @@
 */
 
 #include "sdlinputfield.h"
+#include <iostream>
 
 int SDLInputField::usageCount=0;
 

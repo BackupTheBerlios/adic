@@ -63,6 +63,7 @@ typedef uint16_t TeamID;
 #define ADIC_NEED_SDLMAIN
 #endif
 
+/*
 // std::streambuf
 #include <iostream>
 // layer 2 mini xml output stream
@@ -73,15 +74,12 @@ typedef uint16_t TeamID;
 #include <dope/typenames.h>
 // simple for STL types
 #include <dope/dopestl.h>
-
 #include <sigc++/signal_system.h>
-
-typedef XMLOutStream<std::streambuf> ConfigOutStream;
-typedef XMLSAXInStream<std::streambuf> ConfigInStream;
+*/
 
 #define SIMPLE(d) simple(d,#d)
 
-#include "genericpointer.h"
+//#include "genericpointer.h"
 
 #endif
 

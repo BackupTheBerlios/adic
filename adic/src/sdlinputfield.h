@@ -28,6 +28,7 @@
 #include "typedefs.h"
 #include <SDL/SDL.h> // needed for the key symbols
 #include <string>
+#include <sigc++/signal_system.h>
 
 //! input field modell
 /*!

@@ -26,6 +26,8 @@
 #define SOUNDCONFIG_H
 
 #include "typedefs.h"
+#include <string>
+#include <dope/typenames.h>
 
 struct SoundConfig
 {

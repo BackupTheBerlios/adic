@@ -25,6 +25,10 @@
 #ifndef GENERICPOINTER_H
 #define GENERICPOINTER_H
 
+#include <dope/streamtraits.h>
+#include <dope/typenames.h>
+#include <boost/smart_ptr.hpp>
+
 //! generic pointer
 /*!
   \todo 

@@ -25,6 +25,9 @@
 #ifndef VERSION_H
 #define VERSION_H
 
+#include <dope/utils.h>
+#include <dope/typenames.h>
+
 //! A Version number consting of major minor and micro
 struct Version
 {

@@ -27,6 +27,8 @@
 
 #include "typedefs.h"
 #include "texture.h"
+#include <boost/smart_ptr.hpp>
+#include <vector>
 
 class SDLGL;
 

@@ -26,6 +26,7 @@
 #define SDLSIGFACTORY_H
 
 #include <SDL/SDL.h>
+#include <sigc++/signal_system.h>
 
 //! sig c++ marshaller which stops emit on first true value
 struct StopOnTrue

@@ -24,6 +24,7 @@
 
 #include "server.h"
 #include "metaserver.h"
+#include <dope/dopestl.h>
 
 void sigPipeHandler(int x){
   std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;

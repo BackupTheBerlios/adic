@@ -26,6 +26,7 @@
 #define INPUT_H
 
 #include "typedefs.h"
+#include <dope/typenames.h>
 
 //! input control message
 struct Input

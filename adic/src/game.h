@@ -33,6 +33,10 @@
 #include "wall.h"
 #include "team.h"
 
+#include <sigc++/signal_system.h>
+#include <boost/smart_ptr.hpp>
+#include <dope/typenames.h>
+
 class PlayerInput;
 
 //! door in the world coord system

@@ -30,6 +30,8 @@
 #include "wall.h"
 #include "polygon.h"
 
+#include <boost/smart_ptr.hpp>
+
 //! full winged edge
 /*!
   this is the information about one wall and alll its direct neighbours

@@ -1,5 +1,7 @@
 #include "game.h"
 #include "input.h"
+#include <dope/dopestl.h>
+
 
 RealDoor::RealDoor(Door &_d, const V2D &_s, const V2D &_e)
   : d(_d), s(_s), e(_e), mass(0.1)

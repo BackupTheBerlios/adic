@@ -26,6 +26,7 @@
 #define SOUND_H
 
 #include "soundconfig.h"
+#include <sigc++/signal_system.h>
 
 //! sound interface class
 /*!

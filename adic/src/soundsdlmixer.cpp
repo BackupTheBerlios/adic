@@ -24,6 +24,7 @@
 
 #include "soundsdlmixer.h"
 #include "utils.h"
+#include <stdexcept>
 
 // hack needed for c callback
 SoundSDLMixer *thisptr=NULL;

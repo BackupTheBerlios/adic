@@ -27,6 +27,9 @@
 
 #include "typedefs.h"
 #include "texture.h"
+#include <boost/smart_ptr.hpp>
+#include <string>
+#include <vector>
 
 class SDLGLGUI;
 

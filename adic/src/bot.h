@@ -25,6 +25,7 @@
 #ifndef BOT_H
 #define BOT_H
 
+#include <sigc++/signal_system.h>
 #include "botclient.h"
 
 //! Bot interface - implement it if you write a bot
@@ -69,10 +70,16 @@ protected:
   Input oinput;
 
   //! calculates direction of given vector
+  /*!
+    \return direction (0<=direction<2*Pi)
+   */
   static R vdir(const V2D &v)
   {
     // our coord sys is a little bit wired (we have clockwise angles and start from 0/1)
-    return M_PI/2-atan2(v[1],v[0]);
+    // atan2 is between -M_PI and +M_PI
+    R res=M_PI/2-atan2(v[1],v[0]);
+    // res is now between -M_PI/2 and M_PI+M_PI/2
+    return (res>=0) ? res : res+M_PI*2;
   }
 };
 

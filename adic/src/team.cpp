@@ -1,4 +1,5 @@
 #include "team.h"
+#include <dope/utils.h>
 
 Team::Team(const std::string &_name,unsigned tno) 
   : name(_name)
