@@ -108,6 +108,11 @@ public:
   {
     angleSpeed+=s;
   }
+  //! moved in the last step
+  bool moved() const
+  {
+    return angle!=oldAngle;
+  }
 };
 DOPE_CLASS(Door);
 template <typename Layer2>

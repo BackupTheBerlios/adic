@@ -31,6 +31,8 @@
 class GameObject
 {
 public:
+  virtual ~GameObject() {}
+  
   //! step time forward
   /*!
     \param dt time elapsed

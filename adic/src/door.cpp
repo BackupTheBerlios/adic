@@ -13,13 +13,16 @@ Door::Door(FWEdge::EID _eid)
 bool 
 Door::step(R dt)
 {
-  if (angleSpeed==0)
+  if (angleSpeed==R(0))
     return true;
   int sig1=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
   angle+=angleSpeed*dt;
   int sig2=(angle>0) ? 1 : ((angle<0) ? -1 : 0);
   if ((sig1!=sig2)&&(fabs(angleSpeed)<RAD(30))) {
     angle=0;
+    angleSpeed=0;
+    return true;
+  }else if (fabs(angleSpeed)<RAD(2)) {
     angleSpeed=0;
     return true;
   }
@@ -29,8 +32,8 @@ Door::step(R dt)
   angleSpeed-=angleSpeed*damping*dt+R(sig1)*damping*dt;
   sig2=(angleSpeed>0) ? 1 : ((angleSpeed<0) ? -1 : 0);
   if (sig1!=sig2) angleSpeed=0;
-  else if (angleSpeed>RAD(90)) angleSpeed=RAD(90);
-  else if (angleSpeed<RAD(-90)) angleSpeed=RAD(-90);
+  else if (angleSpeed>RAD(180)) angleSpeed=RAD(180);
+  else if (angleSpeed<RAD(-180)) angleSpeed=RAD(-180);
   return true;
 }
 

@@ -55,6 +55,10 @@ public:
   {
     return (m_pos==c.m_pos)&&(m_r==c.m_r);
   }
+  bool operator!=(const Circle &c) const
+  {
+    return !(*this==c);
+  }
 };
 DOPE_CLASS(Circle);
 

@@ -152,6 +152,10 @@ public:
   {
     return (m_v[0]==o.m_v[0])&&(m_v[1]==o.m_v[1]);
   }
+  bool operator!=(const V2D &o) const
+  {
+    return !operator==(o);
+  }
 
   //! access our vector like an array - we pass back a reference to our member
   /*!
