@@ -23,7 +23,6 @@
 */
 
 #include "server.h"
-#include "metaserver.h"
 #include <dope/dopestl.h>
 
 void sigPipeHandler(int x){
@@ -228,27 +227,26 @@ Server::main()
   listener.dataAvailable.connect(SigC::slot(*this,&Server::handleDataAvailable));
   listener.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
 
-  Host host;
   if (!m_config.m_useMetaServer)
-    m_metaServer.clear();
+    m_config.m_metaServer.clear();
   else{
     if (m_config.m_myAddress.empty())
       /* myAddress not set => we only report our port and the metaserver will use the ip
 	 from which it was connected (if the server is behind a nat-firewall this means
 	 that the nat firewall must redirect this port to the server) */
-      host.port=m_config.m_port;
+      m_maddr.port=m_config.m_port;
     else{
       /* myAddress is set => we report it to the metaserver (if the address contains a :
 	 the port is assumed to follow the :
       */
-      host.adr=m_config.m_myAddress;
-      std::string::size_type pos(host.adr.find_first_of(':'));
+      m_maddr.adr=m_config.m_myAddress;
+      std::string::size_type pos(m_maddr.adr.find_first_of(':'));
       if (pos!=std::string::npos) {
-	if (pos+1<host.adr.size())
-	  stringToAny(std::string(host.adr,pos+1),host.port);
+	if (pos+1<m_maddr.adr.size())
+	  stringToAny(std::string(m_maddr.adr,pos+1),m_maddr.port);
 	else
-	  host.port=m_config.m_port;
-	host.adr=std::string(host.adr,0,pos);
+	  m_maddr.port=m_config.m_port;
+	m_maddr.adr=std::string(m_maddr.adr,0,pos);
       }
     }
   }
@@ -257,7 +255,7 @@ Server::main()
     try {
       MetaServer metaServer(msURI.c_str());
       RegisterServer reg;
-      reg.host=host;
+      reg.host=m_maddr;
       ServerRegistered answer;
       metaServer.rpc(reg,answer);
       std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
@@ -339,7 +337,7 @@ Server::main()
     try {
       MetaServer metaServer(msURI.c_str());
       ServerExit exitmsg;
-      exitmsg.host=host;
+      exitmsg.host=m_maddr;
       exitmsg.secret=m_msecret;
       
       Result answer;
@@ -474,7 +472,7 @@ Server::updateMetaserver()
   try {
     MetaServer metaServer(m_config.m_metaServer.c_str());
     ServerStatus status;
-    status.host.port=m_config.m_port;
+    status.host=m_maddr;
     status.level=m_config.m_meshURI;
     status.clients=connections.size();
     

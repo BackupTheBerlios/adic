@@ -42,6 +42,7 @@
 #include "messages.h"
 #include "input.h"
 #include "commonconfig.h"
+#include "metaserver.h"
 
 //! server configuration
 struct ServerConfig : public CommonConfig
@@ -185,6 +186,8 @@ protected:
   NetStreamBufServer::ID m_emitFilter;
   //! meta server secret or empty if metaserver is not used
   std::string m_msecret;
+  //! address we report to metaSever
+  Host m_maddr;
 
   static const NetStreamBufServer::ID m_allFilter=-1;
 public:
