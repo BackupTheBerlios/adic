@@ -7,7 +7,8 @@ TESTS =
 manualtests = \
 	test-line \
 	test-vector2d \
-	test-world
+	test-world \
+	test-poly
 
 check_PROGRAMS = \
 	$(TESTS) \
@@ -25,11 +26,14 @@ allcommon = \
 	genericpointer.h \
 	wall.h wall.cpp
 
+polygon = \
+	polygon.h polygon.cpp
+
 # needed for the world
 world = \
 	$(allcommon) \
+	$(polygon) \
 	mesh.h \
-	polygon.h polygon.cpp \
 	world.h world.cpp
 
 # client and server have in common
@@ -52,6 +56,8 @@ test_world_SOURCES = \
 	test-world.cpp
 
 test_world_LDADD = @DOPE_LIBS@
+
+test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 
 @PACKAGE@server_SOURCES = $(gamecommon) server.h server.cpp
 @PACKAGE@server_LDADD = @DOPE_LIBS@
