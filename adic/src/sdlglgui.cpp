@@ -130,7 +130,12 @@ SDLGLGUI::createWindow()
   if ( m_config.fullscreen) m_flags |= SDL_FULLSCREEN;
 
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-  resize(m_config.width, m_config.height);
+
+  SDL_ResizeEvent e;
+  e.w=m_config.width;
+  e.h=m_config.height;
+  sf.resize.emit(e);
+  //  resize(m_config.width, m_config.height);
   m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(*this,"data/textures.png"));
   m_fontPtr=DOPE_SMARTPTR<Texture>(new Texture(*this,"data/font.png"));
   glDisableP(GL_NORMALIZE);
@@ -307,21 +312,15 @@ SDLGLGUI::step(R dt)
       }
     if (c) {
       if (m_autoCenter) {
-	pos/=R(c);
-	// don't use sub-pixels
+	pos=(maxp+minp)/2;
 	pos[0]=int(pos[0]);
 	pos[1]=int(pos[1]);
 	m_pos=pos;
       }
       if ((c>1)&&m_autoZoom) {
 	maxp-=minp;
-	maxp+=V2D(maxr,maxr)*2.0+V2D(300,300);
-	R xzoom=1.0;
-	if (maxp[0]>0)
-	  xzoom=m_width/maxp[0];
-	R yzoom=1.0;
-	if (maxp[1]>0)
-	  yzoom=m_height/maxp[1];
+	R xzoom=double(m_width)/(maxp[0]+maxr*2.0+300.0);
+	R yzoom=double(m_height)/(maxp[1]+maxr*2.0+300.0);
 	m_zoom=std::min(xzoom,yzoom);
 	m_zoom=std::min(R(2.0),m_zoom);
       }
@@ -453,6 +452,8 @@ SDLGLGUI::step(R dt)
       if (cp.isPlayer()&&m_showNames) {
 	glPushMatrixP();
 	glTranslatefP(int(cp.m_pos[0]), int(cp.m_pos[1])+2*cp.m_r, 0);
+	float s=1.0f/m_zoom;
+	glScalefP(s,s,1);
 	drawText(m_client.getPlayerName(p),true);
 	glPopMatrixP();
       }
@@ -484,10 +485,10 @@ SDLGLGUI::step(R dt)
     for (unsigned i=0;i<teams.size();++i) {
       glColor3fP(teams[i].color[0],teams[i].color[1],teams[i].color[2]);
       glLoadIdentityP();
-      glTranslatefP(dx*(i+1),40,0);
+      glTranslatefP(dx*(i+1),30,0);
       drawText(teams[i].name,true);
       glLoadIdentityP();
-      glTranslatefP(dx*(i+1),10,0);
+      glTranslatefP(dx*(i+1),5,0);
       drawText(anyToString(numPlayers[i]-locked[i])+"/"+anyToString(numPlayers[i]),true);
       glFlushP();
     }
@@ -533,18 +534,22 @@ SDLGLGUI::getPos() const
 void 
 SDLGLGUI::drawCircle(const V2D &p, float r)
 {
-  glPushMatrixP();
-  glTranslatefP(p[0], p[1], 0);
-  glBeginP(GL_TRIANGLE_FAN);
-  glVertex2fP(0, 0);
+  unsigned d=1.0/m_zoom;
   unsigned res=12;
-  for (unsigned i=0;i<res;++i) {
-    double angle(double(i)*2*M_PI/double(res-1));
-    glVertex2fP(r * cos(angle), r * sin(angle));
+  if (d>1) res/=d;
+  if (res>=3) {
+    glPushMatrixP();
+    glTranslatefP(p[0], p[1], 0);
+    glBeginP(GL_TRIANGLE_FAN);
+    glVertex2fP(0, 0);
+    for (unsigned i=0;i<res;++i) {
+      double angle(double(i)*2*M_PI/double(res-1));
+      glVertex2fP(r * cos(angle), r * sin(angle));
+    }
+    glEndP();
+    glPopMatrixP();
+    glFlushP();
   }
-  glEndP();
-  glPopMatrixP();
-  glFlushP();
 }
 void
 SDLGLGUI::drawWall(const Wall &w)

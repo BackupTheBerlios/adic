@@ -94,6 +94,7 @@ struct Room
   //! is this edge clockwise
   bool m_cw;
   Polygon m_poly;
+  std::vector<Wall> m_walls;
 };
 
 
@@ -199,6 +200,13 @@ public:
     DOPE_CHECK(eid<m_edges.size());
     return m_edges[eid];
   }
+  //! get roomids for one edge
+  void getRoomIDs(FWEdge::EID eid, FWEdge::RoomID rooms[2]) const
+  {
+    rooms[0]=getEdge(eid).m_rcw;
+    rooms[1]=getEdge(eid).m_rccw;
+  }
+  
   //! get start point of edge
   const V2D &getPoint(FWEdge::VID v) const
   {

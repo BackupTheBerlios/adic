@@ -196,11 +196,12 @@ Client::main()
     // end of main work
     oldTime=newTime;
     ++frames;
+    /*
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
     std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(10) << uptime 
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
-	      << " Frame: " << std::setw(10) << frames;
+	      << " Frame: " << std::setw(10) << frames;*/
   }
   m_soundPtr=DOPE_SMARTPTR<Sound>(NULL);
   m_guiPtr=DOPE_SMARTPTR<GUI>(NULL);

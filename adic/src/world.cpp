@@ -162,7 +162,7 @@ World::setFromMesh(const Mesh &mesh)
 
 	    Room newRoom;
 	    newRoom.m_e=fe;
-	    newRoom.m_cw=true;
+	    newRoom.m_cw=feCW;
 	    m_rooms.push_back(newRoom);
 	    fe=lastID=FWEdge::noEdge;
 	  }else{
@@ -179,27 +179,35 @@ World::setFromMesh(const Mesh &mesh)
 	  //	  std::cout << "Stored "<<mesh.edgelist[ce].vid<<","<<mesh.edgelist[ne].vid<<std::endl;
 	}
     }
-  for (unsigned r=0;r<m_rooms.size();++r)
+  for (unsigned r=0;r<m_rooms.size();++r) {
     m_rooms[r].m_poly=getLineLoop(r);
+
+    // loop through edges of this room
+    EdgeIterator end(*this);
+    for (EdgeIterator it(*this,r);it!=end;++it)
+      {
+	if (it.getEdge().isDoor())
+	  continue;
+	m_rooms[r].m_walls.push_back(it.getEdge().m_wall);
+      }
+  }
 }
 
 bool
 World::collide
 (const Circle &c, FWEdge::RoomID room, V2D &cv) const
 {
-  // loop through edges of this room
+  // loop through walls
+  const Room &r(m_rooms[room]);
+  unsigned nw=r.m_walls.size();
   bool res=false;
-  for (EdgeIterator it(*this,room);it!=EdgeIterator(*this);++it)
-    {
-      Wall wall;
-      if (!it.getWall(wall))
-	continue;
-      V2D subc;
-      if (wall.collide(c,subc)) {
-	res=true;
-	cv+=subc;
-      }
+  V2D subc;
+  for (unsigned w=0;w<nw;++w) {
+    if (r.m_walls[w].collide(c,subc)) {
+      res=true;
+      cv+=subc;
     }
+  }
   return res;
 }
 

@@ -8,17 +8,22 @@ class Line
 {
 public:
   Line()
+    : m_b(1,1),m_v(1,1), m_l(m_v.norm2()), m_vn(m_v/m_l), m_n(V2D(m_vn).rot90())
   {
-    m_a = V2D(0,0);
-    m_b = V2D(1,1);
-    m_v = V2D(m_b-m_a);
-    m_l = m_v.norm2();
-    m_vn = m_v/m_l;
-    m_n = V2D(m_vn).rot90();
+    /*
+      m_a = V2D(0,0);
+      m_b = V2D(1,1);
+      m_v = V2D(m_b-m_a);
+      m_l = m_v.norm2();
+      m_vn = m_v/m_l;
+      m_n = V2D(m_vn).rot90();
+    */
   }
 
   Line(const V2D &a, const V2D &b)
+    : m_a(a), m_b(b), m_v(m_b-m_a), m_l(m_v.norm2()), m_vn(m_v/m_l), m_n(V2D(m_vn).rot90())
   {
+    /*
     m_a=a;
     m_b=b;
     m_v = V2D(m_b-m_a);
@@ -26,11 +31,12 @@ public:
     m_vn = m_v/m_l;
     m_n = V2D(m_vn);
     m_n.rot90();
+    */
   }
     
-  V2D m_a,m_b,m_v,m_vn,m_n;
+  V2D m_a,m_b,m_v;
   R m_l;
-
+  V2D m_vn,m_n;
   //! parallel projection of point p on Line orthogonal to line
   /*!
     find foot point (f)

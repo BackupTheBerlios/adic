@@ -1,4 +1,7 @@
 TUNING:
+- stepsize tunen (maxspeed*stepsize=maxstep mit maxstep=wallthickness => stepsize=wallthickness/maxspeed)
+- tueren uebertragen viel zu viel (angle und anglespeed sollte genuegen)
+- uebertrage nur tueren/spieler die sich bewegt haben
 - drawCircle ist lahm
 - kollision in räume unterteilen
   da spieler in max. 2 räumen sein können ist das problem rel. einfach dadurch zu lösen,
@@ -41,6 +44,7 @@ BUGS/QUESTIONS:
 - dope todo: darüber nachdenken
   ob das cache konzept so richtig ist - ich glaube es wird nicht kopiert => objekte im cache
   können verändert werden)
+- autocenter zoom bei mehr als 2 spielern an einem rechner ist falsch
 
 MISC:
 - compile with -O9 and check the warnings about uninitialized usage

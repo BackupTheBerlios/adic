@@ -58,39 +58,34 @@ Game::step(R dt)
   return true;
 }
 
-void
+FWEdge::RoomID
 Game::calcPlayerInRoom(unsigned p)
 {
-  WorldPtr w(getWorldPtr());
-  if (!w.get()) return;
+  const WorldPtr &w(getWorldPtr());
+  if (!w.get()) return FWEdge::noRoom;
   FWEdge::RoomID r=FWEdge::noRoom;
-  PlayerRoomMap::iterator it(m_playerRoomMap.find(p));
-  if ((it!=m_playerRoomMap.end())&&(w->isInRoom(m_players[p].m_pos,it->second)))
-    r=it->second;
-  else
-    r=playerInRoom(m_players[p]);
-  if (r!=FWEdge::noRoom)
-    m_playerRoomMap[p]=r;
-  return;
+  while (p>=m_playerRoomMap.size()) {
+    m_playerRoomMap.push_back(r);
+  }
+  r=m_playerRoomMap[p];
+  if ((r!=FWEdge::noRoom)&&(w->isInRoom(m_players[p].m_pos,r)))
+    return r;
+  return (m_playerRoomMap[p]=playerInRoom(m_players[p]));
 }
 
 FWEdge::RoomID 
 Game::playerInRoomCached(unsigned pid)
 {
-  DOPE_CHECK(pid<m_players.size());
-  PlayerRoomMap::iterator it(m_playerRoomMap.find(pid));
-  if (it==m_playerRoomMap.end()) {
-    calcPlayerInRoom(pid);
-    it=m_playerRoomMap.find(pid);
-    DOPE_CHECK(it!=m_playerRoomMap.end());
-  }
-  return it->second;
+  assert(pid<m_players.size());
+  if (pid>=m_playerRoomMap.size())
+    return calcPlayerInRoom(pid);
+  return m_playerRoomMap[pid];
 }
 
 FWEdge::RoomID
 Game::playerInRoom(Player &p)
 {
-  WorldPtr w(getWorldPtr());
+  const WorldPtr &w(getWorldPtr());
   if (!w.get()) {
     DOPE_WARN("\nreturned noRoom because I don't have the world yet\n");
     return FWEdge::noRoom;
@@ -103,12 +98,12 @@ Game::playerInRoom(Player &p)
 bool
 Game::collidePlayer(unsigned pid, bool test)
 {
-  DOPE_CHECK(pid<m_players.size());
+  assert(pid<m_players.size());
   Player &p=m_players[pid];
   if (!p.moved())
     return false;
 
-  WorldPtr w(getWorldPtr());
+  const WorldPtr &w(getWorldPtr());
   if (w.get()) {
     // find room this player is in
     FWEdge::RoomID r=playerInRoomCached(pid);
@@ -122,7 +117,7 @@ Game::collidePlayer(unsigned pid, bool test)
       if (p.collide(m_players[o],cv))
 	{
 	  p.rollback();
-	  DOPE_CHECK(!p.collide(m_players[o],cv));
+	  assert(!p.collide(m_players[o],cv));
 	  
 	  if (test)
 	    return true;
@@ -163,7 +158,7 @@ Game::collidePlayer(unsigned pid, bool test)
 	  p.rollback();
 	  calcPlayerInRoom(pid);
 	  r=playerInRoomCached(pid);
-	  DOPE_CHECK(!w->collide(p,r,cv));
+	  assert(!w->collide(p,r,cv));
 	  V2D imp(cv.project(p.getImpuls()));
 	  p.applyImpuls(imp*-2);
 	  p.commit();
@@ -174,7 +169,7 @@ Game::collidePlayer(unsigned pid, bool test)
     // 3. collide with doors
     for (unsigned d=0;d<m_doors.size();++d)
       {
-	if (collideDoorAndPlayer(m_doors[d],p,false))
+	if (collideDoorAndPlayer(m_doors[d],pid,false))
 	  return true;
       }
   }
@@ -189,7 +184,7 @@ Game::miniStep(R dt)
   m_timeStamp+=TimeStamp(dt);
   for (unsigned p=0;p<m_players.size();++p)
     {
-      WorldPtr w(getWorldPtr());
+      const WorldPtr &w(getWorldPtr());
       if (w.get()) {
 	// calculate player step
 	if (playerIsLocked(p))
@@ -212,7 +207,7 @@ Game::miniStep(R dt)
 	// collide with players
 	for (unsigned p=0;p<m_players.size();++p)
 	  {
-	    if (collideDoorAndPlayer(m_doors[d],m_players[p],true))
+	    if (collideDoorAndPlayer(m_doors[d],p,true))
 	      break;
 	  }
       }
@@ -225,7 +220,7 @@ Game::miniStep(R dt)
 void Game::calcClosedRooms()
 {
   m_closedRooms.clear();
-  WorldPtr w(getWorldPtr());
+  const WorldPtr &w(getWorldPtr());
   if (!w.get())
     return;
   for (unsigned r=0;r<w->getNumRooms();++r)
@@ -240,8 +235,8 @@ PlayerID
 Game::addPlayer(const std::string &name, const std::string &URI)
 {
   PlayerID id=m_players.size();
-  WorldPtr w(getWorldPtr());
-  DOPE_CHECK(w.get());
+  const WorldPtr &w(getWorldPtr());
+  assert(w.get());
   const Mesh::StartPoints &s(w->getStartPoints());
   for (unsigned p=0;p<s.size();++p) {
     Player newp(s[p].first,s[p].second*M_PI/180,URI);
@@ -334,7 +329,7 @@ Game::replace(Game &o)
 Game::WorldPtr
 Game::getWorldPtr()
 {
-  if (m_meshPtr.get()&&(!m_worldPtr.get()))
+  if ((!m_worldPtr.get())&&m_meshPtr.get())
     {
       //      DOPE_WARN("reached");
       m_worldPtr=WorldPtr(new World(*m_meshPtr.get()));
@@ -361,7 +356,7 @@ Game::setWorldPtr(WorldPtr &w)
 RealDoor
 Game::doorInWorld(Door &d)
 {
-  WorldPtr w(getWorldPtr());
+  const WorldPtr &w(getWorldPtr());
   DOPE_CHECK(w.get());
   const FWEdge &e(w->getEdge(d.getEdgeID()));
   const V2D &sv=w->getPoint(e.m_sv);
@@ -369,8 +364,18 @@ Game::doorInWorld(Door &d)
   return RealDoor(d,sv,ev);
 }
 bool
-Game::collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor)
+Game::collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor)
 {
+  // check if player and door are in the same room
+  const WorldPtr &wp(getWorldPtr());
+  DOPE_CHECK(wp.get());
+  FWEdge::RoomID rooms[2];
+  wp->getRoomIDs(d.getEdgeID(),rooms);
+  FWEdge::RoomID proom(playerInRoomCached(pid));
+  if ((proom!=rooms[0])&&(proom!=rooms[1]))
+    return false;
+
+  Player &p(m_players[pid]);
   RealDoor rd(doorInWorld(d));
   Wall w(rd.asWall());
   V2D cv;

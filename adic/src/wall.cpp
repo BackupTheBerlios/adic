@@ -10,6 +10,9 @@ Wall::collide(const Circle &circle, V2D &cv) const
 bool
 Wall::collide(const Circle &circle, V2D &cv, R &dist) const
 { 
+  if (!m_circle.collide(circle))
+    return false;
+  
   V2D dn;
   R dl = Line(m_l).dist(circle.m_pos, dn) - circle.m_r - m_wt;
   R dpa = (circle.m_pos-m_l.m_a).norm2() - circle.m_r - m_pr;

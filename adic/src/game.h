@@ -121,7 +121,7 @@ public:
   typedef std::vector<Door> Doors;
   typedef GenericPointer<Mesh, std::string, URILoader<URICache<Mesh> > > MeshPtr;
   typedef DOPE_SMARTPTR<World> WorldPtr;
-  typedef std::map<unsigned,FWEdge::RoomID> PlayerRoomMap;
+  typedef std::vector<FWEdge::RoomID> PlayerRoomMap;
 
   //! signal emitted if a crash occurs
   /*!
@@ -187,7 +187,7 @@ public:
 
     \return true on collision otherwise false
   */
-  bool collideDoorAndPlayer(Door &d, Player &p, bool rollbackdoor);
+  bool collideDoorAndPlayer(Door &d, PlayerID pid, bool rollbackdoor);
   
   //! return corresponding RealDoor to a door
   RealDoor doorInWorld(Door &d);
@@ -203,7 +203,7 @@ public:
   }
 
   //! calculate in which room this player is in
-  void calcPlayerInRoom(unsigned pid);
+  FWEdge::RoomID calcPlayerInRoom(unsigned pid);
   
   //! in which room is this player ?
   FWEdge::RoomID playerInRoomCached(unsigned pid);
