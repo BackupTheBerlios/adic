@@ -31,12 +31,11 @@
 
 //! generic pointer
 /*!
-  \todo 
-  - how to document template params with doxygen
-  - how to document template concepts with doxygen
-  - take a look at boost concept checks
-  - recheck that the default copy constructor is ok
-  I think it only works if the factory acts as cache
+  \todo how to document template params with doxygen
+  \todo how to document template concepts with doxygen
+  \todo take a look at boost concept checks
+  \todo recheck that the default copy constructor is ok
+  \todo I think it only works if the factory acts as cache
 */
 template <typename X, typename Address, typename Factory>
 class GenericPointer
@@ -100,7 +99,8 @@ protected:
   DOPE_SMARTPTR<X> m_xp;
 };
 
-//! \todo how many template arguments do we want to pickle ?
+//! TypeNameTrait specialization for GenericPointer
+/*! \todo how many template arguments do we want to pickle ? */
 template <typename T1, typename T2, typename T3> 
 struct TypeNameTrait<GenericPointer<T1,T2,T3> > 
 { 

@@ -103,8 +103,7 @@ class Server;
 
 //! one class for each connection
 /*! 
-  \todo
-  - why did I use StreamFactory which seems to wrap the SignalInAdapter only ?
+  \todo why did I use StreamFactory which seems to wrap the SignalInAdapter only ?
 */
 class Connection : public SigC::Object
 {
