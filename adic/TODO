@@ -2,6 +2,11 @@ GAMEPLAY:
 - sichtbarkeit einschränken
 
 TUNING:
+- reduce latency
+  1) tcp/ip options
+  2) game::step loops
+     if it takes long (measure first) move the loop into the main loop and check for network traffic
+     and perhaps new input
 - alpha-blending with mesa too slow - test alpha values of 0/1 with DrawPixels 
   (did not help)
   how do transparent (not semi-transparent/alpha blended) sprites work in opengl / colorkeying
@@ -60,6 +65,54 @@ FEATURES:
 
 
 BUGS/QUESTIONS:
+- time skew => crash
+FATAL: timestamp.cpp:128:TimeStamp& TimeStamp::operator-=(const TimeStamp&): x.tv_sec<y.tv_sec: 1033831728<1033831729 (1033831728+136369*10^-6) - (1033831729+4096*10^-6)(errno=0:Success)
+Obtained 7 stack frames.
+[0x808d4cd]
+[0x808db0c]
+[0x808d7d1]
+[0x806e216]
+[0x807016b]
+[0x812f615]
+[0x8048101]
+Abgebrochen
+
+ZDV:
+Metaserver RPC result: 0=success
+FATAL: timestamp.cpp:128:TimeStamp& TimeStamp::operator-=(const TimeStamp&): x.tv_sec<y.tv_sec: 1033918120<1033918121 (1033918120+123024*10^-6) - (1033918120+990898*10^-6)(errno=0:Success)
+Obtained 7 stack frames.
+[0x80652ed]
+[0x806592c]
+[0x80655f1]
+[0x8059306]
+[0x805b25b]
+[0x80c3ad5]
+[0x8048101]
+
+(gdb) x 0x80652ed
+0x80652ed <_Z14dope_backtracev+29>:	0x5a58c689
+(gdb) x 0x806592c
+0x806592c <_ZN9TimeStampmIERKS_+764>:	0x0c38dfe8
+(gdb) x 0x80655f1
+0x80655f1 <_ZNK9TimeStampmiERKS_+33>:	0x084d8b5b
+(gdb) x 0x8059306
+0x8059306 <_ZN6Server4mainEv+3190>:	0xfe78858b
+(gdb) x 0x805b25b
+0x805b25b <main+1099>:	0xcf83c689
+(gdb) x 0x80c3ad5
+0x80c3ad5 <__libc_start_main+213>:	0xcf55e850
+(gdb) x 0x8048101
+0x8048101 <_start+33>:	0x55f689f4
+equals:
+0x80652ed <dope_backtrace()+29>:	0x5a58c689
+0x806592c <TimeStamp::operator-=(TimeStamp const&)+764>:	0x0c38dfe8
+0x80655f1 <TimeStamp::operator-(TimeStamp const&) const+33>:	0x084d8b5b
+0x8059306 <Server::main()+3190>:	0xfe78858b
+0x805b25b <main+1099>:	0xcf83c689
+0x80c3ad5 <__libc_start_main+213>:	0xcf55e850
+:
+
+
 - on win32 systems textures get corrupted if you switch between windowed and fullscreen mode
 - the wall collide return -cv instead of cv
 - it is easy to block/crash the server (DoS-Attack) - this is mainly a dope TODO

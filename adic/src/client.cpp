@@ -299,6 +299,7 @@ Client::main()
   DOPE_CHECK(m_guiPtr->init());
 
   std::cout << "Welcome to ADIC !!!\n";
+  std::cout << "Please report bugs and give us some feedback !\nadic-general@lists.berlios.de (http://adic.berlios.de)\n";
   while (!m_quit) {
     newTime.now();
     dt=newTime-oldTime;
