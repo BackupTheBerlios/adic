@@ -45,9 +45,8 @@ Player::step(R dt)
   }
   
   // we are moving
-  if (!getY()&&m_speed.length()<R(0.5)) {      
+  if (!getY()&&m_speed.length()<m_playerDataPtr->minspeed) {      
     m_speed=null;
-    std::cerr << "\nStopped player\n";
     return true;
   }
   R maxs=m_playerDataPtr->maxspeed*fit;

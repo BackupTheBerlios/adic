@@ -38,13 +38,16 @@ public:
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(maxspeed).SIMPLE(rotspeed).SIMPLE(acceleration).SIMPLE(hdamping).SIMPLE(vdamping)
+    layer2.SIMPLE(maxspeed).SIMPLE(minspeed)
+      .SIMPLE(rotspeed).SIMPLE(acceleration).SIMPLE(hdamping).SIMPLE(vdamping)
       .SIMPLE(mass).SIMPLE(maxfitness).SIMPLE(minfitness).SIMPLE(type)
       .SIMPLE(r).SIMPLE(recoverTime);
   }
 
   //! maximum speed
   R maxspeed;
+  //! minimum speed
+  R minspeed;
   //! rotation speed
   R rotspeed;
   //! acceleration
