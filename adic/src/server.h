@@ -157,9 +157,7 @@ protected:
 
   static const NetStreamBufServer::ID m_allFilter=-1;
 public:
-  Server(ServerConfig &config) 
-    : m_config(config), m_game(config.m_meshURI), m_quit(false), m_emitFilter(m_allFilter)
-  {}
+  Server(ServerConfig &config);
   ~Server(){}
 
   //! get team

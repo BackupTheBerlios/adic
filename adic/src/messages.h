@@ -99,29 +99,28 @@ struct User
   User()
   {}
   
-  User(const char *name) : m_name(name)
+  User(const char *uname) : m_uname(uname)
   {}
   
-  std::string m_name;
+  std::string m_uname;
+  std::string m_tname;
 };
 DOPE_CLASS(User);
 template <typename Layer2>
 inline void composite(Layer2 &layer2, User &c)
 {
-  layer2.simple(c.m_name,"name");
+  layer2.simple(c.m_uname,"uname").simple(c.m_tname,"tname");
 }
 
 struct UserSetting
 {
   //! the users (players)
   std::vector<User> users;
-  //! the requested team
-  std::string team;
 
   template <typename Layer2>
   void composite(Layer2 &l2)
   {
-    l2.SIMPLE(users).SIMPLE(team);
+    l2.SIMPLE(users);
   }
 };
 DOPE_CLASS(UserSetting);

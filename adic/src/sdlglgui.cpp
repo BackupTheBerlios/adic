@@ -27,6 +27,7 @@ SDLGLGUI::Player::Player(SDLGLGUI &gui, const std::vector<std::string> &uris)
 void 
 SDLGLGUI::Player::step(const ::Player &p,R dt)
 {
+  if (textures.size()<2) return;
   time+=p.getY()*dt*p.getSpeed().length()*0.1;
   while (time>=textures.size())
 	time-=textures.size();
@@ -38,8 +39,13 @@ SDLGLGUI::Player::step(const ::Player &p,R dt)
 
 
 SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config) 
-  : GUI(client,config), m_textureTime(5)
-{}
+  : GUI(client,config), m_textureTime(5), 
+  m_autoCenter(true), 
+  m_zoom(1), m_zoomOp(0), m_autoZoom(true),
+  m_showNames(true)
+{
+  m_scrollOp[0]=m_scrollOp[1]=0;
+}
 
 
 bool
@@ -56,6 +62,7 @@ SDLGLGUI::init()
   LOOKUP(glColor3f,fvec3Func);
   LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
+  LOOKUP(glScalef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
   LOOKUP(glVertex2i,ivec2Func);
   LOOKUP(glVertex2f,fvec2Func);
@@ -195,21 +202,65 @@ SDLGLGUI::step(R dt)
 	i[1].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
 	ichanged[1]=true;
 	break;
+	/* third player - this does not work well because of the stupid pc keyboard
+	   case SDLK_KP4:
+	   i[2].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	   ichanged[2]=true;
+	   break;
+	   case SDLK_KP6:
+	   i[2].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	   ichanged[2]=true;
+	   break;
+	   case SDLK_KP8:
+	   i[2].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	   ichanged[2]=true;
+	   break;
+	   case SDLK_KP2:
+	   i[2].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	   ichanged[2]=true;
+	   break;
+	*/
       case SDLK_KP4:
-	i[2].x=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[2]=true;
+	m_scrollOp[0]=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	m_autoCenter=false;
 	break;
       case SDLK_KP6:
-	i[2].x=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[2]=true;
+	m_scrollOp[0]=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	m_autoCenter=false;
 	break;
       case SDLK_KP8:
-	i[2].y=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
-	ichanged[2]=true;
+	m_scrollOp[1]=((event.key.type==SDL_KEYDOWN) ? 1 : 0);
+	m_autoCenter=false;
 	break;
       case SDLK_KP2:
-	i[2].y=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
-	ichanged[2]=true;
+	m_scrollOp[1]=((event.key.type==SDL_KEYDOWN) ? -1 : 0);
+	m_autoCenter=false;
+	break;
+      case SDLK_SPACE:
+	if (event.key.type==SDL_KEYDOWN)
+	  m_showNames=!m_showNames;
+	break;
+      case SDLK_KP_PLUS:
+	if (event.key.type==SDL_KEYDOWN) {
+	  m_autoZoom=false;
+	  m_zoomOp=1;
+	} else
+	  m_zoomOp=0;
+	break;
+      case SDLK_KP_MINUS:
+	if (event.key.type==SDL_KEYDOWN) {
+	  m_autoZoom=false;
+	  m_zoomOp=-1;
+	}else
+	  m_zoomOp=0;
+	break;
+      case SDLK_1:
+	if (event.key.type==SDL_KEYDOWN) 
+	  m_autoZoom=!m_autoZoom;
+	break;
+      case SDLK_2:
+	if (event.key.type==SDL_KEYDOWN) 
+	  m_autoCenter=!m_autoCenter;
 	break;
       case SDLK_ESCAPE:
       case SDLK_q:
@@ -265,30 +316,63 @@ SDLGLGUI::step(R dt)
   glLoadIdentityP();
   glColor3fP(1.0,1.0,1.0);
 
-  // keep myself in the middle
+  // set up camera
   const Game::Players &players(m_client.getPlayers());
 
   const std::vector<PlayerID> &myIDs(m_client.getMyIDs());
-  if (!myIDs.empty()) {
+  if (m_autoCenter||m_autoZoom&&(!myIDs.empty())) {
     V2D pos;
+    R big=10000000000.0;
+    V2D minp(big,big);
+    V2D maxp;
+    R maxr=0;
     unsigned c=0;
     for (unsigned i=0;i<myIDs.size();++i)
       {
 	unsigned id=myIDs[i];
+	// perhaps we did not receive all our players yet
 	if (id<m_client.getPlayers().size()) {
 	  pos+=m_client.getPlayers()[id].m_pos;
+	  minp[0]=std::min(minp[0],m_client.getPlayers()[id].m_pos[0]);
+	  minp[1]=std::min(minp[1],m_client.getPlayers()[id].m_pos[1]);
+	  maxp[0]=std::max(maxp[0],m_client.getPlayers()[id].m_pos[0]);
+	  maxp[1]=std::max(maxp[1],m_client.getPlayers()[id].m_pos[1]);
+	  maxr=std::max(maxr,m_client.getPlayers()[id].m_r);
 	  ++c;
 	}
       }
     if (c) {
-      pos/=R(c);
-      m_pos=pos;
-      // don't use sub-pixels
-      pos[0]=int(pos[0]);
-      pos[1]=int(pos[1]);
-      glTranslatefP(-pos[0]+m_width/2,-pos[1]+m_height/2,0);
+      if (m_autoCenter) {
+	pos/=R(c);
+	// don't use sub-pixels
+	pos[0]=int(pos[0]);
+	pos[1]=int(pos[1]);
+	m_pos=pos;
+      }
+      if ((c>1)&&m_autoZoom) {
+	maxp-=minp;
+	maxp+=V2D(maxr,maxr)*2.0+V2D(300,300);
+	R xzoom=1.0;
+	if (maxp[0]>0)
+	  xzoom=m_width/maxp[0];
+	R yzoom=1.0;
+	if (maxp[1]>0)
+	  yzoom=m_height/maxp[1];
+	m_zoom=std::min(xzoom,yzoom);
+	m_zoom=std::min(R(2.0),m_zoom);
+      }
     }
   }
+  if (m_scrollOp[0])
+    m_pos[0]+=dt*R(m_scrollOp[0]*100)/m_zoom;
+  if (m_scrollOp[1])
+    m_pos[1]+=dt*R(m_scrollOp[1]*100)/m_zoom;
+  if (m_zoomOp) {
+    m_zoom*=1.0+0.1*dt*R(m_zoomOp);
+    m_zoom=std::max(m_zoom,R(0.1));
+  }
+  glTranslatefP(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
+  glScalefP(m_zoom,m_zoom,1);
 
   // paint world
   Game::WorldPtr worldPtr=m_client.getWorldPtr();
@@ -352,22 +436,28 @@ SDLGLGUI::step(R dt)
       m_players.pop_back();
     while (m_players.size()<players.size())
       {
-	// find team this player is in
 	PlayerID id=m_players.size();
-	unsigned tid=~0U;
-	const std::vector<Team> &teams(m_client.getGame().getTeams());
-	unsigned i=0;
-	for (;i<teams.size();++i) {
-	  std::vector<PlayerID>::const_iterator it(std::find(teams[i].playerIDs.begin(),teams[i].playerIDs.end(),id));
-	  if (it!=teams[i].playerIDs.end()) {
-	    tid=it-teams[i].playerIDs.begin();
-	    break;
+	if (players[id].isPlayer()) {
+	  // find team this player is in
+	  unsigned tid=~0U;
+	  const std::vector<Team> &teams(m_client.getGame().getTeams());
+	  unsigned i=0;
+	  for (;i<teams.size();++i) {
+	    std::vector<PlayerID>::const_iterator it(std::find(teams[i].playerIDs.begin(),teams[i].playerIDs.end(),id));
+	    if (it!=teams[i].playerIDs.end()) {
+	      tid=it-teams[i].playerIDs.begin();
+	      break;
+	    }
 	  }
+	  DOPE_CHECK(i<teams.size());
+	  DOPE_CHECK(tid!=~0U);
+	  DOPE_CHECK(tid<teams[i].textures.size());
+	  m_players.push_back(Player(*this,teams[i].textures[tid]));
+	}else{
+	  std::vector<std::string> uris(1);
+	  uris[0]=m_client.getPlayerName(id);
+	  m_players.push_back(Player(*this,uris));
 	}
-	DOPE_CHECK(i<teams.size());
-	DOPE_CHECK(tid!=~0U);
-	DOPE_CHECK(tid<teams[i].textures.size());
-	m_players.push_back(Player(*this,teams[i].textures[tid]));
       }
   }
   for (unsigned p=0;p<players.size();++p)
@@ -379,10 +469,12 @@ SDLGLGUI::step(R dt)
       //      drawCircle(players[p].m_pos,players[p].m_r);
       m_players[p].step(players[p],dt);
       drawTexture(m_players[p].getTexture(),players[p].m_pos,players[p].getDirection());
-      glPushMatrixP();
-      glTranslatefP(int(players[p].m_pos[0]), int(players[p].m_pos[1])+players[p].m_r, 0);
-      drawText(m_client.getPlayerName(p),true);
-      glPopMatrixP();
+      if (players[p].isPlayer()&&m_showNames) {
+	glPushMatrixP();
+	glTranslatefP(int(players[p].m_pos[0]), int(players[p].m_pos[1])+2*players[p].m_r, 0);
+	drawText(m_client.getPlayerName(p),true);
+	glPopMatrixP();
+      }
       /*      V2D dv(V2D(0,100).rot(players[p].getDirection()));
       glColor3fP(1.0,1.0,0.0);
       glBeginP(GL_LINES);
@@ -478,7 +570,7 @@ SDLGLGUI::drawWall(const Wall &w)
 {
   float lw;
   glGetFloatvP(GL_LINE_WIDTH,&lw);
-  glLineWidthP(2*w.getWallWidth());
+  glLineWidthP(2*w.getWallWidth()*m_zoom);
   Line l(w.getLine());
   drawCircle(l.m_a,w.getPillarRadius());
   drawCircle(l.m_b,w.getPillarRadius());

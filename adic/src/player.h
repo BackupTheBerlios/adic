@@ -28,10 +28,13 @@
 #include "roundobject.h"
 
 //! a player in the game world
+/*!
+  \note there are also non-player objects represented by this class
+ */
 class Player : public RoundObject
 {
 public:
-  Player(const V2D &pos=V2D(0,0));
+  Player(const V2D &pos=V2D(0,0), R dir=0, int8_t _type=0,R r=15);
   
   bool step(R dt);
 
@@ -39,7 +42,7 @@ public:
   inline void composite(Layer2 &layer2)
   {
     RoundObject::composite(layer2);
-    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy)
+    layer2.SIMPLE(m_speed).SIMPLE(m_direction).SIMPLE(m_ix).SIMPLE(m_iy).SIMPLE(type)
       .SIMPLE(m_oldSpeed).SIMPLE(m_oldDirection);
   }
 
@@ -87,6 +90,10 @@ public:
   {
     return m_iy;
   }
+  bool isPlayer() const
+  {
+    return type==0;
+  }
 protected:
 
   //! maximum speed
@@ -106,7 +113,9 @@ protected:
   int8_t m_ix;
   //! input y
   int8_t m_iy;
-
+  //! type
+  int8_t type;
+  
   V2D m_oldSpeed;
   R m_oldDirection;
 };

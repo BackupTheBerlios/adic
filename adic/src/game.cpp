@@ -30,6 +30,12 @@ RealDoor::applyImpuls(R dist, V2D impuls)
   d.addSpeed(m/(dist*2*M_PI*mass));
 }
 
+Game::Game(const std::string &meshURI) 
+  : m_meshPtr(meshURI)
+{
+  init();
+}
+
 void
 Game::init()
 {
@@ -184,15 +190,17 @@ Game::miniStep(R dt)
   for (unsigned d=0;d<m_doors.size();++d)
     {
       m_doors[d].step(dt);
-      // collide with players
-      for (unsigned p=0;p<m_players.size();++p)
-	{
-	  if (collideDoorAndPlayer(m_doors[d],m_players[p],true))
-	    {
-	      DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],m_players[p],true));
-	      break;
-	    }
-	}
+      if (m_doors[d].getSpeed()!=R(0)) {
+	// collide with players
+	for (unsigned p=0;p<m_players.size();++p)
+	  {
+	    if (collideDoorAndPlayer(m_doors[d],m_players[p],true))
+	      {
+		DOPE_CHECK(!collideDoorAndPlayer(m_doors[d],m_players[p],true));
+		break;
+	      }
+	  }
+      }
       m_doors[d].commit();
     }
   calcClosedRooms();
@@ -219,9 +227,9 @@ Game::addPlayer(const std::string &name)
   PlayerID id=m_players.size();
   WorldPtr w(getWorldPtr());
   DOPE_CHECK(w.get());
-  const std::vector<V2D> &s(w->getStartPoints());
+  const Mesh::StartPoints &s(w->getStartPoints());
   for (unsigned p=0;p<s.size();++p) {
-    Player newp(s[p]);
+    Player newp(s[p].first,s[p].second*M_PI/180);
     m_players.push_back(newp);
     if (!collidePlayer(id,true)) {
       setPlayerName(id,name);
@@ -233,6 +241,16 @@ Game::addPlayer(const std::string &name)
   }
   // did not find a start place
   return ~0U;
+}
+
+void 
+Game::addObject(const V2D &pos, R dir, const std::string &name, R r)
+{
+  Player newp(pos,dir*M_PI/180,1,r);
+  PlayerID id=m_players.size();
+  m_players.push_back(newp);
+  DOPE_CHECK(!collidePlayer(id,true));
+  setPlayerName(id,name);
 }
 
 void 

@@ -40,17 +40,20 @@ Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server)
 void 
 Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
 {
-  Team *t=server.getTeam(gPtr->m_userSetting.team);
-  if (!t) return;
   for (unsigned i=0;i<gPtr->m_userSetting.users.size();++i)
     {
+      Team *t=server.getTeam(gPtr->m_userSetting.users[i].m_tname);
+      // todo: the problem is that we send back an array
+      // and the client doesn't know which players haven't been created
+      if (!t) continue; 
+
       // todo - find unused player before adding a new one
 
       // check if team is full
       if (t->playerIDs.size()>=t->textures.size())
-	break;
+	continue;
       // try to add player
-      PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_name);
+      PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_uname);
       if (id==PlayerID(~0U))
 	break;
       playerIDs.push_back(id);
@@ -77,6 +80,18 @@ Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
   server.setInput(i);
   server.broadcast(i);
   //  std::cerr << "\nGot input signal\n";
+}
+
+Server::Server(ServerConfig &config) 
+  : m_config(config), m_game(config.m_meshURI), m_quit(false), m_emitFilter(m_allFilter)
+{
+  Game::WorldPtr w(m_game.getWorldPtr());
+  assert(w.get());
+  const Mesh::StartPoints &objpos(w->getStartObjects());
+  for (unsigned i=0;i<objpos.size();++i){
+    // todo add different kind of objects
+    m_game.addObject(objpos[i].first,objpos[i].second,"data/barrel.png",30);
+  }
 }
 
 Team *
@@ -106,8 +121,9 @@ Server::getTeam(const std::string &tname)
 Team *
 Server::getWeakestTeam()
 {
-  unsigned maxTeams=3;
+  unsigned maxTeams=4;
   unsigned numTeams=m_game.numTeams();
+  unsigned maxPlayers=4;
   if (numTeams<maxTeams)
     {
       // create team
@@ -121,6 +137,8 @@ Server::getWeakestTeam()
   const std::vector<Team> &teams(m_game.getTeams());
   for (;i<numTeams;++i)
     minp=std::min(teams[i].playerIDs.size(),minp);
+  if (minp>=maxPlayers)
+    return NULL;
   for (i=0;i<numTeams;++i)
     if (teams[i].playerIDs.size()==minp)
       break;

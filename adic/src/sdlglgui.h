@@ -84,12 +84,20 @@ protected:
   R m_textureTime;
   DOPE_SMARTPTR<Texture> m_fontPtr;
   std::vector<Player> m_players;
+
   V2D m_pos;
+  int m_scrollOp[2];
+  bool m_autoCenter;
 
+  R m_zoom;
+  int m_zoomOp;
+  bool m_autoZoom;
 
+  
   DOPE_SMARTPTR<Texture> getTexture(const std::string &uri);
   typedef std::map<std::string, DOPE_SMARTPTR<Texture> > Textures;
   Textures m_textures;
+  bool m_showNames;
   
   typedef void (*voidFunc)(void);
   typedef void (*intFunc)(int);
@@ -124,6 +132,7 @@ public:
   LOOKUP(glColor3f,fvec3Func);
   LOOKUP(glColor4f,fvec4Func);
   LOOKUP(glTranslatef,fvec3Func);
+  LOOKUP(glScalef,fvec3Func);
   LOOKUP(glBegin,uintFunc);
   LOOKUP(glVertex2i,ivec2Func);
   LOOKUP(glVertex2f,fvec2Func);

@@ -1,12 +1,12 @@
 #include "player.h"
 
-const R Player::m_maxspeed=40;
-const R Player::m_acceleration=10;
+const R Player::m_maxspeed=60;
+const R Player::m_acceleration=60;
 const R Player::m_hdamping=2;
-const R Player::m_vdamping=3;
+const R Player::m_vdamping=1;
 
-Player::Player(const V2D &pos)
-  : RoundObject(pos), m_direction(0), m_ix(0), m_iy(0), m_oldDirection(0)
+Player::Player(const V2D &pos, R dir, int8_t _type,R r)
+  : RoundObject(pos,r), m_direction(dir), m_ix(0), m_iy(0), type(_type), m_oldDirection(0)
 {
 }
 

@@ -72,15 +72,18 @@ class Mesh
 public:
   //! edge ID type
   typedef int EID;
+  typedef std::vector<std::pair<V2D,R> > StartPoints;
   
   std::vector<V2D> vertices;
   std::vector<Edge> edgelist;
-  std::vector<V2D> startPoints;
+
+  StartPoints startPoints;
+  StartPoints startObjects;
   
   template <typename Layer2>
   inline void composite(Layer2 &layer2)
   {
-    layer2.SIMPLE(vertices).SIMPLE(edgelist).SIMPLE(startPoints);
+    layer2.SIMPLE(vertices).SIMPLE(edgelist).SIMPLE(startPoints).SIMPLE(startObjects);
   }
 
   uint getNumFaces() const

@@ -13,6 +13,8 @@ Door::Door(FWEdge::EID _eid)
 bool 
 Door::step(R dt)
 {
+  if (angleSpeed==0)
+    return true;
   angle+=angleSpeed*dt;
   if (angle>maxAngle) {angle=maxAngle-(angle-maxAngle);angleSpeed*=-1;}
   if (angle<minAngle) {angle=minAngle+(minAngle-angle);angleSpeed*=-1;}

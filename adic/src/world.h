@@ -111,7 +111,9 @@ protected:
   //! room / face list
   std::vector<Room> m_rooms;
   //! all our start points
-  std::vector<V2D> m_startPoints;
+  Mesh::StartPoints m_startPoints;
+  //! objects present on start
+  Mesh::StartPoints m_startObjects;
   //! temporary mesh object
   DOPE_SMARTPTR<Mesh> m_meshptr;
   //! stack depth counter for composite
@@ -171,9 +173,13 @@ public:
   {
     return m_rooms.size();
   }
-  const std::vector<V2D> &getStartPoints() const
+  const Mesh::StartPoints &getStartPoints() const
   {
     return m_startPoints;
+  }
+  const Mesh::StartPoints &getStartObjects() const
+  {
+    return m_startObjects;
   }
   
   //! return lineloop for one room

@@ -131,8 +131,7 @@ public:
 
   Game() 
   {init();}
-  Game(const std::string &meshURI) : m_meshPtr(meshURI)
-  {init();}
+  Game(const std::string &meshURI);
   
   ~Game(){}
 
@@ -169,6 +168,9 @@ public:
   //! add a new player
   PlayerID addPlayer(const std::string &name);
 
+  //! add a object
+  void addObject(const V2D &pos, R dir, const std::string &name, R r);
+  
   void setInput(const PlayerInput &i);
 
   //! collide player with world (players, walls, doors)
