@@ -1,7 +1,6 @@
 #include "line.h"
 #include "wall.h"
 #include "polygon.h"
-#include <assert.h>
 #include <stdlib.h>
 #include <vector>
 

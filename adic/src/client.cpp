@@ -58,14 +58,14 @@ Client::~Client()
 void
 Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 {
-  assert(gPtr.get());
+  DOPE_ASSERT(gPtr.get());
   std::cout << "\nGot Greeting from server.\nServer is running ver. "<< gPtr->m_adicVersion.asString() << "\n";
   std::cout << "(DOPE++ ver. "<<gPtr->m_dopeVersion.asString()<<")\n";
   m_playerIDs=gPtr->m_players;
 
   unsigned got=m_playerIDs.size();
   unsigned req=m_config.m_users.users.size();
-  assert(m_guiPtr.get());
+  DOPE_ASSERT(m_guiPtr.get());
   unsigned devs=m_guiPtr->numInputDevices();
   std::cout << "I Got "<< got <<" player IDs (requested "<< req <<" )\n";
   std::cout << "I found "<<devs<<" input devices\n";
@@ -78,7 +78,7 @@ Client::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 void 
 Client::handleGame(DOPE_SMARTPTR<Game> gPtr)
 {
-  assert(gPtr.get());
+  DOPE_ASSERT(gPtr.get());
   m_game.replace(*gPtr,m_config.m_lagCompensation);
   //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&Client::handleCollision));
@@ -103,7 +103,7 @@ Client::handleCollision(V2D pos, R strength)
 void
 Client::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
-  assert(iPtr.get());
+  DOPE_ASSERT(iPtr.get());
   if (m_config.m_lagCompensation) {
     //    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
     if (m_game.getFrame()-iPtr->frame>=0)
@@ -122,7 +122,7 @@ Client::handleNewClient(DOPE_SMARTPTR<NewClient> mPtr)
 {
   m_game.setPlayerNames(mPtr->playerNames);
   m_game.setTeams(mPtr->teams);
-  assert(m_guiPtr.get());
+  DOPE_ASSERT(m_guiPtr.get());
   m_guiPtr->handleNewClient(mPtr);
 }
 
@@ -201,13 +201,13 @@ Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   m_game.restart();
   m_playerIDs.clear();
 
-  assert(m_guiPtr.get());
+  DOPE_ASSERT(m_guiPtr.get());
   m_guiPtr->handleEndGame(egPtr);
 
   // send greeting again
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
-  assert(m_streamPtr.get());
+  DOPE_ASSERT(m_streamPtr.get());
   m_streamPtr->so.emit(g);
 }
 
@@ -244,7 +244,7 @@ Client::connect()
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handleEndGame));
   m_streamPtr->si.connect(SigC::slot(*this,&Client::handlePing));
 
-  assert(m_guiPtr.get());
+  DOPE_ASSERT(m_guiPtr.get());
   m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
   m_guiPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
 

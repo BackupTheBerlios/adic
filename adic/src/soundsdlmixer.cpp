@@ -31,14 +31,14 @@ SoundSDLMixer *thisptr=NULL;
 
 static void music_finished()
 {
-  assert(thisptr);
+  DOPE_ASSERT(thisptr);
   thisptr->musicFinished.emit();
 }
 
 SoundSDLMixer::SoundSDLMixer(SoundConfig &sc)
   : Sound(sc), audio_open(0), music(NULL), oldPlaying(false)
 {
-  assert(!thisptr);
+  DOPE_ASSERT(!thisptr);
   thisptr=this;
   
   if ( SDL_InitSubSystem(SDL_INIT_AUDIO) < 0 ) 
@@ -95,7 +95,7 @@ void
 SoundSDLMixer::playMusic(const char *uri, R volume, int repeat) 
 {
   if (music) Mix_FreeMusic(music);
-  assert(uri);
+  DOPE_ASSERT(uri);
   std::string f(findDataFile(uri));
   music = Mix_LoadMUS(f.c_str());
   if ( music == NULL ) {
@@ -132,7 +132,7 @@ SoundSDLMixer::loadSample(const char *uri)
 {
   if (samples.find(std::string(uri))!=samples.end())
     return;
-  assert(uri);
+  DOPE_ASSERT(uri);
   std::string f(findDataFile(uri));
   samples[uri]=Mix_LoadWAV(f.c_str());
 }

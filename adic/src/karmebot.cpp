@@ -59,7 +59,7 @@ KarmeBot::playerCollision(PlayerID cp, const V2D &cv)
 void 
 KarmeBot::wallCollision(const std::vector<FWEdge::EID> &eids, const V2D &cv)
 {
-  assert(eids.size());
+  DOPE_ASSERT(eids.size());
   followEdge(eids[0]);
   handleCollision();
 }
@@ -126,8 +126,8 @@ KarmeBot::crossLine()
 void
 KarmeBot::followEdge(FWEdge::EID eid)
 {
-  assert(client.getWorldPtr().get());
-  assert(eid!=FWEdge::noEdge);
+  DOPE_ASSERT(client.getWorldPtr().get());
+  DOPE_ASSERT(eid!=FWEdge::noEdge);
   const Game::WorldPtr &worldPtr(client.getWorldPtr());
   const FWEdge &e(worldPtr->getEdge(eid));
   const Player &me(client.getPlayers()[pid]);

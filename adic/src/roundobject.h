@@ -42,9 +42,9 @@ struct RoundObject : public GameObject, public Circle
   
   void rollback()
   {
-    assert(*(static_cast<Circle *>(this))!=m_oldCircle);
+    DOPE_ASSERT(*(static_cast<Circle *>(this))!=m_oldCircle);
     *(static_cast<Circle *>(this))=m_oldCircle;
-    assert(*(static_cast<Circle *>(this))==m_oldCircle);
+    DOPE_ASSERT(*(static_cast<Circle *>(this))==m_oldCircle);
   }
   
   void commit()

@@ -80,8 +80,8 @@ public:
     /*
       m_speed=m_oldSpeed;
       m_direction=m_oldDirection;
-      assert(m_speed==m_oldSpeed);
-      assert(m_direction==m_oldDirection);
+      DOPE_ASSERT(m_speed==m_oldSpeed);
+      DOPE_ASSERT(m_direction==m_oldDirection);
     */
   }
   void commit()
@@ -102,24 +102,24 @@ public:
 
   V2D getImpuls() const
   {
-    assert(m_playerDataPtr.get());
+    DOPE_ASSERT(m_playerDataPtr.get());
     return getSpeed()*m_playerDataPtr->mass;
   }
   
   void applyImpuls(const V2D &i)
   {
-    assert(m_playerDataPtr.get());
+    DOPE_ASSERT(m_playerDataPtr.get());
     m_speed+=i/m_playerDataPtr->mass;
   }
 
   bool isPlayer() const
   {
-    assert(m_playerDataPtr.get());
+    DOPE_ASSERT(m_playerDataPtr.get());
     return m_playerDataPtr->type<10;
   }
   int8_t getType() const
   {
-    assert(m_playerDataPtr.get());
+    DOPE_ASSERT(m_playerDataPtr.get());
     return m_playerDataPtr->type;
   }
   void setLocked(bool _locked)

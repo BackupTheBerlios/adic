@@ -213,7 +213,7 @@ public:
   //! get edge
   const FWEdge &getEdge(FWEdge::EID eid) const
   {
-    assert(eid<m_edges.size());
+    DOPE_ASSERT(eid<m_edges.size());
     return m_edges[eid];
   }
   //! get roomids for one edge
@@ -226,7 +226,7 @@ public:
   //! get start point of edge
   const V2D &getPoint(FWEdge::VID v) const
   {
-    assert(v<m_vertices.size());
+    DOPE_ASSERT(v<m_vertices.size());
     return m_vertices[v];
   }
 
@@ -278,7 +278,7 @@ public:
 
   const Poly& getRoomPoly(FWEdge::RoomID r) const
   {
-    assert(r<m_rooms.size());
+    DOPE_ASSERT(r<m_rooms.size());
     return m_rooms[r].m_poly;
   }
   
@@ -331,7 +331,7 @@ public:
     }
     const FWEdge& getEdge() const
     {
-      assert(m_c<m_w.m_edges.size());
+      DOPE_ASSERT(m_c<m_w.m_edges.size());
       return m_w.m_edges[m_c];
     }
     //! get start point of this edge
@@ -340,7 +340,7 @@ public:
       FWEdge::VID id;
       if (m_cw) id=getEdge().m_sv;
       else id=getEdge().m_ev;
-      assert(id<m_w.m_vertices.size());
+      DOPE_ASSERT(id<m_w.m_vertices.size());
       return m_w.m_vertices[id];
     }
     //! get end point of this edge
@@ -349,7 +349,7 @@ public:
       FWEdge::VID id;
       if (!m_cw) id=getEdge().m_sv;
       else id=getEdge().m_ev;
-      assert(id<m_w.m_vertices.size());
+      DOPE_ASSERT(id<m_w.m_vertices.size());
       return m_w.m_vertices[id];
     }
     //! get corresponding wall

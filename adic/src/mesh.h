@@ -151,7 +151,7 @@ public:
 	}while (isEdge(e));
 	++e;
       }
-    assert(isEdge(e));
+    DOPE_ASSERT(isEdge(e));
     return e;
   }
 };

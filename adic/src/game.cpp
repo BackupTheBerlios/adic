@@ -91,14 +91,14 @@ Game::playerInRoom(Player &p)
     return FWEdge::noRoom;
   }
   FWEdge::RoomID r=w->inRoom(p.m_pos);
-  assert(r<w->getNumRooms());
+  DOPE_ASSERT(r<w->getNumRooms());
   return r;
 }
 
 bool
 Game::collidePlayer(unsigned pid, bool test)
 {
-  assert(pid<m_players.size());
+  DOPE_ASSERT(pid<m_players.size());
   Player &p=m_players[pid];
   if (!p.moved())
     return false;
@@ -117,7 +117,7 @@ Game::collidePlayer(unsigned pid, bool test)
       if (p.collide(m_players[o],cv))
 	{
 	  p.rollback();
-	  assert(!p.collide(m_players[o],cv));
+	  DOPE_ASSERT(!p.collide(m_players[o],cv));
 	  
 	  if (test)
 	    return true;
@@ -163,7 +163,7 @@ Game::collidePlayer(unsigned pid, bool test)
 #ifndef NDEBUG
 	  V2D foocv;
 	  std::vector<FWEdge::EID> fooeids;
-	  assert(!w->collide(p,r,foocv,fooeids));
+	  DOPE_ASSERT(!w->collide(p,r,foocv,fooeids));
 #endif
 	  V2D imp(cv.project(p.getImpuls()));
 	  p.applyImpuls(imp*-2);
@@ -199,12 +199,12 @@ Game::step(R dt)
       if (w.get()) {
 	// calculate player step
 	m_players[p].setLocked(playerIsLocked(p));
-	assert(!collidePlayer(p));
+	DOPE_ASSERT(!collidePlayer(p));
 	m_players[p].step(dt);
 	if (m_players[p].moved()) {
 	  calcPlayerInRoom(p);
 	  collidePlayer(p);
-	  assert(!collidePlayer(p));
+	  DOPE_ASSERT(!collidePlayer(p));
 	}
       }
     }
@@ -249,7 +249,7 @@ void Game::calcClosedRooms()
 		    break;
 		  }
 		}
-	      assert(doorID!=~0U);
+	      DOPE_ASSERT(doorID!=~0U);
 	      m_roomDoors[r].push_back(doorID);
 	    }
 	}
@@ -272,7 +272,7 @@ Game::addPlayer(const std::string &name, const std::string &URI)
 {
   PlayerID id=m_players.size();
   const WorldPtr &w(getWorldPtr());
-  assert(w.get());
+  DOPE_ASSERT(w.get());
   const Mesh::StartPoints &s(w->getStartPoints());
   for (unsigned p=0;p<s.size();++p) {
     Player newp(s[p].first,s[p].second*M_PI/180,URI);
@@ -431,7 +431,7 @@ RealDoor
 Game::doorInWorld(Door &d)
 {
   const WorldPtr &w(getWorldPtr());
-  assert(w.get());
+  DOPE_ASSERT(w.get());
   const FWEdge &e(w->getEdge(d.getEdgeID()));
   const V2D &sv=w->getPoint(e.m_sv);
   const V2D &ev=w->getPoint(e.m_ev);
@@ -440,12 +440,12 @@ Game::doorInWorld(Door &d)
 bool
 Game::collideDoorAndPlayer(unsigned did, PlayerID pid, bool rollbackdoor)
 {
-  assert(did<m_doors.size());
+  DOPE_ASSERT(did<m_doors.size());
   Door &d(m_doors[did]);
 
   // check if player and door are in the same room
   const WorldPtr &wp(getWorldPtr());
-  assert(wp.get());
+  DOPE_ASSERT(wp.get());
   FWEdge::RoomID rooms[2];
   wp->getRoomIDs(d.getEdgeID(),rooms);
   FWEdge::RoomID proom(playerInRoomCached(pid));

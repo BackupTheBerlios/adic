@@ -23,7 +23,7 @@
 */
 
 #include "vector2d.h"
-#include <assert.h>
+#include <dope/dope.h>
 
 int main()
 {
@@ -32,7 +32,7 @@ int main()
   V2D c(a+b);
   std::cout << a << "+" << b << "=" << c << std::endl;
   std::cout << c << "-" << b << "=" << c-b << "==" << a << std::endl;
-  assert(c-b==a);
+  DOPE_ASSERT(c-b==a);
   std::cout << a << "*" << b << "=" << a*b << std::endl;
   std::cout << a << "*" << 5 << "=" << a*5 << std::endl;
   std::cout << a << "+=" << b << "=";

@@ -185,7 +185,7 @@ public:
   //! in which room is this player ?
   inline FWEdge::RoomID playerInRoomCached(unsigned pid)
   {
-    assert(pid<m_players.size());
+    DOPE_ASSERT(pid<m_players.size());
     if (pid<m_playerRoomMap.size())
       return m_playerRoomMap[pid];
     return calcPlayerInRoom(pid);
@@ -219,7 +219,7 @@ public:
     TeamID tid(getTeamID(t));
     if (tid==TeamID(~0U))
       return NULL;
-    assert(tid<m_teams.size());
+    DOPE_ASSERT(tid<m_teams.size());
     return &m_teams[tid];
   }
 
@@ -236,7 +236,7 @@ public:
   //! get team by ID
   Team *getTeam(unsigned id)
   {
-    assert(id<m_teams.size());
+    DOPE_ASSERT(id<m_teams.size());
     return &m_teams[id];
   }
   

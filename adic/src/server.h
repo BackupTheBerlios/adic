@@ -131,7 +131,7 @@ public:
   /*
   void handleFoo(DOPE_SMARTPTR<foo> fooPtr)
   {
-    assert(fooPtr.get());
+    DOPE_ASSERT(fooPtr.get());
     ++msgs;
     std::cout << "saved foo from network to foo.net\n";
     writeFoo(*fooPtr.get(),"foo.net");
@@ -221,7 +221,7 @@ public:
   void handleNewConnection(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf> streamPtr)
   {
     std::cerr << "\nNew connection ("<<id<<")\n";
-    assert(streamPtr.get());
+    DOPE_ASSERT(streamPtr.get());
     streamPtr->setTcpNoDelay(m_config.m_tcpNoDelay);
     m_emitFilter=id;
     Connection *c(new Connection(streamPtr,*this));
@@ -232,7 +232,7 @@ public:
 
   void handleDataAvailable(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf>)
   {
-    assert(connections.find(id)!=connections.end());
+    DOPE_ASSERT(connections.find(id)!=connections.end());
     m_emitFilter=id;
     connections[id]->read();
   }
@@ -240,7 +240,7 @@ public:
   void handleConnectionClosed(NetStreamBufServer::ID id, DOPE_SMARTPTR<NetStreamBuf>)
   {
     Connections::iterator it(connections.find(id));
-    assert(it!=connections.end());
+    DOPE_ASSERT(it!=connections.end());
     std::cerr << "\nConnection ("<<id<<") closed\n";
     connections.erase(it);
     updateMetaserver();
@@ -309,16 +309,16 @@ public:
 
   std::string getPlayerName(PlayerID pid) const
   {
-    assert(pid<m_game.getPlayerNames().size());
+    DOPE_ASSERT(pid<m_game.getPlayerNames().size());
     return m_game.getPlayerNames()[pid];
   }
   std::string getPlayersTeamName(PlayerID pid)
   {
     TeamID tid=m_game.getTeamIDofPlayer(pid);
-    assert(tid!=TeamID(~0U));
+    DOPE_ASSERT(tid!=TeamID(~0U));
     // this is not const => we are not const
     Team *t(m_game.getTeam(tid));
-    assert(t);
+    DOPE_ASSERT(t);
     return t->name;
   }
 

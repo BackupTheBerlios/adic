@@ -1,7 +1,6 @@
 #include "sdlgl.h"
 
 #include <SDL.h>
-#include <assert.h>
 #include <iostream>
 #include <dope/dope.h>
 #include <iomanip>
@@ -65,7 +64,7 @@ void* gluHandle=NULL;
 void
 loadGLU(const std::string &libGLU)
 {
-  assert(!gluHandle);
+  DOPE_ASSERT(!gluHandle);
   std::string lib(libGLU);
   if (lib.empty()) lib="libGLU.so.1";
   gluHandle = dlopen (lib.c_str(), RTLD_LAZY);
@@ -79,7 +78,7 @@ static
 _GLUfuncptr
 GetGluProcAddress(char *symbol)
 {
-  assert(gluHandle);
+  DOPE_ASSERT(gluHandle);
   return (_GLUfuncptr)dlsym(gluHandle,symbol);
 }
 // end GLU hack
@@ -90,7 +89,7 @@ lookupGLSymbols()
 {
 #define STRINGIFY(m) #m
   DEBUG_GL("looking up GL and GLU symbols");
-#define FUNC(ret,name,parm) do{typedef ret (*T##name) parm ;name=(T##name)SDL_GL_GetProcAddress(STRINGIFY(name));if(!name) name=(T##name)GetGluProcAddress(STRINGIFY(name));assert(name);DEBUG_GL("got address of:" STRINGIFY(name) " it is at: " << ((void *)name));}while(0)
+#define FUNC(ret,name,parm) do{typedef ret (*T##name) parm ;name=(T##name)SDL_GL_GetProcAddress(STRINGIFY(name));if(!name) name=(T##name)GetGluProcAddress(STRINGIFY(name));DOPE_ASSERT(name);DEBUG_GL("got address of:" STRINGIFY(name) " it is at: " << ((void *)name));}while(0)
 #include "glfunctions.h"
 #undef FUNC
 #undef STRINGIFY

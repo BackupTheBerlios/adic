@@ -89,8 +89,8 @@ SDLGLGUI::init()
 
   // create menu
   m_menuPtr=DOPE_SMARTPTR<SDLMenu>(new SDLMenu(*this));
-  assert(m_inputDevices.size());
-  assert(m_menuPtr.get());
+  DOPE_ASSERT(m_inputDevices.size());
+  DOPE_ASSERT(m_menuPtr.get());
   for (unsigned i=0;i<m_inputDevices.size();++i)
     // we do not want the mouse as input device for the menu
     if (!m_inputDevices[i]->getDevName().isMouse())
@@ -123,7 +123,7 @@ SDLGLGUI::createWindow()
   m_fontTexPtr=getTexture("data:font.png");
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(m_fontTexPtr));
 
-  assert(m_fontPtr.get());
+  DOPE_ASSERT(m_fontPtr.get());
   m_terminalPtr=DOPE_SMARTPTR<GLTerminal>(new GLTerminal(*m_fontPtr,0,getGUIConfig().height-48));
   m_terminalPtr->printed.connect(printed.slot());
 
@@ -603,7 +603,7 @@ SDLGLGUI::step(R dt)
   }
 
   // paint terminal
-  assert(m_terminalPtr.get());
+  DOPE_ASSERT(m_terminalPtr.get());
   // copy text from input buffer to terminal
   m_terminalPtr->print(m_streamBuf.str());
   m_streamBuf.str("");
@@ -910,7 +910,7 @@ SDLGLGUI::drawTextRow(const std::string &text, bool centered)
     }else if ((text[i]>=11)&&(text[i]<15)) {
       unsigned t=text[i]-11;
       t%=teams.size();
-      assert(t<teams.size());
+      DOPE_ASSERT(t<teams.size());
       glColor3f(teams[t].color[0],teams[t].color[1],teams[t].color[2]);
     }
   }
@@ -1026,8 +1026,8 @@ SDLGLGUI::setupCamera(R dt)
 	m_camera.setZoom(std::min(std::min(xzoom,yzoom),R(2.0)));
       }
       if ((c==1)&&(m_autoRotate)) {
-	assert(myIDs.size());
-	assert(myIDs[0]<players.size());
+	DOPE_ASSERT(myIDs.size());
+	DOPE_ASSERT(myIDs[0]<players.size());
 	m_camera.setRotate(-players[myIDs[0]].getDirection()*180/M_PI);
       }
     }
@@ -1264,7 +1264,7 @@ SDLGLGUI::drawTeamStat()
   const std::vector<Team> &teams(getTeams());
   if (teams.size()) {
     const std::vector<TeamStat> &teamStat(getTeamStats());
-    assert(teams.size()==teamStat.size());
+    DOPE_ASSERT(teams.size()==teamStat.size());
     int dx=m_width/(teams.size()+1);
     glPushMatrix();
     if (teams.size()>m_fontPtr->numColors()) {

@@ -28,7 +28,7 @@ Player::increaseFitness(R f)
 bool
 Player::step(R dt)
 {
-  assert(m_playerDataPtr.get());
+  DOPE_ASSERT(m_playerDataPtr.get());
   V2D null(0,0);
 
   // normally i use a different coord system

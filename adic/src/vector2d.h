@@ -28,7 +28,6 @@
 #include "typedefs.h"
 #include <iostream>
 #include <math.h>
-#include <assert.h>
 #include <dope/typenames.h>
 
 //! yet another simple 2D-Vector
@@ -165,13 +164,13 @@ public:
   */
   R& operator[](int i)
   {
-    assert((!i)||(i==1));
+    DOPE_ASSERT((!i)||(i==1));
     return m_v[i];
   }
 
   const R& operator[](int i) const
   {
-    assert((!i)||(i==1));
+    DOPE_ASSERT((!i)||(i==1));
     return m_v[i];
   }
 

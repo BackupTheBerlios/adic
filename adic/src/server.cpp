@@ -62,7 +62,7 @@ Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
       if (t->playerIDs.size()>=t->textures.size())
 	continue;
       // try to add player
-      assert(t->playerIDs.size()<t->dataURIs.size());
+      DOPE_ASSERT(t->playerIDs.size()<t->dataURIs.size());
       PlayerID id=server.addPlayer(gPtr->m_userSetting.users[i].m_uname,t->dataURIs[t->playerIDs.size()]);
       if (id==PlayerID(~0U))
 	break;
@@ -80,7 +80,7 @@ Connection::handleGreeting(DOPE_SMARTPTR<ClientGreeting> gPtr)
 void 
 Connection::handleInput(DOPE_SMARTPTR<Input> inputPtr)
 {
-  assert(inputPtr.get());
+  DOPE_ASSERT(inputPtr.get());
   // we have to remap the device no to the player no
   uint8_t devno=inputPtr->devno;
   if (devno>=playerIDs.size()) {
@@ -172,7 +172,7 @@ Team *
 Server::getWeakestTeam()
 {
   unsigned maxTeams=4;
-  assert(maxTeams>=4);
+  DOPE_ASSERT(maxTeams>=4);
   unsigned numTeams=m_game.numTeams();
   unsigned maxPlayers=4;
   const std::vector<Team> &teams(m_game.getTeams());
@@ -427,20 +427,20 @@ void
 Server::sendChatMessage(ChatMessage &msg)
 {
   // check if sender is a player name
-  assert(msg.sender.size());
-  assert(!msg.global);
+  DOPE_ASSERT(msg.sender.size());
+  DOPE_ASSERT(!msg.global);
   const std::vector<std::string> &pn(m_game.getPlayerNames());
   PlayerID pid=m_game.getPlayerID(msg.sender);
   TeamID tid=~0U;
   if (pid<pn.size()) {
     // yes => find team of player
     tid=m_game.getTeamIDofPlayer(pid);
-    assert(tid!=~0U);
+    DOPE_ASSERT(tid!=~0U);
   }else{
     // no => check if sender is a team name
     tid=m_game.getTeamID(msg.sender);
   }
-  assert(tid!=TeamID(~0U));
+  DOPE_ASSERT(tid!=TeamID(~0U));
   // now we have the team id we want to send messages to
   // => send message to every client which has a member of this team
   Connections::iterator it(connections.begin());
@@ -459,12 +459,12 @@ Server::sendChatMessage(ChatMessage &msg)
 std::vector<TeamID> 
 Server::getTeamIDs(const Connection *c) const
 {
-  assert(c);
+  DOPE_ASSERT(c);
   std::vector<TeamID> res;
   const std::vector<PlayerID> &pids(c->getPlayerIDs());
   for (unsigned p=0;p<pids.size();++p) {
     TeamID tid=m_game.getTeamIDofPlayer(pids[p]);
-    assert(tid!=TeamID(~0U));
+    DOPE_ASSERT(tid!=TeamID(~0U));
     if (std::find(res.begin(),res.end(),tid)==res.end())
       res.push_back(tid);
   }
@@ -490,7 +490,7 @@ void
 Server::addStartObjects()
 {
   Game::WorldPtr w(m_game.getWorldPtr());
-  assert(w.get());
+  DOPE_ASSERT(w.get());
   const Mesh::StartObjects &objpos(w->getStartObjects());
   for (unsigned i=0;i<objpos.size();++i)
     m_game.addObject(objpos[i]);
@@ -505,7 +505,7 @@ Server::updateMetaserver()
     MetaServer metaServer(m_config.m_metaServer.c_str());
     ServerStatus status;
     status.host=m_maddr;
-    assert(m_cmesh<m_config.m_meshURIs.size());
+    DOPE_ASSERT(m_cmesh<m_config.m_meshURIs.size());
     status.level=m_config.m_meshURIs[m_cmesh];
     status.clients=connections.size();
     

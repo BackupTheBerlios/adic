@@ -1,6 +1,5 @@
 #include "line.h"
 #include "wall.h"
-#include <assert.h>
 #include <stdlib.h>
 
 int main(int argc, char* argv[])

@@ -45,7 +45,7 @@ BotClient::~BotClient()
 void
 BotClient::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 {
-  assert(gPtr.get());
+  DOPE_ASSERT(gPtr.get());
   std::cout << "\nGot Greeting from server.\nServer is running ver. "<< gPtr->m_adicVersion.asString() << "\n";
   std::cout << "(DOPE++ ver. "<<gPtr->m_dopeVersion.asString()<<")\n";
   m_playerIDs=gPtr->m_players;
@@ -60,7 +60,7 @@ BotClient::handleGreeting(DOPE_SMARTPTR<ServerGreeting> gPtr)
 void 
 BotClient::handleGame(DOPE_SMARTPTR<Game> gPtr)
 {
-  assert(gPtr.get());
+  DOPE_ASSERT(gPtr.get());
   m_game.replace(*gPtr);
   //  reconnect signals
   m_game.collision.connect(SigC::slot(*this,&BotClient::handleCollision));
@@ -86,7 +86,7 @@ BotClient::handleCollision(V2D pos, R strength)
 void
 BotClient::handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
 {
-  assert(iPtr.get());
+  DOPE_ASSERT(iPtr.get());
   if (m_config.m_lagCompensation) {
     //    std::cerr << "\nInput Lag: "<<(m_game.getFrame()-iPtr->frame)<<" frames\n";
     if (m_game.getFrame()-iPtr->frame>=0)
@@ -189,7 +189,7 @@ BotClient::sendGreeting()
 {
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
-  assert(m_streamPtr.get());
+  DOPE_ASSERT(m_streamPtr.get());
   m_streamPtr->so.emit(g);
 }
 
@@ -306,7 +306,7 @@ unsigned
 BotClient::getPlayerBotID(PlayerID pid)
 {
   const std::vector<PlayerID> &myids(getMyIDs());
-  assert(myids.size()==m_bots.size());
+  DOPE_ASSERT(myids.size()==m_bots.size());
   for (unsigned i=0;i<myids.size();++i) {
     if (myids[i]==pid) return i;
   }

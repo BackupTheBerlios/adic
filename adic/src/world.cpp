@@ -6,8 +6,8 @@ World::EdgeIterator::EdgeIterator
 (const World &world, FWEdge::RoomID room) 
 : m_w(world)
 {
-  assert(room>=0);
-  assert(room<m_w.m_rooms.size());
+  DOPE_ASSERT(room>=0);
+  DOPE_ASSERT(room<m_w.m_rooms.size());
   const Room &r=m_w.m_rooms[room];
   m_cw=r.m_cw;
   m_c=m_b=r.m_e;
@@ -183,7 +183,7 @@ World::setFromMesh(const Mesh &mesh)
 	  }
 
 	  // calculate corresponding wall
-	  assert(newEdge.m_sv<m_vertices.size()&&newEdge.m_ev<m_vertices.size());
+	  DOPE_ASSERT(newEdge.m_sv<m_vertices.size()&&newEdge.m_ev<m_vertices.size());
 	  newEdge.m_wall=Wall(Line(m_vertices[newEdge.m_sv],m_vertices[newEdge.m_ev]));
 
 	  m_edges.push_back(newEdge);
@@ -213,7 +213,7 @@ World::collide
   // loop through walls
   const Room &r(m_rooms[room]);
   unsigned nw=r.m_walls.size();
-  assert(nw==r.m_eids.size());
+  DOPE_ASSERT(nw==r.m_eids.size());
   bool res=false;
   V2D subc;
   for (unsigned w=0;w<nw;++w) {
@@ -252,7 +252,7 @@ World::getLineLoop(FWEdge::RoomID room) const
 bool 
 World::isInRoom(const V2D &p, FWEdge::RoomID r)
 {
-  assert(r<m_rooms.size());
+  DOPE_ASSERT(r<m_rooms.size());
   return m_rooms[r].m_poly.inside(p);
   /*
   const std::vector<V2D> &ll(getLineLoop(r));
