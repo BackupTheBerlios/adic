@@ -3,7 +3,7 @@
 #include <fstream>
 #include <dope/utils.h>
 
-std::string findDataFile(const std::string &fname, const char *dataPath=NULL)
+std::string findDataFile(const std::string &fname, const char *dataPath)
 {
   std::string first,path;
   if (dataPath)

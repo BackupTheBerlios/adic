@@ -90,6 +90,17 @@ struct ServerExit
 };
 IO_CLASS(ServerExit)
 
+struct Result
+{
+  int status;
+  std::string message;
+  
+  IO
+  {
+    l2.SIMPLE(status).SIMPLE(message);
+  }
+};
+IO_CLASS(Result)
 
 //! server list that may be requested from the meta-server
 typedef std::list<ServerStatus> ServerList;

@@ -176,8 +176,6 @@ protected:
   Game m_game;
   typedef std::map<NetStreamBufServer::ID, DOPE_SMARTPTR<Connection> > Connections;
   Connections connections;
-  //! should we quit ?
-  bool m_quit;
   //! emit will send the message to this client (m_emitFilter == m_allFilter => all clients)
   NetStreamBufServer::ID m_emitFilter;
 

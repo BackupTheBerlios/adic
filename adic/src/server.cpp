@@ -29,6 +29,12 @@ void sigPipeHandler(int x){
   std::cerr << "WARNING: Received sig pipe signal - I ignore it"<<std::endl;
 }
 
+int quit=0;
+
+void sigTermHandler(int x){
+  quit=1;
+}
+
 Connection::Connection(DOPE_SMARTPTR<NetStreamBuf> _streamPtr, Server &_server) 
   : streamPtr(_streamPtr), server(_server),
     factory(*(streamPtr.get())), outProto(*(streamPtr.get())), emitter(outProto)
@@ -122,7 +128,7 @@ Connection::singleTeam() const
 }
 
 Server::Server(ServerConfig &config) 
-  : m_config(config), m_game(config.m_meshURI), m_quit(false), m_emitFilter(m_allFilter)
+  : m_config(config), m_game(config.m_meshURI), m_emitFilter(m_allFilter)
 {
   addStartObjects();
 }
@@ -184,21 +190,29 @@ int
 Server::main()
 {
   signal(SIGPIPE,sigPipeHandler);
+  signal(SIGTERM,sigTermHandler);
+  signal(SIGINT,sigTermHandler);
   NetStreamBufServer listener(m_config.m_port);
   listener.init();
   listener.newConnection.connect(SigC::slot(*this,&Server::handleNewConnection));
   listener.dataAvailable.connect(SigC::slot(*this,&Server::handleDataAvailable));
   listener.connectionClosed.connect(SigC::slot(*this,&Server::handleConnectionClosed));
 
+  Host host;
+  //  host.adr=""; // we leave it blank and let the metaserver decide
+  host.port=m_config.m_port;
+  std::string metaServerSecret;
+  bool msGood=false;
+  std::string msURI("http://adic.berlios.de/metaserver/index.php");
   try {
-    MetaServer metaServer("http://adic.berlios.de/metaserver/index.php");
+    MetaServer metaServer(msURI.c_str());
     RegisterServer reg;
-    reg.host.adr="foo";
-    reg.host.port=m_config.m_port;
+    reg.host=host;
     ServerRegistered answer;
-    
     metaServer.rpc(reg,answer);
     std::cerr << "Metaserver answered !:\nRegistered: " << answer.registered << " , secret:"<<answer.secret<<std::endl;
+    metaServerSecret=answer.secret;
+    msGood=true;
   }catch(...){
     std::cerr << "Could not connect to Metaserver\n";
   }
@@ -213,7 +227,7 @@ Server::main()
   TimeStamp timeOut;
   oldTime.now();
   unsigned frames=0;
-  while (!m_quit) {
+  while (!quit) {
     // todo - should it be a loop while(dataAvailable?)
     listener.select(&null); // test for input and emit signals if input is available
     newTime.now();
@@ -254,6 +268,22 @@ Server::main()
 	      << " Frame: " << std::setw(10) << frames;
   }
   connections.clear();
+
+  if (msGood) {
+    try {
+      MetaServer metaServer(msURI.c_str());
+      ServerExit exitmsg;
+      exitmsg.host=host;
+      exitmsg.secret=metaServerSecret;
+      
+      Result answer;
+      metaServer.rpc(exitmsg,answer);
+      std::cerr << "Metaserver answered:\nStatus: " << answer.status << " , message:"<<answer.message<<std::endl;
+    }catch(...){
+      std::cerr << "Could not connect to Metaserver\n";
+    }
+  }
+  
   return 0;
 }
 
