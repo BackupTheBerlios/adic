@@ -190,8 +190,7 @@ Game::miniStep(R dt)
       const WorldPtr &w(getWorldPtr());
       if (w.get()) {
 	// calculate player step
-	if (playerIsLocked(p))
-	  m_players[p].setControl(0,0);
+	m_players[p].setLocked(playerIsLocked(p));
 	assert(!collidePlayer(p));
 	m_players[p].step(dt);
 	if (m_players[p].moved()) {

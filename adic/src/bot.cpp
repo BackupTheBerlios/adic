@@ -9,7 +9,7 @@ Bot::sendInput()
   if (cinput!=oinput) {
     input.emit(cinput);
     oinput=cinput;
-    std::cerr << "I am " <<pid<<" and did send an input event\n";
+    //  std::cerr << "I am " <<pid<<" and did send an input event\n";
     assert(cinput==oinput);
   }
 }

@@ -106,14 +106,6 @@ public:
     m_speed+=i/m_playerDataPtr->mass;
   }
 
-  int8_t getX() const
-  {
-    return m_ix;
-  }
-  int8_t getY() const
-  {
-    return m_iy;
-  }
   bool isPlayer() const
   {
     assert(m_playerDataPtr.get());
@@ -124,7 +116,25 @@ public:
     assert(m_playerDataPtr.get());
     return m_playerDataPtr->type;
   }
+  void setLocked(bool _locked)
+  {
+    locked=_locked;
+  }
+  bool isLocked() const
+  {
+    return locked;
+  }
+
+  int8_t getX() const
+  {
+    return locked ? 0 : m_ix;
+  }
+  int8_t getY() const
+  {
+    return locked ? 0 : m_iy;
+  }
 protected:
+
   //! our crrent speed vector
   V2D m_speed;
   //! our direction we are heading
@@ -142,6 +152,7 @@ protected:
     V2D m_oldSpeed;
     R m_oldDirection;
   */
+  bool locked;
 };
 DOPE_CLASS(Player);
 
