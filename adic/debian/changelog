@@ -3,11 +3,11 @@ adic (0.9.0-1) unstable; urgency=low
   * added TCP_NODELAY option
   * Split into architecture dependent and independent packages.
 
- -- Jens Thiele <karme@berlios.de>  Sat,  2 Nov 2002 16:41:38 +0100
+ -- Jens Thiele (Karme) <karme@berlios.de>  Sat,  2 Nov 2002 16:41:38 +0100
 
 adic (0.1.0-1) unstable; urgency=low
 
   * Initial Release.
 
- -- Jens Thiele <karme@berlios.de>  Fri,  4 Oct 2002 00:40:12 +0200
+ -- Jens Thiele (Karme) <karme@berlios.de>  Fri,  4 Oct 2002 00:40:12 +0200
 
