@@ -112,7 +112,7 @@ adicserver_SOURCES = \
 	server.h \
 	server.cpp
 
-adicserver_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
+adicserver_LDADD = @DOPE_LIBS@ @SERVER_LDADD@
 
 # did not work with automake 1.4
 # adicclient_CFLAGS = @SDL_CFLAGS@
@@ -187,7 +187,7 @@ endif
 adicclient_SOURCES = $(adicclienth) $(adicclientcpp)
 
 # todo check for SDL_image and SDL_mixer
-adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer @SPECIAL_LDADD@
+adicclient_LDADD = @DOPE_LIBS@ @SDL_LIBS@ -lSDL_image -lSDL_mixer @GUICLIENT_LDADD@
 
 adicboth = \
 	$(clientcommonh) \
@@ -213,7 +213,7 @@ endif
 
 adicbot_SOURCES = $(adicboth) $(adicbotcpp)
 
-adicbot_LDADD = @DOPE_LIBS@ @SPECIAL_LDADD@
+adicbot_LDADD = @DOPE_LIBS@ @BOTCLIENT_LDADD@
 
 # needed to get make dist working with fastcompile
 extradist = $(realgamecommoncpp) $(realadicclientcpp) $(realadicbotcpp)

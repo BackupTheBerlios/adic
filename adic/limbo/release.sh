@@ -1,8 +1,7 @@
 #!/bin/bash
 
-
 #configuration
-BUILDDIR=/tmp
+BUILDDIR=/tmp/adic
 #attention it is assumed dope uses the same prefix
 PREFIX=/tmp/usr
 export ACLOCAL_FLAGS="-I config/m4"
@@ -18,19 +17,26 @@ ADIC_CROSS_CONFIGURE_OPTIONS="--with-dope-prefix=$PREFIX/cross --disable-shared"
 
 set -e
 
+if test -e $BUILDDIR; then
+    echo Warning $BUILDDIR directory already exists
+    read
+else
+    mkdir -p $BUILDDIR
+fi
+cd $BUILDDIR
+
 #build dope first
 PACKAGE=dope
-cd $BUILDDIR
 
 #get dope release.sh script
 if test -e $DOPE_BUILD; then
-	echo Warning $DOPE_BUILD script already exists - abort or I will remove it
+	echo Warning $DOPE_BUILD script already exists - i assume this is okay
 	read
-	rm $DOPE_BUILD
+else
+    cvs -d:pserver:anonymous:@cvs.$PACKAGE.berlios.de:/cvsroot/$PACKAGE login
+    cvs -z3 -d:pserver:anonymous:@cvs.$PACKAGE.berlios.de:/cvsroot/$PACKAGE co -p $PACKAGE/limbo/release.sh >$DOPE_BUILD
+    chmod u+x $DOPE_BUILD
 fi
-cvs -d:pserver:anonymous:@cvs.$PACKAGE.berlios.de:/cvsroot/$PACKAGE login
-cvs -z3 -d:pserver:anonymous:@cvs.$PACKAGE.berlios.de:/cvsroot/$PACKAGE co -p $PACKAGE/limbo/release.sh >$DOPE_BUILD
-chmod u+x $DOPE_BUILD
 #backup ACLOCAL_FLAGS
 T="$ACLOCAL_FLAGS"
 export ACLOCAL_FLAGS=""
@@ -45,7 +51,7 @@ cd $BUILDDIR
 
 #check that $PACKAGE directory does not already exist
 if test -e $PACKAGE; then
-    echo Warning $PACKAGE directory already exists - assuming we already have a distribution tarball in there
+    echo Warning `pwd`/$PACKAGE directory already exists - assuming we already have a distribution tarball in there
     read
 else
     #get source
@@ -69,7 +75,7 @@ fi
 
 cd $BUILDDIR
 if test -e $DIR; then
-    echo Warning $DIR directory already exists - assuming we already unpacked distribution
+    echo Warning `pwd`/$DIR directory already exists - assuming we already unpacked distribution
     read
 else
     tar xzvf $PACKAGE/$DISTFILE
@@ -81,25 +87,16 @@ cd build
 
 #build debian packages
 mkdir -p debian
+cd debian
 if test -e $DIR; then
-    echo Warning $DIR directory already exists - abort or i will remove it
+    echo Warning `pwd`/$DIR directory already exists - abort or i will remove it
     read
     rm -rf $DIR
 fi
-cd $DIR
-tar xzvf $PACKAGE/$DISTFILE
+tar xzvf $BUILDDIR/$PACKAGE/$DISTFILE
 cd $DIR
 dpkg-buildpackage -rfakeroot
 
-#check debian packages
-#lintian $BUILDDIR/*.deb
-
-#copy packages to repository
-cp -i $BUILDDIR/adic_* $ADIC_DEBREP
-cp -i $BUILDDIR/adic-data_* $ADIC_DEBREP
-cd $ADIC_DEBREP/..
-./gen-packages.sh
-./update.sh
 
 # todo build static (or "semi-static") binary packages for linux/X11
 # this builds a "semi-static" adicclient:
@@ -113,23 +110,49 @@ if test -e $SETUPCROSS; then
     mkdir -p arch-cross
     cd arch-cross
     if test -e $DIR; then
-	echo Warning $DIR directory already exists - abort or I will remove it
+	echo Warning `pwd`/$DIR directory already exists - abort or I will remove it
 	read
 	rm -rf $DIR
     fi
     mkdir $DIR
     cd $DIR
-    CROSSPREFIX=$PREFIX/cross/adic-bin-win32-${DIR#adic-*}
+    DISTNAME=adic-bin-win32-${DIR#adic-*}
+    CROSSPREFIX=$PREFIX/cross/$DISTNAME
     $BUILDDIR/$DIR/configure $CROSS_CONFIGURE_OPTIONS $ADIC_CROSS_CONFIGURE_OPTIONS --enable-fastcompile --prefix=$CROSSPREFIX --bindir=$CROSSPREFIX --datadir=$CROSSPREFIX/data
     make install
     # rearange files
     cd $CROSSPREFIX
-    mv data/doc/* .
+    mv data/doc/adic/* .
     mv data/adic d2
     rm -rf data
     mv d2 data
+    $STRIP *.exe
+    cd ..
+    zip -r $DISTNAME.zip $DISTNAME
 else
     echo cross compiler config script not found
 fi
 
 #todo build static binary packages for linux/fbdev
+
+
+#upload packages
+
+#win32 zip file
+cd $BUILDDIR
+mkdir -p upload
+cd upload
+mv $CROSSPREFIX/$DISTNAME.zip .
+
+#debian packages
+mv $BUILDDIR/debian/adic_${DIR#adic-*}* .
+mv $BUILDDIR/debian/adic-data_${DIR#adic-*}* .
+
+exit 0
+#copy packages to repository
+#todo
+cp -i $BUILDDIR/adic_* $ADIC_DEBREP
+cp -i $BUILDDIR/adic-data_* $ADIC_DEBREP
+cd $ADIC_DEBREP/..
+./gen-packages.sh
+./update.sh

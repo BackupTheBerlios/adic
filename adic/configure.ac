@@ -30,11 +30,20 @@ dnl AC_PROG_CXXCPP
 dnl build options
 AC_ARG_VAR(ADIC_PORT, the default port to use)
 
+dnl this option is mainly for building packages for debian/woody
+dnl because woody does not contain gcc 3.2
 AC_ARG_ENABLE([staticcpp],
 	AC_HELP_STRING([--enable-staticcpp],
 		[enable static cpp standard library @<:@default=no@:>@]),
 		[],
 		[enable_staticcpp=no])
+
+dnl this option is to build portable linux binaries
+AC_ARG_ENABLE([staticcpp],
+	AC_HELP_STRING([--enable-mostlystatic],
+		[static linkage as far as possible @<:@default=no@:>@]),
+		[],
+		[enable_mostlystatic=no])
 
 AC_ARG_ENABLE([fastcompile],
      [  --enable-fastcompile    Use fast compilation hack],
@@ -57,18 +66,30 @@ if test "x$ADIC_PORT" = "x"; then
 fi
 AC_DEFINE_UNQUOTED(ADIC_PORT, $ADIC_PORT, [default port to use])
 
-
-if test "x$enable_staticcpp" = "xno"; then
-     SPECIAL_LDADD=""
-else
-     dnl hack to get static linkage with libtool and g++-3.2 of stdc++ library
-     dnl it seems we have to use the dynamic gcc_s - otherwise exception handling does
-     dnl not work - but are different gcc_s libraries compatible ?
-     dnl especially is the gcc_s from gcc 3.0.x compatible with the one in gcc 3.2 ?
-     dnl it seems to work
-     SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_s -lc"
+if test -z "$enable_staticcpp" -o -z "$enable_mostlystatic"; then
+	dnl hack to get static linkage with libtool and g++-3.2 of stdc++ library
+	dnl it seems we have to use the dynamic gcc_s - otherwise exception handling does
+	dnl not work - but are different gcc_s libraries compatible ?
+	dnl especially is the gcc_s from gcc 3.0.x compatible with the one in gcc 3.2 ?
+	dnl it seems to work
+	SPECIAL_LDADD="-nodefaultlibs `$CXX --print-file-name=libstdc++.a` -lgcc_s -lc"
 fi
-AC_SUBST(SPECIAL_LDADD)
+
+if test -z "$enable_staticcpp"; then
+	SERVER_LDADD="$SPECIAL_LDADD"
+	GUICLIENT_LDADD="$SPECIAL_LDADD"
+	BOTCLIENT_LDADD="$SPECIAL_LDADD"
+fi
+
+if test -z "$enable_mostlystatic"; then
+	SERVER_LDADD="-all-static"
+	GUICLIENT_LDADD="$SPECIAL_LDADD"
+	BOTCLIENT_LDADD="-all-static"
+fi
+
+AC_SUBST(SERVER_LDADD)
+AC_SUBST(GUICLIENT_LDADD)
+AC_SUBST(BOTCLIENT_LDADD)
 
 dnl output files
 AC_CONFIG_FILES([Makefile doc/Makefile doc/Doxyfile config/Makefile config/m4/Makefile src/Makefile debian/Makefile data/Makefile])
