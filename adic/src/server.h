@@ -45,7 +45,7 @@
 //! server configuration
 struct ServerConfig
 {
-  ServerConfig() : m_port(40700), m_meshURI("file:data/mesh.xml")
+  ServerConfig() : m_port(ADIC_PORT), m_meshURI("file:data/mesh.xml")
   {}
   
   unsigned short int m_port;

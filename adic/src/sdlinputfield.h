@@ -27,6 +27,7 @@
 
 #include "typedefs.h"
 #include <SDL/SDL.h> // needed for the key symbols
+#include <string>
 
 //! input field modell
 /*!
@@ -42,10 +43,22 @@
 */
 class SDLInputField : public SigC::Object
 {
+  //! counts how many input fields are active
+  /*!
+    \note this is needed because we use SDL_EnableUNICODE
+    \todo protect this field (threads)
+  */
+  static int usageCount;
 public:
-  SDLInputField()
-    : m_active(false)
-  {}
+
+  //! create input field
+  /*!
+    \param def the default content - if not specified empty
+  */
+  SDLInputField(const std::string &def=std::string())
+    : m_active(false), m_content(def)
+  {
+  }
 
   ~SDLInputField(){}
 
@@ -64,56 +77,10 @@ public:
 
     \return true if key was handled otherwise false
   */
-  bool handleKey(SDL_KeyboardEvent e)
-  {
-    if (!m_active)
-      return false;
-    bool pressed=e.state==SDL_PRESSED;
-    SDLKey k(e.keysym.sym);
-
-    if (!pressed) return true;
-
-    // check for special keys
-    switch (k) {
-    case SDLK_RETURN:
-      {
-	input.emit(m_content);
-	printed.emit('\n');
-	setActive(false);
-	return true;
-      }
-      break;
-    case SDLK_DELETE:
-    case SDLK_BACKSPACE:
-    case SDLK_LEFT:
-      unsigned s=m_content.size();
-      if (s)
-	m_content.resize(s-1);
-      printed.emit(k);
-      return true;
-    }
-
-    Uint16 unicode(e.keysym.unicode);
-    char ch;
-    if ( (unicode & 0xFF80) == 0 ) {
-      ch = unicode & 0x7F;
-      if (ch>=32) {
-	m_content+=ch;
-	printed.emit(ch);
-      }
-    }
-    else {
-      std::cerr << "An International Character.\n";
-    }
-    return true;
-  }
+  bool handleKey(SDL_KeyboardEvent e);
 
   //! activate or deactivate input field (focus)
-  void setActive(bool active=true)
-  {
-    m_active=active;
-    SDL_EnableUNICODE(active);
-  }
+  void setActive(bool active=true);
 
   bool isActive() const
   {
@@ -125,6 +92,12 @@ public:
   {
     return m_content;
   }
+  //! set content
+  void setContent(const std::string &c)
+  {
+    m_content=c;
+  }
+  
   //! clear the input field
   void clear() 
   {

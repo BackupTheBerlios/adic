@@ -211,7 +211,7 @@ Server::main()
     }
     // main work
     m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
-    if (!(frames%1000))
+    if (!(frames%100))
       broadcast(m_game);
     // check for win condition
     TeamID wt;

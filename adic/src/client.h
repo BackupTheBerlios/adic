@@ -40,6 +40,34 @@
 
 class GUI;
 
+struct NetStream
+{
+  NetStream(const std::string &name, unsigned short int port);
+
+  bool select(TimeStamp *stamp)
+  {
+    return layer0.select(stamp);
+  }
+
+  void read()
+  {
+    si.read();
+  }
+
+  void readAll()
+  {
+    TimeStamp null;
+    while (select(&null)) read();
+  }
+  
+  InternetAddress adr;
+  NetStreamBuf layer0;
+  OutProto l2out;
+  InProto l2in;
+  SignalOutAdapter<OutProto> so;
+  SignalInAdapter<InProto> si;
+};
+
 class Client : public SigC::Object
 {
 protected:
@@ -51,7 +79,6 @@ protected:
   std::vector<std::string> m_songs;
   unsigned m_csong;
   DOPE_SMARTPTR<GUI> m_guiPtr;
-  SignalOutAdapter<OutProto> *soPtr;
 public:
   Client(ClientConfig &config);
   ~Client();
@@ -65,6 +92,11 @@ public:
   void printed(char c);
   void handleChatMessage(DOPE_SMARTPTR<ChatMessage> chatPtr);
   void handleEndGame(DOPE_SMARTPTR<EndGame> egPtr);
+  //! try to connect
+  /*!
+    \return true on success otherwise false
+  */
+  bool connect();
   
   int main();
 
@@ -88,9 +120,20 @@ public:
   }
 
   std::string getPlayerName(PlayerID id) const;
+
+  //! get configuration
+  /*!
+    \note although this field is protected we allow direct access
+  */
+  ClientConfig &getConfig()
+  {
+    return m_config;
+  }
 protected:
   std::streambuf* m_cerrbuf;
   std::streambuf* m_coutbuf;
+
+  DOPE_SMARTPTR<NetStream> m_streamPtr;
 };
 
 #endif

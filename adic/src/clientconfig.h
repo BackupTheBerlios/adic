@@ -34,7 +34,7 @@
 
 struct ClientConfig
 {
-  ClientConfig() : m_port(40700), m_server("localhost")
+  ClientConfig() : m_port(ADIC_PORT), m_server("localhost")
   {}
   
   void setDefaults() 

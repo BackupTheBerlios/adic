@@ -25,13 +25,16 @@
 #ifndef SDLMENU_H
 #define SDLMENU_H
 
-#include "sdlglgui.h"
 #include "messages.h"
 #include "team.h"
 #include "clientconfig.h"
+#include "sdlglgui.h"
 
 //! menu displayed on game start
 /*!
+  the job of the menu ist to fill the ClientConfig config member
+  and to emit signals reporting which fields have changed
+
   you can select:
   the servername
   the number of players
@@ -41,13 +44,10 @@
 
   save configuration
 */
-
 class SDLMenu : public SigC::Object
 {
 public:
-  SDLMenu(SDLGLGUI &_gui, const ClientConfig &_config)
-    : gui(_gui), gl(_gui.gl), config(_config)
-  {}
+  SDLMenu(SDLGLGUI &_gui);
   ~SDLMenu(){}
 
   //! repaint
@@ -62,9 +62,6 @@ public:
   //! is called when input device has changed status
   void handleInput(Input &i);
 
-  //! is called when server connection succeeded or failed
-  void handleServerConnect(bool success);
-
   //! is called when we received new server statistics
   /*!
     \todo this is not perfect because the menu has to assume
@@ -72,13 +69,17 @@ public:
   */
   void handleServerStat(const std::vector<TeamStat> &stats);
   
+
   // signal output
 
   //! signal is emitted if user selected a server
-  SigC::Signal1<void, const std::string &> serverSelected;
+  /*!
+    \return true on success otherwise false
+  */
+  SigC::Signal0<bool> serverSelected;
 
   //! signal is emitted if user finished input
-  SigC::Signal1<void, const ClientConfig &> configured;
+  SigC::Signal0<void> configured;
 
   //! emitted when a key is pressed / this could be used to play a sound
   /*!
@@ -88,20 +89,31 @@ public:
   SigC::Signal1<void, char> printed;
 
   //! emitted if the configuration should be saved now
-  SigC::Signal1<void, const ClientConfig &> save;
+  SigC::Signal0<void> save;
+
 protected:
+  // internally used:
+
+  void handleServerName(const std::string &name);
+  void handleServerPort(const std::string &name);
+
+
   //! this is called when the menu is finished
   /*!
     this is mainly to demonstrate Jens Schwarz how to emit signals ;-)
   */
   void finish() 
   {
-    configured.emit(config);
+    configured.emit();
   }
   
   SDLGLGUI &gui;
   SDLGL &gl;
-  ClientConfig config;
+  //! the whole job of SDLMenu is to fill this struct
+  ClientConfig &config;
+  
+  SDLInputField serverName;
+  SDLInputField serverPort;
 };
 
 #endif

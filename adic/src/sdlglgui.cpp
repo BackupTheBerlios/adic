@@ -1,8 +1,8 @@
 #include "sdlglgui.h"
+#include "sdlmenu.h"
 
-
-SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config) 
-  : GUI(client,config), m_terminal(*this,0,config.height-48),
+SDLGLGUI::SDLGLGUI(Client &client) 
+  : GUI(client), m_terminal(*this,0,getGUIConfig().height-48),
     m_textureTime(5), 
     m_autoCenter(true), 
     m_zoom(1), m_zoomOp(0), m_autoZoom(true),
@@ -17,6 +17,11 @@ SDLGLGUI::SDLGLGUI(Client &client, const GUIConfig &config)
   m_start.now();
 }
 
+SDLGLGUI::~SDLGLGUI()
+{
+  m_textures.clear();
+  killWindow();
+}
 
 bool
 SDLGLGUI::init()
@@ -24,8 +29,8 @@ SDLGLGUI::init()
   // Initialize SDL
   if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0 )
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
-  if (SDL_GL_LoadLibrary(m_config.libGL.c_str())==-1)
-    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+m_config.libGL.c_str()+"\": "+SDL_GetError());
+  if (SDL_GL_LoadLibrary(getGUIConfig().libGL.c_str())==-1)
+    throw std::runtime_error(std::string("Could not load OpenGL lib: \"")+getGUIConfig().libGL.c_str()+"\": "+SDL_GetError());
   gl.init();
 
   int major=2;
@@ -59,6 +64,12 @@ SDLGLGUI::init()
   // handle input
   m_chatLine.input.connect(SigC::slot(*this,&SDLGLGUI::handleChatInput));
 
+  // create menu
+  m_menuPtr=DOPE_SMARTPTR<SDLMenu>(new SDLMenu(*this));
+  assert(m_inputDevices.size());
+  assert(m_menuPtr.get());
+  m_inputDevices[0]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
+  m_menuPtr->serverSelected.connect(SigC::slot(m_client,&Client::connect));
   createWindow();
   return true;
 }
@@ -67,15 +78,15 @@ void
 SDLGLGUI::createWindow() 
 {
   m_flags = SDL_OPENGL|SDL_RESIZABLE;
-  if ( m_config.fullscreen) m_flags |= SDL_FULLSCREEN;
+  if ( getGUIConfig().fullscreen) m_flags |= SDL_FULLSCREEN;
 
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
   SDL_ResizeEvent e;
-  e.w=m_config.width;
-  e.h=m_config.height;
+  e.w=getGUIConfig().width;
+  e.h=getGUIConfig().height;
   sf.resize.emit(e);
-  //  resize(m_config.width, m_config.height);
+  //  resize(getGUIConfig().width, getGUIConfig().height);
   m_texturePtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/textures.png"));
   m_fontTexPtr=DOPE_SMARTPTR<Texture>(new Texture(gl,"data/font.png"));
   m_fontPtr=DOPE_SMARTPTR<GLFont>(new GLFont(gl,m_fontTexPtr));
@@ -99,7 +110,7 @@ SDLGLGUI::resize(int width, int height)
   if ( SDL_SetVideoMode(width, height, 0, m_flags) == NULL ) {
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   }
-  SDL_WM_SetCaption(m_config.title.c_str(), m_config.title.c_str());
+  SDL_WM_SetCaption(getGUIConfig().title.c_str(), getGUIConfig().title.c_str());
   if (m_flags&SDL_FULLSCREEN)
     SDL_ShowCursor(SDL_DISABLE);
   else
@@ -349,7 +360,7 @@ SDLGLGUI::step(R dt)
   gl.Translatef(-int(m_pos[0]*m_zoom)+m_width/2,-int(m_pos[1]*m_zoom)+m_height/2,0);
   gl.Scalef(m_zoom,m_zoom,1);
 
-  // paint world
+  // paint world (if possible)
   Game::WorldPtr worldPtr=m_client.getWorldPtr();
   if (worldPtr.get()) {
     // paint rooms
@@ -402,9 +413,8 @@ SDLGLGUI::step(R dt)
       drawWall(w);
     }
     gl.Color3f(1.0,1.0,1.0);    
-  }else{
-    DOPE_WARN("Did not receive world yet");
   }
+
   // paint players
   if (m_animations.size()!=players.size()) {
     while (players.size()<m_animations.size())
@@ -548,7 +558,12 @@ SDLGLGUI::step(R dt)
   gl.Translatef(0,0,0);
   gl.Color3f(1.0,1.0,1.0);
   m_fontPtr->drawText(m_chatLine.getContent());
-  
+
+  // paint menu
+  if (m_menuPtr.get())
+    if (!m_menuPtr->step(dt))
+      m_menuPtr=DOPE_SMARTPTR<SDLMenu>();
+
   gl.Flush();
   gl.Finish();
   SDL_GL_SwapBuffers();

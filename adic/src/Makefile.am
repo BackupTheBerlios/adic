@@ -83,7 +83,7 @@ test_poly_SOURCES = test-poly.cpp $(polygon) $(allcommon)
 	sdlkeyboard.h sdlkeyboard.cpp \
 	sdljoystick.h sdljoystick.cpp \
 	sdlmouse.h sdlmouse.cpp \
-	sdlinputfield.h \
+	sdlinputfield.h sdlinputfield.cpp \
 	sdlmenu.h sdlmenu.cpp
 
 # we do not need @GL_LIBS@ since we now dlopen it

@@ -32,7 +32,7 @@
 class GUI : public SigC::Object
 {
 public:
-  GUI(Client &client, const GUIConfig &config) : m_client(client), m_config(config)
+  GUI(Client &client) : m_client(client)
   {}
   virtual ~GUI(){}
   
@@ -48,15 +48,22 @@ public:
   virtual std::ostream &getOstream()=0;
 
   virtual unsigned numInputDevices() const=0;
+  GUIConfig &getGUIConfig()
+  {
+    return m_client.getConfig().m_gui;
+  }
+  ClientConfig &getConfig()
+  {
+    return m_client.getConfig();
+  }
 protected:
   Client &m_client;
-  GUIConfig m_config;
 };
 
 class GUIFactory
 {
 public:
-  GUI* create(Client &client, const GUIConfig &config);
+  GUI* create(Client &client);
 };
 
 #endif

@@ -3,9 +3,10 @@
 #include "sdlglgui.h"
 
 GUI*
-GUIFactory::create(Client &client, const GUIConfig &config)
+GUIFactory::create(Client &client)
 {
-  if (config.implementation=="SDLGLGUI")
-    return new SDLGLGUI(client,config);
-  DOPE_FATAL("Unkown implementation: \""<<config.implementation<<"\"");
+  const std::string &i(client.getConfig().m_gui.implementation);
+  if (i=="SDLGLGUI")
+    return new SDLGLGUI(client);
+  DOPE_FATAL("Unkown implementation: \""<<i<<"\"");
 }

@@ -30,6 +30,17 @@ void sigPipeHandler(int x){
   std::cerr << "\nWARNING: Received sig pipe signal - I ignore it\n"<<std::endl;
 }
 
+NetStream::NetStream(const std::string &name, unsigned short int port)
+  : adr(HostAddress(name.c_str()),port),
+    layer0(adr), l2out(layer0), 
+#if USE_RAW_PROTOCOL == 1
+    l2in(layer0), 
+#elif USE_XML_PROTOCOL == 1
+    l2in(layer0,TimeStamp(0,300),2),
+#endif
+    so(l2out), si(l2in)
+{
+}
 
 Client::Client(ClientConfig &config) 
   : m_config(config), m_quit(false), m_soundPtr(NULL), m_csong(0), m_guiPtr(NULL),
@@ -192,10 +203,42 @@ Client::handleEndGame(DOPE_SMARTPTR<EndGame> egPtr)
   m_playerIDs.clear();
   ClientGreeting g;
   g.m_userSetting=m_config.m_users;
-  assert(soPtr);
-  soPtr->emit(g);
+  DOPE_CHECK(m_streamPtr.get());
+  m_streamPtr->so.emit(g);
 }
 
+bool
+Client::connect()
+{
+  if (m_streamPtr.get()) {
+    DOPE_WARN("already connected");
+    return true;
+  }
+  try {
+    m_streamPtr=DOPE_SMARTPTR<NetStream>(new NetStream(m_config.m_server,m_config.m_port));
+  }catch(...){
+    // todo: catch only socket errors and dns errors
+    // dope should be fixed when errors occur in HostAddress
+    if (m_streamPtr.get()) m_streamPtr=DOPE_SMARTPTR<NetStream>();
+  }
+  if (!m_streamPtr.get()) return false;
+
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handleGreeting));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handleGame));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handlePlayerInput));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handleNewClient));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handleChatMessage));
+  m_streamPtr->si.connect(SigC::slot(*this,&Client::handleEndGame));
+
+  ClientGreeting g;
+  g.m_userSetting=m_config.m_users;
+  m_streamPtr->so.emit(g);
+
+  DOPE_CHECK(m_guiPtr.get());
+  m_guiPtr->input.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<Input>));
+  m_guiPtr->chatMessage.connect(SigC::slot(m_streamPtr->so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
+  return true;
+}
 
 int
 Client::main()
@@ -206,28 +249,24 @@ Client::main()
   URILoader<URICache<PlayerData> >::cache=pdc.get();
   
   signal(SIGPIPE,sigPipeHandler);
-  InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
-  NetStreamBuf layer0(adr);
-  //  layer0.setBlocking(false);
-  OutProto l2out(layer0);
-#if USE_RAW_PROTOCOL == 1
-  InProto l2in(layer0);
-#elif USE_XML_PROTOCOL == 1
-  InProto l2in(layer0,TimeStamp(0,300),2);
-#endif
-  SignalOutAdapter<OutProto> so(l2out);
-  soPtr=&so;
-  SignalInAdapter<InProto> si(l2in);
-  si.connect(SigC::slot(*this,&Client::handleGreeting));
-  si.connect(SigC::slot(*this,&Client::handleGame));
-  si.connect(SigC::slot(*this,&Client::handlePlayerInput));
-  si.connect(SigC::slot(*this,&Client::handleNewClient));
-  si.connect(SigC::slot(*this,&Client::handleChatMessage));
-  si.connect(SigC::slot(*this,&Client::handleEndGame));
 
-  ClientGreeting g;
-  g.m_userSetting=m_config.m_users;
-  so.emit(g);
+  /*
+    InternetAddress adr(HostAddress(m_config.m_server.c_str()),m_config.m_port);
+    NetStreamBuf layer0(adr);
+    //  layer0.setBlocking(false);
+    OutProto l2out(layer0);
+    #if USE_RAW_PROTOCOL == 1
+    InProto l2in(layer0);
+    #elif USE_XML_PROTOCOL == 1
+    InProto l2in(layer0,TimeStamp(0,300),2);
+    #endif
+    SignalOutAdapter<OutProto> so(l2out);
+    soPtr=&so;
+
+    ClientGreeting g;
+    g.m_userSetting=m_config.m_users;
+    so.emit(g);
+  */
 
   TimeStamp start;
   start.now();
@@ -241,7 +280,7 @@ Client::main()
   unsigned frames=0;
 
   GUIFactory guif;
-  m_guiPtr=DOPE_SMARTPTR<GUI>(guif.create(*this,m_config.m_gui));
+  m_guiPtr=DOPE_SMARTPTR<GUI>(guif.create(*this));
   /*
     m_cerrbuf=std::cerr.rdbuf();
     std::cerr.rdbuf(m_guiPtr->getOstream().rdbuf());
@@ -257,19 +296,24 @@ Client::main()
   std::vector<int> soundChannel;
   
   DOPE_CHECK(m_guiPtr->init());
-  m_guiPtr->input.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<Input>));
-  m_guiPtr->chatMessage.connect(SigC::slot(so,&SignalOutAdapter<OutProto>::emit<ChatMessage>));
+
   std::cout << "Welcome to ADIC !!!\n";
   while (!m_quit) {
     newTime.now();
     dt=newTime-oldTime;
     while(dt<minStep) {
       timeOut=(minStep-dt);
-      if (layer0.select(&timeOut)) {
-	// read all messages
-	do {
-	  si.read();
-	}while (layer0.select(&null));
+      if (m_streamPtr.get()) {
+	// we check for incoming messages here to reduce latency
+	// for input messages
+	if (m_streamPtr->select(&timeOut)) {
+	  // read all messages
+	  do {
+	    m_streamPtr->read();
+	  }while (m_streamPtr->select(&null));
+	}
+      }else{
+	timeOut.sleep();
       }
       newTime.now();
       dt=newTime-oldTime;
@@ -309,8 +353,8 @@ Client::main()
       */
       m_soundPtr->step(rdt);
     }
-    while (layer0.select(&null))
-      si.read();
+    if (m_streamPtr.get()) m_streamPtr->readAll();
+
     // end of main work
     oldTime=newTime;
     ++frames;
@@ -321,7 +365,6 @@ Client::main()
 	      << " FPS: " << std::setw(8) << R(frames)/uptime 
 	      << " Frame: " << std::setw(10) << frames;*/
   }
-  soPtr=NULL;
   m_soundPtr=DOPE_SMARTPTR<Sound>(NULL);
   m_guiPtr=DOPE_SMARTPTR<GUI>(NULL);
   return 0;

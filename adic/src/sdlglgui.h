@@ -34,10 +34,12 @@
 #include "glfont.h"
 #include "sdlinputfield.h"
 
+class SDLMenu;
+
 class SDLGLGUI : public GUI
 {
 public:
-  SDLGLGUI(Client &client, const GUIConfig &config) ;
+  SDLGLGUI(Client &client);
 
   //! intitialize gui
   bool init();
@@ -46,7 +48,7 @@ public:
   //! center of screen coordinates
   V2D getPos() const;
   //! cleanup
-  ~SDLGLGUI(){m_textures.clear();killWindow();}
+  ~SDLGLGUI();
 
   bool handleKey(SDL_KeyboardEvent e);
   void handleResize(SDL_ResizeEvent e);
@@ -85,6 +87,12 @@ public:
   int getHeight() const
   {
     return m_height;
+  }
+
+  //! get signal factory
+  SDLSigFactory &getSigFactory()
+  {
+    return sf;
   }
 protected:
   //! \todo not yet implemented
@@ -131,6 +139,9 @@ protected:
   //! global or group chat ?
   int m_chatMode;
   SDLInputField m_chatLine;
+
+  //! the menu
+  DOPE_SMARTPTR<SDLMenu> m_menuPtr;
 };
 
 #endif
