@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[])
 {
-  R r;
+  R r, dist=0;
   V2D a(atof(argv[1]), atof(argv[2]));
   V2D b(atof(argv[3]), atof(argv[4]));
   V2D c(atof(argv[5]), atof(argv[6]));
@@ -38,8 +38,11 @@ int main(int argc, char* argv[])
 
   Wall w(l1, 1, 0.5);
   Circle k( d, 0.5 );
-  if (w.collide(k, cp))
+  if (w.collide(k, cp, dist))
+  {
     std::cout << "wall.collide: " << cp << std::endl;
+    std::cout << "wall dist:    " << dist << std::endl;
+  }
   else
     std::cout << "wall does not collide " << std::endl;
   return 0;
