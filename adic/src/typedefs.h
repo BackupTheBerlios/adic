@@ -39,7 +39,7 @@
 #error you must define int8_t int16_t ...
 
 // todo we should not assume that we use SDL
-#include <SDL/SDL_types.h>
+#include <SDL_types.h>
 
 typedef Uint8 uint8_t;
 typedef Sint8 int8_t;

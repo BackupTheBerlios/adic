@@ -27,8 +27,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include "sdlgl.h"
 
 class Texture

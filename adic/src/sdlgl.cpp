@@ -1,6 +1,6 @@
 #include "sdlgl.h"
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <assert.h>
 #include <iostream>
 #include <dope/dope.h>
