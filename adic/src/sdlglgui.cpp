@@ -79,24 +79,35 @@ SDLGLGUI::step(R dt)
     input.emit(i);
 
   // Clear The Screen And The Depth Buffer
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT);
   // Reset The View
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glColor3f(1.0,1.0,1.0);
+
+  // keep myself in the middle
+  const Game::Players &players(m_client.getPlayers());
+
+  uint16_t me=m_client.getPlayerID();
+  if (me<players.size()) {
+    V2D mypos(m_client.getPlayers()[me].m_pos);
+    glTranslatef(-mypos[0]+m_width/2,-mypos[1]+m_height/2,0);
+  }
+
   // paint world
   Game::WorldPtr worldPtr=m_client.getWorldPtr();
   if (worldPtr.get()) {
     // paint walls
     for (unsigned r=0;r<worldPtr->getNumRooms();++r)
       {
-	std::vector<V2D> lineloop(worldPtr->getLineLoop(r));
-	glBegin(GL_LINE_LOOP);
-	for (unsigned p=0;p<lineloop.size();++p)
-	  {
-	    glVertex2f(lineloop[p][0],lineloop[p][1]);
-	  }
-	glEnd();
+	World::EdgeIterator it(*worldPtr.get(),r);
+	Wall wall;
+	for (;it!=World::EdgeIterator(*worldPtr.get());++it) {
+	  if (!it.getWall(wall))
+	    continue;
+	  drawWall(wall);
+	}
       }
     // paint doors
     std::vector<FWEdge::EID> d(worldPtr->getAllDoors());
@@ -105,20 +116,13 @@ SDLGLGUI::step(R dt)
     for (unsigned d=0;d<doors.size();++d) {
       RealDoor rd(m_client.getGame().doorInWorld(doors[d]));
       Wall w(rd.asWall());
-      Line l(w.getLine());
-      drawCircle(l.m_a,w.getPillarRadius());
-      drawCircle(l.m_b,w.getPillarRadius());
-      glBegin(GL_LINES);
-      glVertex2f(l.m_a[0],l.m_a[1]);
-      glVertex2f(l.m_b[0],l.m_b[1]);
-      glEnd();
+      drawWall(w);
     }
     glColor3f(1.0,1.0,1.0);    
   }else{
     DOPE_WARN("Did not receive world yet");
   }
   // paint players
-  const Game::Players &players(m_client.getPlayers());
   for (unsigned p=0;p<players.size();++p)
     {
       glColor3f(0.0,1.0,0.0);
@@ -143,18 +147,16 @@ void SDLGLGUI::resize(int width, int height)
   // Prevent A Divide By Zero By
   if (height==0)			
     height=1;
+
+  m_width=width;
+  m_height=height;
+
   // Reset The Current Viewport
   glViewport(0,0,width,height);
   // Select The Projection Matrix
   glMatrixMode(GL_PROJECTION);		
   glLoadIdentity();
-  // gluPerspective(45.0f,(GLfloat)width/(GLfloat)height,0.1f,100.0f);
-  //  glOrtho(0.0f,width,height,0.0f,-1.0f,1.0f);
   glOrtho(0.0f,width,0.0f,height,-100.0f,100.0f);
-  // Select The Modelview Matrix
-  glMatrixMode(GL_MODELVIEW);
-  // Reset The Modelview Matrix
-  glLoadIdentity();
 }
 
 void SDLGLGUI::initSDL() {
@@ -178,7 +180,8 @@ SDLGLGUI::createWindow(const char* title, int width, int height, int bits, bool 
     throw std::runtime_error(std::string("Couldn't init SDL: ")+SDL_GetError());
   }
   SDL_WM_SetCaption(title, "opengl");
-  
+  if (fullscreenflag)
+    SDL_ShowCursor(SDL_DISABLE);
   resize(width, height);					// Set Up Our Perspective GL Screen
   
   initGL();
@@ -187,21 +190,14 @@ SDLGLGUI::createWindow(const char* title, int width, int height, int bits, bool 
 void
 SDLGLGUI::initGL() 
 {
-  glShadeModel(GL_SMOOTH);
-  // Clear The Background Color To Black
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  // Enables Clearing Of The Depth Buffer
-  //  glClearDepth(1.0);
-  // Enable Depth Testing
-  //  glEnable(GL_DEPTH_TEST);
-  // Enables Smooth Color Shading
-  //  glShadeModel(GL_SMOOTH);
-  glShadeModel(GL_FLAT);
-  // Enable 2D Texture Mapping
-  //  glEnable(GL_TEXTURE_2D);
-  //  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-  // glEnable(GL_BLEND);
-  //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  /*
+  glShadeModel(GL_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glEnable(GL_LINE_SMOOTH);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  */
 }
 
 void
@@ -219,9 +215,24 @@ SDLGLGUI::drawCircle(const V2D &p, float r)
   glTranslatef(p[0], p[1], 0);
   glBegin(GL_TRIANGLE_FAN);
   glVertex2f(0, 0);
-  for (angle = 0.0; angle <= 2 * M_PI; angle += M_PI / 24) {
+  for (angle = 0.0; angle <= 2 * M_PI; angle += M_PI / 12) {
     glVertex2f(r * cos(angle), r * sin(angle));
   }
   glEnd();
   glPopMatrix();
+}
+void
+SDLGLGUI::drawWall(const Wall &w)
+{
+  float lw;
+  glGetFloatv(GL_LINE_WIDTH,&lw);
+  glLineWidth(2*w.getWallWidth());
+  Line l(w.getLine());
+  drawCircle(l.m_a,w.getPillarRadius());
+  drawCircle(l.m_b,w.getPillarRadius());
+  glBegin(GL_LINES);
+  glVertex2f(l.m_a[0],l.m_a[1]);
+  glVertex2f(l.m_b[0],l.m_b[1]);
+  glEnd();
+  glLineWidth(lw);
 }

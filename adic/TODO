@@ -1,68 +1,19 @@
-heißenbug:
-create door is called more than once when running without gdb
-and exactly once when running in gdb
+jetzt serialisiere ich auch die old values
+besser wäre nach dem lesen die alten werte auf die neuen zu setzen
+allerings macht das ja evtl. probleme mit dem XMLSAXInStream
+also eigentlich ein dope problem
+
+libefence does not work with -lGL - is there a bug in libGL ?
+perhaps update NVIDIA driver
 
 
 collideDoorAndPlayer
 macht nen rollback fuer beide
 das kann zu fehlern fuehren
 
-
-
-client und server main loop richtig machen !!!
-
-
-
-in door.h habe ich aus versehen ueberall grad benutzt
-
-
-nochmal ueber die klasse door nachdenken
-meine urspruenglicher gedanke war der die daten moeglichst klein zu halten
-damit wenig netzerk traffic erzeugt wird
-das hat aber zur folge dass alle methoden die eigentlich zur tuer gehoeren nach
-game wandern
-evtl. 2-stufig
-also tür-daten und tür-adapter
-
-xml parser haengt ewig
-problem ist timeout
-warum wird der parser nicht rechtzeitig angehalten ?
-libxml scheint in diesem punkt aber auch schlecht zu sein
-wie mache ich das nochmal mit dem parser anhalten und neu starten ?
-kann es daran liegen ?
-
-
 server closes connection
 client doesn't detect it
 
-
-input message enthaelt muell
-
-
-es scheint jetzt zu gehen
-=> close connection on error
-
-also er malt schonmal die welt (nur als linien)
-jetzt muss ich machen dass er die spieler malt und v.a. dass man sie bewegen kann
-
-
-änderungen reinmachen
-
-
-habe grad nen crash
-und zwar bei xmlsaxinstream
-src/gameserver --file=file:data/world.xml
-
-mit den eingabe devices nochmal ueberlegen
 der genericpointer ist gut fuer dope - nicht loeschen
-
-aber bei panzer habe ich das mit der eingabe irgendwie besser gemacht
-da nachschauen
-
-also bei panzer habe ich das so gemacht:
-die control daten (input device zustand) sind einfach in dem objekt und werden
-ganz normal mitgeschickt
-
-der client sendet spezielle control messages an den server sobald noetig
 
 i18n (localization)

@@ -45,8 +45,10 @@ protected:
   void killWindow();
 
   void drawCircle(const V2D &p, float r);
-
+  void drawWall(const Wall &wall);
   Input i;
+  int m_width;
+  int m_height;
 };
 
 #endif

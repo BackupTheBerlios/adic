@@ -2,7 +2,7 @@
 #include "wall.h"
 //#include "world.h"
 
-const R Door::damping=0;
+const R Door::damping=RAD(1);
 
 bool
 Door::isClosed() const

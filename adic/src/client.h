@@ -55,17 +55,16 @@ inline void composite(Layer2 &layer2, ClientConfig &c)
   layer2.simple(c.m_port,"port").simple(c.m_server,"server").simple(c.m_gui,"gui");
 }
 
-typedef XMLOutStream<std::streambuf> OutProto;
-typedef XMLSAXInStream<std::streambuf> InProto;
-
 class Client : public SigC::Object
 {
 protected:
   ClientConfig &m_config;
   Game m_game;
   bool m_quit;
+  uint16_t m_playerID;
+  
 public:
-  Client(ClientConfig &config) : m_config(config), m_quit(false)
+  Client(ClientConfig &config) : m_config(config), m_quit(false), m_playerID(~uint16_t(0))
   {}
   ~Client(){}
 
@@ -73,15 +72,10 @@ public:
   {
     assert(gPtr.get());
     std::cerr << "\nGot Greeting from server "<< gPtr->m_adicVersion.asString() << " DOPE++ "<<gPtr->m_dopeVersion.asString()<<"\n";
+    m_playerID=gPtr->m_playerID;
   }
   
-  void handleGame(DOPE_SMARTPTR<Game> gPtr)
-  {
-    assert(gPtr.get());
-    std::cerr << "\nGot game data\n";
-    // todo later we will perhaps need a replace method
-    m_game=*gPtr.get();
-  }
+  void handleGame(DOPE_SMARTPTR<Game> gPtr);
 
   void handlePlayerInput(DOPE_SMARTPTR<PlayerInput> iPtr)
   {
@@ -106,7 +100,11 @@ public:
   {
     return m_game.getPlayers();
   }
-  
+
+  uint16_t getPlayerID() const
+  {
+    return m_playerID;
+  }
 protected:
 };
 

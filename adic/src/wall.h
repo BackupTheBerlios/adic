@@ -43,7 +43,7 @@ protected:
   R m_wt;
 
 public:
-  Wall(const Line &line, R pr=1, R wt=1) 
+  Wall(const Line &line=Line(), R pr=5, R wt=1) 
     : m_l(line), m_pr(pr), m_wt(wt)
   {
   }
@@ -56,6 +56,10 @@ public:
   R getPillarRadius() const
   {
     return m_pr;
+  }
+  R getWallWidth() const
+  {
+    return m_wt*2;
   }
   
   //! collide circle and wall

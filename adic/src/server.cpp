@@ -79,12 +79,18 @@ Server::main()
       newTime.now();
       dt=newTime-oldTime;
     }
+    // main work
     m_game.step(R(dt.getSec())+R(dt.getUSec())/1000000);
+    if (!(frames%100))
+      broadcast(m_game);
     oldTime=newTime;
     ++frames;
     dt=newTime-start;
     R uptime=R(dt.getSec())+(R(dt.getUSec())/1000000);
-    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime << " FPS: " << std::setw(10) << R(frames)/uptime << " Frame: " << std::setw(20) << frames;
+    std::cout << "\rUptime: " << std::fixed << std::setprecision(2) << std::setw(15) << uptime 
+	      << " FPS: " << std::setw(10) << R(frames)/uptime 
+	      << " Frame: " << std::setw(20) << frames
+	      << " Stamp: " << m_game.getTimeStamp().getSec() << "sec "<<m_game.getTimeStamp().getUSec() << "usec";
   }
   connections.clear();
   return 0;
@@ -93,6 +99,14 @@ Server::main()
 int main(int argc,char *argv[])
 {
   try{
+    /* efence test
+    char *foo=new char[99];
+    //foo[100]=1; // above
+    //    foo[-1]=2; // below
+    delete [] foo;
+    foo[10]=0; // free
+    */
+
     ArgvParser parser(argc,argv);
     ServerConfig config;
     parser.simple(config,NULL);

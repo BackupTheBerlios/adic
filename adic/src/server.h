@@ -59,14 +59,16 @@ inline void composite(Layer2 &layer2, ServerConfig &c)
   layer2.simple(c.m_port,"port").simple(c.m_meshURI,"meshURI");
 }
 
-typedef XMLOutStream<std::streambuf> OutProto;
-typedef XMLSAXInStream<std::streambuf> InProto;
-
 template <typename INP = InProto>
 class StreamFactory
 {
 public:
-  StreamFactory(std::streambuf &_l0) : inp(_l0,TimeStamp(0,300),2) , sigFactory(inp)
+  StreamFactory(std::streambuf &_l0) 
+#if USE_RAW_PROTOCOL == 1
+    : inp(_l0) , sigFactory(inp)
+#elif USE_XML_PROTOCOL == 1
+    : inp(_l0,TimeStamp(0,300),2) , sigFactory(inp)
+#endif
   {
   }
 

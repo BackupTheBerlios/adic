@@ -1,7 +1,7 @@
 #include "player.h"
 
-const R Player::m_maxspeed=20;
-const R Player::m_acceleration=5;
+const R Player::m_maxspeed=40;
+const R Player::m_acceleration=10;
 const R Player::m_hdamping=2;
 const R Player::m_vdamping=3;
 

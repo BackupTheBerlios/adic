@@ -27,6 +27,7 @@
 
 #include "mesh.h"
 #include "circle.h"
+#include "wall.h"
 
 //! full winged edge
 /*!
@@ -35,7 +36,8 @@
 struct FWEdge
 {
   FWEdge() 
-    : m_ncw(noEdge), m_pcw(noEdge), m_nccw(noEdge), m_pccw(noEdge), m_rcw(noRoom), m_rccw(noRoom)
+    : m_ncw(noEdge), m_pcw(noEdge), m_nccw(noEdge), m_pccw(noEdge), m_rcw(noRoom), m_rccw(noRoom),
+      m_etcw(0), m_etccw(0)
   {
   }
   
@@ -278,6 +280,20 @@ public:
       else id=getEdge().m_ev;
       assert(id<m_w.m_vertices.size());
       return m_w.m_vertices[id];
+    }
+    //! get corresponding wall
+    /*!
+      \param r the result
+      \return true if a wall has been stored in r otherwise false
+    */
+    bool getWall(Wall &r) const
+    {
+      const FWEdge &e=getEdge();
+      if (e.isDoor())
+	return false;
+      Line l(getStartPoint(),getEndPoint());
+      r=Wall(l);
+      return true;
     }
   };
 };

@@ -43,6 +43,7 @@ World::World(const Mesh &mesh)
 void
 World::setFromMesh(const Mesh &mesh)
 {
+  DOPE_WARN("called");
   // this does not have to be fast since it is called only once or twice ;-)
 
   // copy all vertices
@@ -182,11 +183,9 @@ World::collide
   bool res=false;
   for (EdgeIterator it(*this,room);it!=EdgeIterator(*this);++it)
     {
-      const FWEdge &e=*it;
-      if (e.isDoor())
+      Wall wall;
+      if (!it.getWall(wall))
 	continue;
-      Line l(m_vertices[e.m_sv],m_vertices[e.m_ev]);
-      Wall wall(l);
       V2D subc;
       if (wall.collide(c,subc)) {
 	res=true;
