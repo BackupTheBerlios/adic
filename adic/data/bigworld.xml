@@ -1,0 +1,701 @@
+<?xml version="1.0"?>
+<Mesh>
+<stdvectorOfV2D this.name="vertices">
+<V2D y="75" x="75" />
+<V2D y="75" x="375" />
+<V2D y="225" x="375" />
+<V2D y="375" x="375" />
+<V2D y="375" x="75" />
+<V2D y="900" x="225" />
+<V2D y="900" x="375" />
+<V2D y="900" x="525" />
+<V2D y="900" x="1050" />
+<V2D y="1200" x="1050" />
+<V2D y="1200" x="900" />
+<V2D y="1200" x="600" />
+<V2D y="1200" x="225" />
+<V2D y="1275" x="375" />
+<V2D y="1275" x="600" />
+<V2D y="300" x="525" />
+<V2D y="420" x="525" />
+<V2D y="450" x="1425" />
+<V2D y="600" x="1425" />
+<V2D y="600" x="1050" />
+<V2D y="825" x="1050" />
+<V2D y="825" x="1650" />
+<V2D y="750" x="1650" />
+<V2D y="675" x="1650" />
+<V2D y="600" x="1650" />
+<V2D y="600" x="1575" />
+<V2D y="300" x="1575" />
+<V2D y="225" x="525" />
+<V2D y="1425" x="375" />
+<V2D y="1425" x="1050" />
+<V2D y="1275" x="1050" />
+<V2D y="1275" x="900" />
+<V2D y="1275" x="1350" />
+<V2D y="1425" x="1350" />
+<V2D y="1425" x="1875" />
+<V2D y="1125" x="1875" />
+<V2D y="1125" x="1425" />
+<V2D y="1275" x="1425" />
+<V2D y="300" x="2100" />
+<V2D y="420" x="2100" />
+<V2D y="675" x="1800" />
+<V2D y="750" x="1800" />
+<V2D y="750" x="2100" />
+<V2D y="675" x="2100" />
+<V2D y="1050" x="2100" />
+<V2D y="1200" x="2100" />
+<V2D y="975" x="2100" />
+<V2D y="975" x="2400" />
+<V2D y="1050" x="2400" />
+<V2D y="1200" x="2400" />
+<V2D y="1275" x="2400" />
+<V2D y="1275" x="2100" />
+<V2D y="600" x="2100" />
+<V2D y="900" x="2100" />
+<V2D y="900" x="2400" />
+<V2D y="750" x="2400" />
+<V2D y="675" x="2400" />
+<V2D y="600" x="2400" />
+<V2D y="525" x="2400" />
+<V2D y="525" x="2100" />
+<V2D y="225" x="2100" />
+<V2D y="225" x="2400" />
+<V2D y="300" x="2400" />
+<V2D y="300" x="2625" />
+<V2D y="75" x="2625" />
+<V2D y="75" x="3075" />
+<V2D y="225" x="3075" />
+<V2D y="450" x="3075" />
+<V2D y="825" x="3075" />
+<V2D y="825" x="2625" />
+<V2D y="750" x="2625" />
+<V2D y="675" x="2625" />
+<V2D y="600" x="2625" />
+<V2D y="600" x="2775" />
+<V2D y="450" x="2775" />
+<V2D y="1050" x="2625" />
+<V2D y="1200" x="2625" />
+<V2D y="1200" x="2850" />
+<V2D y="1050" x="2850" />
+<V2D y="975" x="2850" />
+<V2D y="975" x="3225" />
+<V2D y="750" x="3225" />
+<V2D y="750" x="3450" />
+<V2D y="825" x="3450" />
+<V2D y="975" x="3450" />
+<V2D y="1200" x="3450" />
+<V2D y="1200" x="3150" />
+<V2D y="1425" x="3150" />
+<V2D y="1425" x="2850" />
+<V2D y="225" x="3750" />
+<V2D y="450" x="3750" />
+<V2D y="150" x="3750" />
+<V2D y="150" x="4050" />
+<V2D y="570" x="4050" />
+<V2D y="750" x="4050" />
+<V2D y="1050" x="4050" />
+<V2D y="1050" x="3750" />
+<V2D y="975" x="3750" />
+<V2D y="870" x="3750" />
+<V2D y="525" x="4350" />
+<V2D y="750" x="4350" />
+<V2D y="900" x="4350" />
+<V2D y="900" x="4425" />
+<V2D y="1275" x="4425" />
+<V2D y="300" x="4350" />
+<V2D y="300" x="4650" />
+<V2D y="300" x="4575" />
+<V2D y="300" x="4425" />
+<V2D y="75" x="4425" />
+<V2D y="225" x="4575" />
+<V2D y="900" x="4575" />
+<V2D y="1125" x="4575" />
+<V2D y="1125" x="4875" />
+<V2D y="225" x="4875" />
+<V2D y="75" x="5175" />
+<V2D y="300" x="5175" />
+<V2D y="1275" x="5175" />
+<V2D y="1200" x="5175" />
+<V2D y="975" x="5175" />
+<V2D y="825" x="5175" />
+<V2D y="675" x="5175" />
+<V2D y="525" x="5175" />
+<V2D y="525" x="5475" />
+<V2D y="300" x="5475" />
+<V2D y="300" x="5325" />
+<V2D y="75" x="5325" />
+<V2D y="75" x="5625" />
+<V2D y="225" x="5625" />
+<V2D y="225" x="5775" />
+<V2D y="375" x="5775" />
+<V2D y="375" x="5925" />
+<V2D y="75" x="5925" />
+<V2D y="525" x="5625" />
+<V2D y="675" x="5625" />
+<V2D y="825" x="5625" />
+<V2D y="1050" x="5625" />
+<V2D y="1050" x="5475" />
+<V2D y="975" x="5475" />
+<V2D y="1200" x="5475" />
+<V2D y="1200" x="5250" />
+<V2D y="1425" x="5250" />
+<V2D y="1425" x="5625" />
+<V2D y="1200" x="5625" />
+<V2D y="1200" x="5925" />
+<V2D y="1425" x="5925" />
+<V2D y="270" x="375" />
+<V2D y="330" x="375" />
+<V2D y="900" x="420" />
+<V2D y="900" x="480" />
+<V2D y="1200" x="660" />
+<V2D y="1200" x="720" />
+<V2D y="1320" x="1050" />
+<V2D y="1380" x="1050" />
+<V2D y="1320" x="1350" />
+<V2D y="1380" x="1350" />
+<V2D y="600" x="1470" />
+<V2D y="600" x="1530" />
+<V2D y="360" x="525" />
+<V2D y="450" x="525" />
+<V2D y="450" x="2400" />
+<V2D y="420" x="2400" />
+<V2D y="450" x="2100" />
+<V2D y="360" x="2100" />
+<V2D y="360" x="2400" />
+<V2D y="300" x="3075" />
+<V2D y="360" x="3075" />
+<V2D y="270" x="3750" />
+<V2D y="341.25" x="3750" />
+<V2D y="300" x="4470" />
+<V2D y="300" x="4530" />
+<V2D y="1080" x="2100" />
+<V2D y="1140" x="2100" />
+<V2D y="1080" x="2400" />
+<V2D y="1140" x="2400" />
+<V2D y="1110" x="2625" />
+<V2D y="1181.25" x="2625" />
+<V2D y="1080" x="2850" />
+<V2D y="1140" x="2850" />
+<V2D y="870" x="3450" />
+<V2D y="930" x="3450" />
+<V2D y="930" x="3750" />
+<V2D y="525" x="4050" />
+<V2D y="630" x="4050" />
+<V2D y="570" x="4350" />
+<V2D y="630" x="4350" />
+<V2D y="900" x="4470" />
+<V2D y="900" x="4530" />
+<V2D y="1050" x="5175" />
+<V2D y="1110" x="5175" />
+<V2D y="1200" x="5400" />
+<V2D y="1200" x="5340" />
+<V2D y="1260" x="5625" />
+<V2D y="1320" x="5625" />
+<V2D y="1200" x="5760" />
+<V2D y="1200" x="5820" />
+<V2D y="270" x="5775" />
+<V2D y="330" x="5775" />
+<V2D y="120" x="5625" />
+<V2D y="180" x="5625" />
+<V2D y="720" x="5175" />
+<V2D y="780" x="5175" />
+<V2D y="480" x="5175" />
+<V2D y="420" x="5175" />
+<V2D y="360" x="5475" />
+<V2D y="420" x="5475" />
+</stdvectorOfV2D>
+<stdvectorOfEdge this.name="edgelist">
+<Edge vid="1" type="0" />
+<Edge vid="0" type="0" />
+<Edge vid="4" type="0" />
+<Edge vid="3" type="0" />
+<Edge vid="146" type="1" />
+<Edge vid="145" type="0" />
+<Edge vid="-1" type="1" />
+<Edge vid="15" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="27" type="0" />
+<Edge vid="2" type="0" />
+<Edge vid="145" type="1" />
+<Edge vid="146" type="0" />
+<Edge vid="3" type="0" />
+<Edge vid="6" type="0" />
+<Edge vid="147" type="1" />
+<Edge vid="148" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="158" type="0" />
+<Edge vid="16" type="1" />
+<Edge vid="157" type="0" />
+<Edge vid="15" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="25" type="0" />
+<Edge vid="-1" type="1" />
+<Edge vid="26" type="0" />
+<Edge vid="15" type="0" />
+<Edge vid="157" type="1" />
+<Edge vid="16" type="0" />
+<Edge vid="158" type="0" />
+<Edge vid="17" type="0" />
+<Edge vid="18" type="0" />
+<Edge vid="155" type="1" />
+<Edge vid="156" type="0" />
+<Edge vid="25" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="31" type="0" />
+<Edge vid="-1" type="1" />
+<Edge vid="8" type="0" />
+<Edge vid="7" type="0" />
+<Edge vid="148" type="1" />
+<Edge vid="147" type="0" />
+<Edge vid="6" type="0" />
+<Edge vid="5" type="0" />
+<Edge vid="12" type="0" />
+<Edge vid="11" type="0" />
+<Edge vid="149" type="1" />
+<Edge vid="150" type="0" />
+<Edge vid="10" type="0" />
+<Edge vid="9" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="10" type="0" />
+<Edge vid="150" type="1" />
+<Edge vid="149" type="0" />
+<Edge vid="11" type="0" />
+<Edge vid="14" type="0" />
+<Edge vid="13" type="0" />
+<Edge vid="28" type="0" />
+<Edge vid="29" type="0" />
+<Edge vid="152" type="1" />
+<Edge vid="151" type="0" />
+<Edge vid="30" type="0" />
+<Edge vid="31" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="34" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="32" type="0" />
+<Edge vid="30" type="0" />
+<Edge vid="151" type="1" />
+<Edge vid="152" type="0" />
+<Edge vid="29" type="0" />
+<Edge vid="33" type="0" />
+<Edge vid="154" type="1" />
+<Edge vid="153" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="35" type="0" />
+<Edge vid="36" type="0" />
+<Edge vid="37" type="0" />
+<Edge vid="32" type="0" />
+<Edge vid="153" type="1" />
+<Edge vid="154" type="0" />
+<Edge vid="33" type="0" />
+<Edge vid="34" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="162" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="24" type="0" />
+<Edge vid="25" type="0" />
+<Edge vid="156" type="1" />
+<Edge vid="155" type="0" />
+<Edge vid="18" type="0" />
+<Edge vid="19" type="0" />
+<Edge vid="20" type="0" />
+<Edge vid="21" type="0" />
+<Edge vid="22" type="1" />
+<Edge vid="23" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="38" type="0" />
+<Edge vid="23" type="1" />
+<Edge vid="22" type="0" />
+<Edge vid="45" type="0" />
+<Edge vid="171" type="1" />
+<Edge vid="170" type="0" />
+<Edge vid="44" type="0" />
+<Edge vid="41" type="0" />
+<Edge vid="42" type="1" />
+<Edge vid="43" type="0" />
+<Edge vid="40" type="0" />
+<Edge vid="161" type="0" />
+<Edge vid="39" type="1" />
+<Edge vid="162" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="48" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="61" type="0" />
+<Edge vid="60" type="0" />
+<Edge vid="38" type="0" />
+<Edge vid="162" type="1" />
+<Edge vid="39" type="0" />
+<Edge vid="161" type="0" />
+<Edge vid="59" type="0" />
+<Edge vid="58" type="0" />
+<Edge vid="159" type="0" />
+<Edge vid="160" type="1" />
+<Edge vid="163" type="0" />
+<Edge vid="62" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="57" type="0" />
+<Edge vid="52" type="0" />
+<Edge vid="43" type="1" />
+<Edge vid="42" type="0" />
+<Edge vid="53" type="0" />
+<Edge vid="54" type="0" />
+<Edge vid="55" type="1" />
+<Edge vid="56" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="47" type="0" />
+<Edge vid="46" type="0" />
+<Edge vid="44" type="0" />
+<Edge vid="170" type="1" />
+<Edge vid="171" type="0" />
+<Edge vid="45" type="0" />
+<Edge vid="51" type="0" />
+<Edge vid="50" type="0" />
+<Edge vid="49" type="0" />
+<Edge vid="173" type="1" />
+<Edge vid="172" type="0" />
+<Edge vid="48" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="166" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="65" type="0" />
+<Edge vid="64" type="0" />
+<Edge vid="63" type="0" />
+<Edge vid="62" type="0" />
+<Edge vid="163" type="1" />
+<Edge vid="160" type="0" />
+<Edge vid="159" type="0" />
+<Edge vid="74" type="0" />
+<Edge vid="73" type="0" />
+<Edge vid="72" type="0" />
+<Edge vid="71" type="1" />
+<Edge vid="70" type="0" />
+<Edge vid="69" type="0" />
+<Edge vid="68" type="0" />
+<Edge vid="67" type="0" />
+<Edge vid="165" type="1" />
+<Edge vid="164" type="0" />
+<Edge vid="66" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="89" type="0" />
+<Edge vid="66" type="0" />
+<Edge vid="164" type="1" />
+<Edge vid="165" type="0" />
+<Edge vid="67" type="0" />
+<Edge vid="90" type="0" />
+<Edge vid="167" type="1" />
+<Edge vid="166" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="174" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="71" type="0" />
+<Edge vid="56" type="1" />
+<Edge vid="55" type="0" />
+<Edge vid="70" type="1" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="75" type="0" />
+<Edge vid="48" type="0" />
+<Edge vid="172" type="1" />
+<Edge vid="173" type="0" />
+<Edge vid="49" type="0" />
+<Edge vid="76" type="0" />
+<Edge vid="175" type="1" />
+<Edge vid="174" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="83" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="78" type="0" />
+<Edge vid="75" type="0" />
+<Edge vid="174" type="1" />
+<Edge vid="175" type="0" />
+<Edge vid="76" type="0" />
+<Edge vid="77" type="0" />
+<Edge vid="177" type="1" />
+<Edge vid="176" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="82" type="0" />
+<Edge vid="81" type="0" />
+<Edge vid="80" type="0" />
+<Edge vid="79" type="0" />
+<Edge vid="78" type="0" />
+<Edge vid="176" type="1" />
+<Edge vid="177" type="0" />
+<Edge vid="77" type="0" />
+<Edge vid="88" type="0" />
+<Edge vid="87" type="0" />
+<Edge vid="86" type="0" />
+<Edge vid="85" type="0" />
+<Edge vid="84" type="0" />
+<Edge vid="179" type="1" />
+<Edge vid="178" type="0" />
+<Edge vid="83" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="92" type="0" />
+<Edge vid="91" type="0" />
+<Edge vid="89" type="0" />
+<Edge vid="166" type="1" />
+<Edge vid="167" type="0" />
+<Edge vid="90" type="0" />
+<Edge vid="98" type="1" />
+<Edge vid="180" type="0" />
+<Edge vid="96" type="0" />
+<Edge vid="95" type="0" />
+<Edge vid="94" type="0" />
+<Edge vid="182" type="1" />
+<Edge vid="93" type="0" />
+<Edge vid="181" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="98" type="0" />
+<Edge vid="178" type="1" />
+<Edge vid="179" type="0" />
+<Edge vid="180" type="1" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="110" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="99" type="0" />
+<Edge vid="181" type="0" />
+<Edge vid="93" type="1" />
+<Edge vid="182" type="0" />
+<Edge vid="94" type="0" />
+<Edge vid="100" type="0" />
+<Edge vid="184" type="1" />
+<Edge vid="183" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="105" type="0" />
+<Edge vid="106" type="0" />
+<Edge vid="169" type="1" />
+<Edge vid="168" type="0" />
+<Edge vid="107" type="0" />
+<Edge vid="104" type="0" />
+<Edge vid="99" type="0" />
+<Edge vid="183" type="1" />
+<Edge vid="184" type="0" />
+<Edge vid="100" type="0" />
+<Edge vid="101" type="0" />
+<Edge vid="102" type="0" />
+<Edge vid="185" type="1" />
+<Edge vid="186" type="0" />
+<Edge vid="110" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="114" type="0" />
+<Edge vid="108" type="0" />
+<Edge vid="107" type="0" />
+<Edge vid="168" type="1" />
+<Edge vid="169" type="0" />
+<Edge vid="106" type="0" />
+<Edge vid="109" type="0" />
+<Edge vid="113" type="0" />
+<Edge vid="112" type="0" />
+<Edge vid="111" type="0" />
+<Edge vid="110" type="0" />
+<Edge vid="186" type="1" />
+<Edge vid="185" type="0" />
+<Edge vid="102" type="0" />
+<Edge vid="103" type="0" />
+<Edge vid="116" type="0" />
+<Edge vid="117" type="0" />
+<Edge vid="188" type="1" />
+<Edge vid="187" type="0" />
+<Edge vid="119" type="0" />
+<Edge vid="200" type="1" />
+<Edge vid="199" type="0" />
+<Edge vid="201" type="1" />
+<Edge vid="202" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="123" type="0" />
+<Edge vid="115" type="0" />
+<Edge vid="202" type="1" />
+<Edge vid="201" type="0" />
+<Edge vid="121" type="0" />
+<Edge vid="122" type="0" />
+<Edge vid="204" type="1" />
+<Edge vid="203" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="137" type="0" />
+<Edge vid="118" type="0" />
+<Edge vid="187" type="1" />
+<Edge vid="188" type="0" />
+<Edge vid="117" type="0" />
+<Edge vid="190" type="1" />
+<Edge vid="189" type="0" />
+<Edge vid="138" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="126" type="0" />
+<Edge vid="125" type="0" />
+<Edge vid="124" type="0" />
+<Edge vid="123" type="0" />
+<Edge vid="203" type="1" />
+<Edge vid="204" type="0" />
+<Edge vid="122" type="0" />
+<Edge vid="132" type="0" />
+<Edge vid="133" type="0" />
+<Edge vid="120" type="0" />
+<Edge vid="199" type="1" />
+<Edge vid="200" type="0" />
+<Edge vid="119" type="0" />
+<Edge vid="134" type="0" />
+<Edge vid="135" type="0" />
+<Edge vid="136" type="0" />
+<Edge vid="138" type="0" />
+<Edge vid="189" type="1" />
+<Edge vid="190" type="0" />
+<Edge vid="139" type="0" />
+<Edge vid="140" type="0" />
+<Edge vid="141" type="0" />
+<Edge vid="192" type="1" />
+<Edge vid="191" type="0" />
+<Edge vid="142" type="0" />
+<Edge vid="193" type="1" />
+<Edge vid="194" type="0" />
+<Edge vid="143" type="0" />
+<Edge vid="130" type="0" />
+<Edge vid="129" type="0" />
+<Edge vid="196" type="1" />
+<Edge vid="195" type="0" />
+<Edge vid="128" type="0" />
+<Edge vid="127" type="0" />
+<Edge vid="198" type="1" />
+<Edge vid="197" type="0" />
+<Edge vid="-1" type="0" />
+
+<Edge vid="131" type="0" />
+<Edge vid="126" type="0" />
+<Edge vid="197" type="1" />
+<Edge vid="127" type="0" />
+<Edge vid="128" type="0" />
+<Edge vid="195" type="1" />
+<Edge vid="196" type="0" />
+<Edge vid="129" type="0" />
+<Edge vid="130" type="0" />
+<Edge vid="-1" type="0" />
+<Edge vid="143" type="0" />
+<Edge vid="194" type="1" />
+<Edge vid="193" type="0" />
+<Edge vid="142" type="0" />
+<Edge vid="191" type="1" />
+<Edge vid="192" type="0" />
+<Edge vid="141" type="0" />
+<Edge vid="144" type="0" />
+<Edge vid="-1" type="0" />
+</stdvectorOfEdge>
+<!-- hier kommen die startpositionen fuer spieler -->
+<!-- second ist richtung -->
+<!-- der vector ist die startposition -->
+
+<stdvectorOfstdpairOfV2DAndfloat this.name="startPoints">
+
+<stdpairOfV2DAndfloat second="45">
+	<V2D this.name="first" x="150" y="150"/>
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="135">
+	<V2D this.name="first" x="720" y="1300"/>
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="225">
+	<V2D this.name="first" x="1600" y="1300"/>
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="90">
+	<V2D this.name="first" x="1200" y="700"/>
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="0">
+	<V2D this.name="first" x="2300" y="800" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="180">
+	<V2D this.name="first" x="800" y="1100" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="80">
+	<V2D this.name="first" x="3150" y="330" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="10">
+	<V2D this.name="first" x="3250" y="300" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="18">
+	<V2D this.name="first" x="3350" y="360" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="90">
+	<V2D this.name="first" x="3500" y="330" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="0">
+	<V2D this.name="first" x="3900" y="780" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="200">
+	<V2D this.name="first" x="3950" y="310" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="270">
+	<V2D this.name="first" x="3880" y="430" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="180">
+	<V2D this.name="first" x="3910" y="580" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="40">
+	<V2D this.name="first" x="5000" y="800" />
+</stdpairOfV2DAndfloat>
+
+<stdpairOfV2DAndfloat second="100">
+	<V2D this.name="first" x="5040" y="950" />
+</stdpairOfV2DAndfloat>
+
+</stdvectorOfstdpairOfV2DAndfloat>
+
+<!-- hier kommen objekte die am anfang vorhanden sind -->
+<!-- URI bestimmt den typ des objekts -->
+<!-- dir ist richtung -->
+<!-- vector ist position -->
+<stdvectorOfObject this.name="startObjects">
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="2200" y="750" />
+  </Object>
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="900" y="380" />
+  </Object>
+  <Object dir="0" URI="file:data/barrel.xml">
+    <V2D this.name="pos" x="4530" y="450" />
+  </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="1250" y="1370" />
+  </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="4200" y="650" />
+  </Object>
+  <Object dir="45" URI="file:data/fountain.xml">
+    <V2D this.name="pos" x="5775" y="1300" />
+  </Object>
+</stdvectorOfObject>
+</Mesh>

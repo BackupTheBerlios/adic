@@ -1,6 +1,6 @@
 gamefilesdir = $(pkgdatadir)
 gamefiles_DATA = \
-	mesh.xml miniworld.xml \
+	mesh.xml miniworld.xml bigworld.xml \
 	barrel.xml fountain.xml \
 	boy.xml girl.xml muetze.xml cowboy.xml \
 	music.mod collision.wav \
