@@ -74,6 +74,7 @@ SDLGLGUI::init()
     m_inputDevices[i]->input.connect(SigC::slot(*m_menuPtr,&SDLMenu::handleInput));
   m_menuPtr->serverSelected.connect(SigC::slot(m_client,&Client::connect));
   m_menuPtr->configured.connect(SigC::slot(m_client,&Client::sendGreeting));
+  m_menuPtr->printed.connect(printed.slot());
   return true;
 }
 
